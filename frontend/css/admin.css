@@ -1,0 +1,534 @@
+/* =========================
+   QUICKCONNECT ADMIN DASHBOARD
+   Dashboard / Analytics only
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #0b1220;
+  color: #e5e7eb;
+  min-height: 100vh;
+}
+
+/* =========================
+   DASHBOARD LAYOUT
+========================= */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+  width: 260px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+  padding: 22px 18px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+
+  overflow-y: auto;
+
+  z-index: 1000;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+
+.sidebar .logo {
+  padding: 4px 8px 10px;
+}
+
+.sidebar h2 {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.sidebar p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* =========================
+   SIDEBAR NAVIGATION
+========================= */
+
+.sidebar nav {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  text-decoration: none;
+  color: #94a3b8;
+
+  padding: 12px 13px;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sidebar a i {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background: rgba(59, 130, 246, 0.10);
+  color: #e2e8f0;
+  transform: translateX(2px);
+}
+
+.sidebar a.active {
+  background: rgba(59, 130, 246, 0.16);
+  color: #fff;
+}
+
+.sidebar a.active i {
+  color: #60a5fa;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+
+  margin-left: 260px;
+
+  padding: 25px 28px 50px;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: sticky;
+  top: 0;
+
+  z-index: 999;
+
+  margin-bottom: 25px;
+  padding: 16px 18px;
+
+  background: rgba(11, 18, 32, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.topbar h1 {
+  font-size: 25px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.topbar p {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.admin-avatar {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+
+  color: #93c5fd;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* =========================
+   ANALYTICS WRAPPER
+========================= */
+
+.stats-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 30px;
+}
+
+/* =========================
+   STAT CARDS
+========================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  min-height: 125px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius: 16px;
+
+  padding: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(96, 165, 250, 0.20);
+}
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+}
+
+.stat-card.blue::before {
+  background: #3b82f6;
+}
+
+.stat-card.green::before {
+  background: #22c55e;
+}
+
+.stat-card.purple::before {
+  background: #a855f7;
+}
+
+.stat-card.orange::before {
+  background: #f97316;
+}
+
+.stat-card.red::before {
+  background: #ef4444;
+}
+
+.stat-card.yellow::before {
+  background: #eab308;
+}
+
+.stat-card.cyan::before {
+  background: #06b6d4;
+}
+
+.stat-card h3 {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.stat-card p {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-card i {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+
+  font-size: 21px;
+}
+
+/* =========================
+   CHART GRID
+========================= */
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* =========================
+   CHART CARDS
+========================= */
+
+.chart-card {
+  width: 100%;
+  min-width: 0;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius: 16px;
+
+  padding: 22px;
+
+  position: relative;
+
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.chart-card:hover {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.chart-card h3 {
+  margin-bottom: 18px;
+
+  color: #fff;
+
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 300px !important;
+  display: block;
+}
+
+.small-chart canvas {
+  height: 260px !important;
+}
+
+/* =========================
+   ANALYTICS TABLE
+========================= */
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+}
+
+.analytics-table th {
+  background: rgba(255, 255, 255, 0.045);
+
+  color: #e2e8f0;
+
+  padding: 13px;
+
+  text-align: left;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.analytics-table td {
+  padding: 13px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+
+  color: #cbd5e1;
+
+  font-size: 13px;
+
+  white-space: nowrap;
+}
+
+.analytics-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.analytics-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* =========================
+   TABLE RESPONSIVENESS
+========================= */
+
+.chart-card:has(.analytics-table) {
+  overflow-x: auto;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 1100px) {
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 220px;
+  }
+
+  .main-content {
+    margin-left: 220px;
+    padding: 20px;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+
+    position: relative;
+
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+    padding: 15px;
+  }
+
+  .sidebar nav {
+    margin-top: 18px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sidebar a {
+    font-size: 13px;
+  }
+
+  .dashboard {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+  .topbar {
+    position: relative;
+    padding: 14px 5px;
+  }
+
+  .topbar h1 {
+    font-size: 21px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    padding: 17px;
+  }
+
+  .chart-card canvas {
+    height: 250px !important;
+  }
+
+  .small-chart canvas {
+    height: 230px !important;
+  }
+
+}
+
+@media (max-width: 450px) {
+
+  .sidebar nav {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .stat-card p {
+    font-size: 25px;
+  }
+
+}

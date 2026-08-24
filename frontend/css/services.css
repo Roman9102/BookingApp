@@ -1,0 +1,817 @@
+/* =========================================================
+   QUICKCONNECT — SERVICES PAGE
+   Modern • Premium • Clean • Responsive
+========================================================= */
+
+/* =========================
+   RESET
+========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.12), transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.10), transparent 30%),
+    #080b14;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+  width: 255px;
+  min-width: 255px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(13, 17, 29, 0.88);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  padding: 28px 18px;
+  z-index: 100;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+  padding: 5px 12px 32px;
+}
+
+.logo h2 {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+
+  background: linear-gradient(135deg, #ffffff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo p {
+  margin-top: 5px;
+  color: #7f8aa3;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 13px 14px;
+  border-radius: 12px;
+
+  color: #929bb0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.sidebar nav a i {
+  width: 19px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.sidebar nav a:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.055);
+  transform: translateX(3px);
+}
+
+.sidebar nav a.active {
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.28),
+    rgba(99, 102, 241, 0.12)
+  );
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 42px 45px 70px;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+  margin-bottom: 28px;
+}
+
+.topbar h1 {
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 750;
+  letter-spacing: -1px;
+  color: #ffffff;
+}
+
+.topbar h1 i {
+  margin-right: 9px;
+  color: #a78bfa;
+}
+
+.topbar p {
+  margin-top: 8px;
+  color: #7f8aa3;
+  font-size: 14px;
+}
+
+/* =========================
+   SEARCH CARD
+========================= */
+
+.glass-card {
+  padding: 5px;
+  margin-bottom: 25px;
+
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 17px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 13px 16px;
+
+  background: rgba(5, 8, 17, 0.65);
+  border-radius: 13px;
+}
+
+.search-box i {
+  color: #8b5cf6;
+  font-size: 15px;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+
+  background: transparent;
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: #606b82;
+}
+
+/* =========================
+   SERVICES GRID
+========================= */
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+/* =========================
+   SERVICE CARD
+========================= */
+
+.service-card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.065),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 19px;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+
+  border-color: rgba(167, 139, 250, 0.30);
+
+  box-shadow:
+    0 25px 55px rgba(0, 0, 0, 0.30),
+    0 0 35px rgba(124, 58, 237, 0.07);
+}
+
+/* =========================
+   CATEGORY IMAGE
+========================= */
+
+.service-card > img {
+  width: 100%;
+  height: 185px;
+
+  object-fit: cover;
+  display: block;
+
+  border-radius: 14px;
+  margin-bottom: 17px;
+
+  transition: transform 0.45s ease;
+}
+
+.service-card:hover > img {
+  transform: scale(1.025);
+}
+
+/* =========================
+   CARD TEXT
+========================= */
+
+.service-card h3 {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin-bottom: 8px;
+}
+
+.service-card p {
+  color: #8d98ad;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* =========================
+   CLICKABLE WORDS
+   Replaces old buttons
+========================= */
+
+.service-card .service-link,
+.service-card .book-link,
+.service-card .view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 15px;
+
+  color: #a78bfa;
+  background: none;
+  border: none;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    gap 0.2s ease;
+}
+
+.service-card .service-link:hover,
+.service-card .book-link:hover,
+.service-card .view-link:hover {
+  color: #c4b5fd;
+  gap: 11px;
+}
+
+.service-card .service-link i,
+.service-card .book-link i,
+.service-card .view-link i {
+  font-size: 11px;
+}
+
+/* =========================
+   PRICE
+========================= */
+
+.service-card strong {
+  color: #c4b5fd;
+  font-weight: 650;
+}
+
+/* =========================
+   SERVICE IMAGE PREVIEW
+========================= */
+
+.service-gallery-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.service-gallery-preview > img {
+  width: 100%;
+  height: 205px;
+
+  object-fit: cover;
+  display: block;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.45s ease,
+    filter 0.3s ease;
+}
+
+.service-gallery-preview:hover > img {
+  transform: scale(1.035);
+  filter: brightness(1.08);
+}
+
+/* =========================
+   GALLERY COUNT
+========================= */
+
+.gallery-preview-count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 10px;
+
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 9px;
+
+  backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font-size: 11px;
+}
+
+/* =========================
+   THUMB STRIP
+========================= */
+
+.thumb-strip {
+  display: flex;
+  gap: 7px;
+
+  margin-top: 9px;
+  overflow-x: auto;
+
+  scrollbar-width: none;
+}
+
+.thumb-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.thumb-strip img {
+  width: 52px;
+  height: 45px;
+
+  flex: 0 0 52px;
+
+  object-fit: cover;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  opacity: 0.72;
+
+  border: 1px solid transparent;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.thumb-strip img:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  border-color: rgba(167, 139, 250, 0.5);
+}
+
+/* =========================
+   BACK TO CATEGORIES
+========================= */
+
+#backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 15px;
+  margin-bottom: 18px;
+
+  padding: 0;
+
+  color: #9ca3b5;
+  background: none;
+  border: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    gap 0.2s ease;
+}
+
+#backBtn:hover {
+  color: #c4b5fd;
+  gap: 11px;
+}
+
+/* =========================
+   GALLERY MODAL
+========================= */
+
+.gallery-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  background: rgba(2, 4, 10, 0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  z-index: 9999;
+}
+
+.gallery-box {
+  width: min(1000px, 95vw);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.gallery-center {
+  position: relative;
+
+  width: min(800px, 78vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-fade {
+  max-width: 100%;
+  max-height: 72vh;
+
+  object-fit: contain;
+
+  border-radius: 15px;
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+
+  cursor: zoom-in;
+
+  transition: transform 0.3s ease;
+}
+
+/* =========================
+   GALLERY CONTROLS
+========================= */
+
+.gallery-close,
+.gallery-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(10px);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.gallery-close:hover,
+.gallery-arrow:hover {
+  background: rgba(139, 92, 246, 0.25);
+  transform: scale(1.05);
+}
+
+.gallery-close {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  z-index: 2;
+}
+
+.gallery-arrow {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   GALLERY COUNTER
+========================= */
+
+.gallery-counter {
+  margin-top: 13px;
+
+  color: #aeb7c9;
+  font-size: 12px;
+}
+
+/* =========================
+   GALLERY THUMBNAILS
+========================= */
+
+.gallery-thumbs {
+  display: flex;
+  gap: 8px;
+
+  max-width: 100%;
+  overflow-x: auto;
+
+  margin-top: 14px;
+  padding-bottom: 3px;
+
+  scrollbar-width: none;
+}
+
+.gallery-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-thumbs img {
+  width: 52px;
+  height: 43px;
+
+  flex: 0 0 52px;
+
+  object-fit: cover;
+
+  border-radius: 7px;
+
+  opacity: 0.5;
+
+  cursor: pointer;
+
+  border: 1px solid transparent;
+
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-thumbs img:hover,
+.gallery-thumbs img.active {
+  opacity: 1;
+  border-color: #a78bfa;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.idea-footer {
+  padding: 20px 30px;
+
+  text-align: center;
+
+  color: #566075;
+
+  background: rgba(5, 8, 15, 0.55);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  font-size: 12px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 850px) {
+
+  .dashboard {
+    display: block;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    position: relative;
+
+    padding: 16px;
+  }
+
+  .logo {
+    padding: 5px 8px 15px;
+  }
+
+  .sidebar nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 3px;
+
+    scrollbar-width: none;
+  }
+
+  .sidebar nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .main-content {
+    padding: 28px 18px 55px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-width: 500px) {
+
+  .topbar h1 {
+    font-size: 24px;
+  }
+
+  .service-card {
+    padding: 13px;
+  }
+
+  .service-card > img,
+  .service-gallery-preview > img {
+    height: 190px;
+  }
+
+  .gallery-overlay {
+    padding: 12px;
+  }
+
+  .gallery-box {
+    gap: 8px;
+  }
+
+  .gallery-arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .gallery-center {
+    width: 76vw;
+  }
+
+}
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+.sidebar-bottom {
+  margin-top: auto !important;
+  width: 100% !important;
+  padding: 20px 0 0 !important;
+}
+
+.logout-btn {
+  width: 100% !important;
+  min-height: 46px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+
+  padding: 12px 16px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #cbd5e1 !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;
+
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.logout-btn i {
+  width: 20px !important;
+  min-width: 20px !important;
+  text-align: center !important;
+  font-size: 15px !important;
+}
+
+.logout-btn span {
+  display: inline-block !important;
+  white-space: nowrap !important;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+}
+
+.logout-btn:active {
+  transform: translateY(1px);
+}

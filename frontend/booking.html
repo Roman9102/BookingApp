@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Service - Quick Connect</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/idea.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+<aside class="sidebar">
+
+  <div class="logo">
+    <h2>QuickConnect</h2>
+    <p>Business Ideas Hub</p>
+  </div>
+
+  <nav>
+
+    <a href="index.html" id="homeLink">
+      <i class="fa-solid fa-house"></i>
+      Home
+    </a>
+
+    <a href="services.html" id="servicesLink">
+      <i class="fa-solid fa-briefcase"></i>
+      Services
+    </a>
+
+    <a href="booking.html" id="bookServiceLink">
+      <i class="fa-solid fa-calendar-check"></i>
+      Book Service
+    </a>
+
+    <a href="my-bookings.html" id="myBookingsLink">
+      <i class="fa-solid fa-list"></i>
+      My Bookings
+    </a>
+
+    <a href="businessIdeas.html" id="businessIdeasLink" class="active">
+      <i class="fa-solid fa-lightbulb"></i>
+      Business Ideas
+    </a>
+
+    <a href="admin.html" id="dashboardLink">
+      <i class="fa-solid fa-chart-line"></i>
+      Dashboard
+    </a>
+
+    <a href="#" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </a>
+
+  </nav>
+
+</aside>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const dashboardLink = document.getElementById("dashboardLink");
+  const businessIdeasLink = document.getElementById("businessIdeasLink");
+  const myBookingsLink = document.getElementById("myBookingsLink");
+
+  // Guests
+  if (!user) {
+    if (dashboardLink) dashboardLink.style.display = "none";
+    return;
+  }
+
+  // Everyone can see My Bookings
+  if (myBookingsLink) myBookingsLink.style.display = "block";
+
+  // Normal User
+  if (user.role === "user") {
+    if (dashboardLink) dashboardLink.style.display = "none";
+    if (businessIdeasLink) businessIdeasLink.style.display = "block";
+  }
+
+  // Service Provider
+  if (user.role === "serviceProvider") {
+    if (dashboardLink) dashboardLink.style.display = "block";
+    if (businessIdeasLink) businessIdeasLink.style.display = "none";
+  }
+
+  // Admin
+  if (user.role === "admin") {
+    if (dashboardLink) dashboardLink.style.display = "block";
+    if (businessIdeasLink) businessIdeasLink.style.display = "none";
+  }
+
+});
+</script>
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+<main class="main-content">
+
+<header class="topbar">
+
+<div>
+<h1>Book a Service</h1>
+<p>Complete your booking below.</p>
+</div>
+
+</header>
+
+<!-- =========================
+     BOOKING FORM
+========================= -->
+
+<form id="bookingForm">
+
+<!-- =========================
+     CUSTOMER INFORMATION
+========================= -->
+
+<section class="glass-card">
+
+<h2>Customer Information</h2>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Full Name</label>
+<input
+type="text"
+id="customerName"
+readonly
+placeholder="Loading customer..."
+>
+</div>
+
+<div class="form-group">
+<label>Email Address</label>
+<input
+type="email"
+id="customerEmail"
+readonly
+placeholder="Loading email..."
+>
+</div>
+
+<div class="form-group">
+<label>Phone Number</label>
+<input
+type="tel"
+id="customerPhone"
+placeholder="Enter your phone number"
+required
+>
+</div>
+
+</div>
+
+</section>
+<!-- =========================
+     SERVICE DETAILS
+========================= -->
+
+<section class="glass-card">
+
+<h2>Service Details</h2>
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label>Select Service</label>
+
+<select id="service" required>
+
+<option value="">
+Select a Service
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Booking Date</label>
+
+<input
+type="date"
+id="date"
+required
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Preferred Time</label>
+
+<input
+type="time"
+id="bookingTime"
+required
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Booking Type</label>
+
+<select
+id="location"
+required
+>
+
+<option value="">
+Select Booking Type
+</option>
+
+<option value="store">
+In Store
+</option>
+
+<option value="mobile">
+Mobile Service
+</option>
+
+</select>
+
+</div>
+
+<!-- DYNAMIC LOCATION -->
+
+<div class="form-group">
+
+<label id="locationLabel">
+
+Location
+
+<span style="color:#ef4444;">*</span>
+
+</label>
+
+<input
+type="text"
+id="serviceLocation"
+placeholder="Select a booking type first"
+required
+>
+
+<small
+id="locationHint"
+style="color:#94a3b8;"
+>
+
+Choose a booking type first.
+
+</small>
+
+</div>
+
+<div class="form-group">
+
+<label>Payment Method</label>
+
+<select
+id="paymentMethod"
+required
+>
+
+<option value="">
+Select Payment Method
+</option>
+
+<option value="cash">
+Cash
+</option>
+
+<option value="eft">
+EFT
+</option>
+
+<option value="card">
+Card
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Booking Status</label>
+
+<input
+type="text"
+id="bookingStatus"
+value="Pending Approval"
+readonly
+>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =========================
+     SPECIAL REQUESTS
+========================= -->
+
+<section class="glass-card">
+
+<h2>Special Requests</h2>
+
+<textarea
+id="notes"
+rows="5"
+placeholder="Add any notes for the service provider (optional)..."
+></textarea>
+
+</section>
+
+<!-- =========================
+     BOOKING SUMMARY
+========================= -->
+
+<section class="glass-card">
+
+<h2>Booking Summary</h2>
+
+<div class="summary-grid">
+
+<div class="summary-item">
+<span>Selected Service</span>
+<strong id="summaryService">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Category</span>
+<strong id="summaryCategory">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Service Provider</span>
+<strong id="summaryProvider">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Service Location</span>
+<strong id="summaryLocation">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Service Mode</span>
+<strong id="summaryMode">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Booking Date</span>
+<strong id="summaryDate">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Booking Time</span>
+<strong id="summaryTime">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Payment Method</span>
+<strong id="summaryPayment">-</strong>
+</div>
+
+<div class="summary-item">
+<span>Status</span>
+<strong id="summaryStatus">Pending</strong>
+</div>
+
+<div class="summary-item total">
+
+<span>Estimated Price</span>
+
+<strong id="summaryPrice">
+R0.00
+</strong>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =========================
+     CTA
+========================= -->
+
+<section class="idea-cta">
+
+<h2>Ready to Book?</h2>
+
+<p>
+Review your booking information before submitting.
+</p>
+
+<button
+type="submit"
+class="btn-primary"
+id="bookBtn"
+>
+
+<i class="fa-solid fa-calendar-check"></i>
+
+Book Service
+
+</button>
+
+<p
+id="bookingMessage"
+style="margin-top:15px;"
+></p>
+
+</section>
+
+</form>
+
+<footer class="idea-footer">
+<p>&copy; 2026 Quick Connect</p>
+</footer>
+
+<script src="js/auth.js"></script>
+<script src="js/booking.js"></script>
+
+</body>
+</html>

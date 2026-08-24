@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Provider Bookings - QuickConnect</title>
+
+  <link rel="stylesheet" href="./css/admin.css">
+  <link rel="stylesheet" href="./css/provider-bookings.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <script src="./js/navbar.js" defer></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- =========================
+       SIDEBAR
+  ========================= -->
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>QuickConnect</h2>
+      <p>Provider Panel</p>
+    </div>
+
+    <nav>
+
+      <!-- DASHBOARD -->
+      <a href="admin.html">
+        <i class="fa fa-chart-line"></i>
+        Dashboard
+      </a>
+
+      <!-- MY SERVICES -->
+      <a href="my-services.html">
+        <i class="fa fa-briefcase"></i>
+        My Services
+      </a>
+
+      <!-- BOOKINGS -->
+      <a href="provider-bookings.html" class="active">
+        <i class="fa fa-calendar-check"></i>
+        Bookings
+      </a>
+
+      <!-- SETTINGS -->
+      <a href="settings.html" id="settingsNavLink">
+        <i class="fa fa-gear"></i>
+        Settings
+      </a>
+
+      <!-- BROWSE APP -->
+      <a href="index.html">
+        <i class="fa fa-globe"></i>
+        Browse App
+      </a>
+
+      <!-- LOGOUT -->
+      <a href="#" onclick="logout()">
+        <i class="fa fa-sign-out"></i>
+        Logout
+      </a>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================= -->
+
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div>
+
+        <h1>Bookings</h1>
+
+        <p>
+          Manage customer bookings for your services
+        </p>
+
+      </div>
+
+      <div class="admin-avatar">
+        <i class="fa fa-calendar-check"></i>
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         BOOKING CONTROLS
+    ========================= -->
+
+    <section class="glass-card">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:15px;
+        flex-wrap:wrap;
+        margin-bottom:20px;
+      ">
+
+        <div>
+
+          <h2>Customer Bookings</h2>
+
+          <p style="color:#94a3b8; margin-top:5px;">
+            Review, accept, postpone or decline incoming bookings.
+          </p>
+
+        </div>
+
+        <a
+          href="booking-history.html"
+          class="btn-primary"
+          style="
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+          "
+        >
+
+          <i class="fa fa-clock-rotate-left"></i>
+
+          Booking History
+
+        </a>
+
+      </div>
+
+
+      <!-- FILTERS -->
+
+      <div style="
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:25px;
+      ">
+
+        <button
+          type="button"
+          class="btn-primary booking-filter active"
+          data-status="all"
+        >
+          <i class="fa fa-list"></i>
+          All
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary booking-filter"
+          data-status="pending"
+        >
+          <i class="fa fa-hourglass-half"></i>
+          Pending
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary booking-filter"
+          data-status="accepted"
+        >
+          <i class="fa fa-check"></i>
+          Accepted
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary booking-filter"
+          data-status="postponed"
+        >
+          <i class="fa fa-clock"></i>
+          Postponed
+        </button>
+
+      </div>
+
+
+      <!-- BOOKINGS -->
+
+      <div
+        id="bookingsContainer"
+        class="grid"
+      ></div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- =========================
+     LOGOUT
+========================= -->
+
+<script>
+
+function logout() {
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  window.location.href = "login.html";
+
+}
+
+</script>
+
+
+<!-- =========================
+     PROVIDER BOOKINGS SCRIPT
+     
+     Cache-busting is intentional.
+     It forces the browser to load
+     the latest provider-bookings.js
+     instead of an older cached copy.
+========================= -->
+
+<script src="./js/provider-bookings.js?v=20261606"></script>
+
+</body>
+</html>

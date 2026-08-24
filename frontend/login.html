@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Quick Connect</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="auth-layout">
+
+  <!-- LEFT SIDE -->
+  <div class="auth-left">
+    <h1>Quick Connect</h1>
+    <p>Login to book and manage services</p>
+
+    <div class="auth-badges">
+      <div class="badge"><i class="fa fa-briefcase"></i> Services</div>
+      <div class="badge"><i class="fa fa-calendar"></i> Bookings</div>
+      <div class="badge"><i class="fa fa-star"></i> Trusted Providers</div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="auth-right">
+
+    <form id="loginForm" class="auth-card">
+
+      <h2>Login</h2>
+
+      <input type="email" id="email" placeholder="Email" required>
+
+      <input type="password" id="password" placeholder="Password" required>
+
+      <!-- FORGOT PASSWORD -->
+      <div style="text-align:right; margin:-5px 0 18px;">
+        <a
+          href="forgot-password.html"
+          style="
+            color:#3b82f6;
+            text-decoration:none;
+            font-size:14px;
+            font-weight:500;
+          "
+        >
+          Forgot Password?
+        </a>
+      </div>
+
+      <button type="submit">Login</button>
+
+      <p class="auth-text">
+        New here?
+        <a href="register.html">Create account</a>
+      </p>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("http://localhost:5000/api/auth/login", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({email,password})
+  });
+
+  const data = await res.json();
+
+  if(data.token){
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role || "user");
+    localStorage.setItem("user", JSON.stringify(data.user || {}));
+    window.location.href = "index.html";
+  } else {
+    alert(data.message || "Login failed");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Subscription Payment - Quick Connect
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- LEFT SIDE -->
+
+  <div class="auth-left">
+
+    <h1>
+      Quick Connect
+    </h1>
+
+    <p>
+      Secure provider subscription
+    </p>
+
+    <div class="auth-badges">
+
+      <div class="badge">
+
+        <i class="fa fa-lock"></i>
+
+        Secure Payments
+
+      </div>
+
+      <div class="badge">
+
+        <i class="fa fa-credit-card"></i>
+
+        Card Payment
+
+      </div>
+
+      <div class="badge">
+
+        <i class="fa fa-shield-halved"></i>
+
+        Secure Subscription
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- RIGHT SIDE -->
+
+  <div class="auth-right">
+
+    <div class="auth-card payment-result-card">
+
+
+      <!-- PAYMENT LOADING -->
+
+      <div id="subscriptionLoading">
+
+        <i class="fa fa-spinner fa-spin"></i>
+
+        <h2>
+          Verifying Subscription
+        </h2>
+
+        <p>
+          Please wait while we confirm
+          your subscription payment.
+        </p>
+
+      </div>
+
+
+      <!-- PAYMENT SUCCESS -->
+
+      <div
+        id="subscriptionSuccess"
+        style="display: none;"
+      >
+
+        <i class="fa fa-circle-check"></i>
+
+        <h2>
+          Subscription Activated
+        </h2>
+
+        <p>
+          Your Quick Connect provider
+          subscription has been successfully
+          activated.
+        </p>
+
+        <p id="subscriptionReference"></p>
+
+        <p id="subscriptionExpiry"></p>
+
+        <p>
+          Returning you to your dashboard in
+          <strong id="subscriptionCountdown">
+            5
+          </strong>
+          seconds...
+        </p>
+
+        <button
+          type="button"
+          onclick="window.location.replace('admin.html')"
+        >
+
+          <i class="fa fa-gauge-high"></i>
+
+          Continue to Dashboard
+
+        </button>
+
+      </div>
+
+
+      <!-- PAYMENT FAILED -->
+
+      <div
+        id="subscriptionFailed"
+        style="display: none;"
+      >
+
+        <i class="fa fa-circle-xmark"></i>
+
+        <h2>
+          Subscription Payment Failed
+        </h2>
+
+        <p id="subscriptionError">
+          We could not confirm your
+          subscription payment.
+        </p>
+
+        <button
+          type="button"
+          onclick="window.location.replace('register.html')"
+        >
+
+          <i class="fa fa-arrow-left"></i>
+
+          Return to Registration
+
+        </button>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+  <!-- SUBSCRIPTION SUCCESS SCRIPT -->
+
+  <script src="js/subscription-success.js"></script>
+
+</body>
+
+</html>

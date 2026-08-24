@@ -1,0 +1,1808 @@
+<!-- settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Settings - Quick Connect</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+</head>
+
+<body>
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+
+      <div>
+        <h2>Quick<span>Connect</span></h2>
+        <p>Provider Panel</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <a href="admin.html">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="admin.html#my-servicesSection">
+        <i class="fa-solid fa-briefcase"></i>
+        <span>My Services</span>
+      </a>
+
+      <a href="admin.html#provider-bookingsSection">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Bookings</span>
+      </a>
+
+      <a href="admin.html#analyticsSection">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
+      </a>
+
+      <a href="settings.html" class="active">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <button
+        type="button"
+        class="logout-btn"
+        onclick="logout()"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+
+      <div class="mobile-brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+
+        <strong>
+          Quick<span>Connect</span>
+        </strong>
+      </div>
+
+      <div class="topbar-title">
+
+        <p>Account</p>
+
+        <h1>Settings</h1>
+
+      </div>
+
+      <div class="profile-mini">
+
+        <div class="profile-avatar" id="profileAvatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div class="profile-info">
+
+          <strong id="topProfileName">
+            Provider
+          </strong>
+
+          <span>
+            Service Provider
+          </span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         SETTINGS CONTENT
+    ========================== -->
+    <section class="settings-page">
+
+      <div class="settings-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            ACCOUNT CONTROL
+          </span>
+
+          <h2>
+            Manage your account
+          </h2>
+
+          <p>
+            Update your personal information,
+            business details, payments and security.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           PROFILE HERO
+      ========================== -->
+      <div class="profile-hero">
+
+        <div class="profile-large">
+
+          <div
+            class="large-avatar"
+            id="largeAvatar"
+          >
+            <i class="fa-solid fa-user"></i>
+          </div>
+
+          <div>
+
+            <span class="account-label">
+              SERVICE PROVIDER ACCOUNT
+            </span>
+
+            <h3 id="heroName">
+              Provider
+            </h3>
+
+            <p id="heroEmail">
+              provider@example.com
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="account-status">
+
+          <span class="status-dot"></span>
+
+          <span>Account Active</span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           SETTINGS GRID
+      ========================== -->
+      <div class="settings-grid">
+
+
+        <!-- =====================
+             PERSONAL INFORMATION
+        ====================== -->
+        <section class="settings-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon blue">
+              <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div>
+
+              <h3>Personal Information</h3>
+
+              <p>
+                Keep your account information up to date.
+              </p>
+
+            </div>
+
+          </div>
+
+          <form id="personalInfoForm">
+
+            <div class="form-grid">
+
+              <div class="field">
+
+                <label for="fullName">
+                  Full Name
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-user"></i>
+
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Your full name"
+                    autocomplete="name"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="email">
+                  Email Address
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-envelope"></i>
+
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Your email address"
+                    autocomplete="email"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="phone">
+                  Phone Number
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-phone"></i>
+
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Your phone number"
+                    autocomplete="tel"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="location">
+                  Location
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-location-dot"></i>
+
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    placeholder="City / Area"
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="card-footer">
+
+              <span
+                class="save-message"
+                id="personalMessage"
+              ></span>
+
+              <button
+                type="submit"
+                class="primary-btn"
+              >
+                <i class="fa-solid fa-check"></i>
+                Save Changes
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+
+        <!-- =====================
+             BUSINESS INFORMATION
+        ====================== -->
+        <section class="settings-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon purple">
+              <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div>
+
+              <h3>Business Information</h3>
+
+              <p>
+                Manage the information customers see.
+              </p>
+
+            </div>
+
+          </div>
+
+          <form id="businessInfoForm">
+
+            <div class="form-grid">
+
+              <div class="field">
+
+                <label for="businessName">
+                  Business Name
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-building"></i>
+
+                  <input
+                    type="text"
+                    id="businessName"
+                    name="businessName"
+                    placeholder="Business name"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="businessCategory">
+                  Business Category
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-layer-group"></i>
+
+                  <select
+                    id="businessCategory"
+                    name="businessCategory"
+                  >
+
+                    <option value="">
+                      Select category
+                    </option>
+
+                    <option>
+                      Hair Services
+                    </option>
+
+                    <option>
+                      Nail Services
+                    </option>
+
+                    <option>
+                      Barber Services
+                    </option>
+
+                    <option>
+                      Makeup Services
+                    </option>
+
+                    <option>
+                      Photography
+                    </option>
+
+                    <option>
+                      Graphic Design
+                    </option>
+
+                    <option>
+                      Web Design
+                    </option>
+
+                    <option>
+                      Delivery Services
+                    </option>
+
+                    <option>
+                      Cleaning Services
+                    </option>
+
+                    <option>
+                      Tutoring
+                    </option>
+
+                    <option>
+                      Car Wash
+                    </option>
+
+                    <option>
+                      Reselling
+                    </option>
+
+                    <option>
+                      Fitness
+                    </option>
+
+                    <option>
+                      Massage
+                    </option>
+
+                    <option>
+                      Other
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+
+              <div class="field full">
+
+                <label for="businessDescription">
+                  Business Description
+                </label>
+
+                <textarea
+                  id="businessDescription"
+                  name="businessDescription"
+                  rows="4"
+                  placeholder="Tell customers about your business..."
+                ></textarea>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="businessLocation">
+                  Business Location
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-location-dot"></i>
+
+                  <input
+                    type="text"
+                    id="businessLocation"
+                    name="businessLocation"
+                    placeholder="Business location"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="website">
+                  Website
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-globe"></i>
+
+                  <input
+                    type="url"
+                    id="website"
+                    name="website"
+                    placeholder="https://..."
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="card-footer">
+
+              <span
+                class="save-message"
+                id="businessMessage"
+              ></span>
+
+              <button
+                type="submit"
+                class="primary-btn"
+              >
+                <i class="fa-solid fa-check"></i>
+                Save Business
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+
+        <!-- =====================
+             PAYMENT & PAYOUT
+        ====================== -->
+        <section class="settings-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon green">
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+
+            <div>
+
+              <h3>Payment &amp; Payout</h3>
+
+              <p>
+                Manage how your QuickConnect payments work.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="payment-plan">
+
+            <div class="plan-icon">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <div class="plan-content">
+
+              <span>Current Provider Plan</span>
+
+              <strong id="providerPlan">
+                Loading...
+              </strong>
+
+              <p id="providerPlanDescription">
+                Your current payment arrangement.
+              </p>
+
+            </div>
+
+            <span
+              class="plan-badge"
+              id="planBadge"
+            >
+              ACTIVE
+            </span>
+
+          </div>
+
+
+          <div class="payment-options">
+
+            <div class="payment-option">
+
+              <div class="option-icon">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+              </div>
+
+              <div>
+
+                <strong>
+                  Payout Account
+                </strong>
+
+                <p id="payoutStatus">
+                  Payout account not configured
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                class="secondary-btn"
+                id="payoutButton"
+              >
+                Manage
+              </button>
+
+            </div>
+
+
+            <div class="payment-option">
+
+              <div class="option-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+
+              <div>
+
+                <strong>
+                  Payment Security
+                </strong>
+
+                <p>
+                  Payments are processed securely.
+                </p>
+
+              </div>
+
+              <span class="secure-badge">
+                <i class="fa-solid fa-check"></i>
+                Secure
+              </span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================
+             PASSWORD
+        ====================== -->
+        <section class="settings-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon orange">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <div>
+
+              <h3>Password &amp; Security</h3>
+
+              <p>
+                Protect your QuickConnect account.
+              </p>
+
+            </div>
+
+          </div>
+
+          <form id="passwordForm">
+
+            <div class="password-fields">
+
+              <div class="field">
+
+                <label for="currentPassword">
+                  Current Password
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-lock"></i>
+
+                  <input
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    placeholder="Current password"
+                    autocomplete="current-password"
+                  >
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="currentPassword"
+                    aria-label="Show password"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="newPassword">
+                  New Password
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-key"></i>
+
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    placeholder="New password"
+                    autocomplete="new-password"
+                  >
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="newPassword"
+                    aria-label="Show password"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="confirmPassword">
+                  Confirm New Password
+                </label>
+
+                <div class="input-wrap">
+
+                  <i class="fa-solid fa-key"></i>
+
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm new password"
+                    autocomplete="new-password"
+                  >
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    data-target="confirmPassword"
+                    aria-label="Show password"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="password-hint">
+
+              <i class="fa-solid fa-circle-info"></i>
+
+              <span>
+                Use a strong password that you do not use
+                on other websites.
+              </span>
+
+            </div>
+
+            <div class="card-footer">
+
+              <span
+                class="save-message"
+                id="passwordMessage"
+              ></span>
+
+              <button
+                type="submit"
+                class="primary-btn"
+              >
+                <i class="fa-solid fa-shield-halved"></i>
+                Update Password
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+
+        <!-- =====================
+             ACCOUNT PREFERENCES
+        ====================== -->
+        <section class="settings-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon cyan">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+
+            <div>
+
+              <h3>Account Preferences</h3>
+
+              <p>
+                Control how your dashboard behaves.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="preference-list">
+
+            <div class="preference-row">
+
+              <div class="preference-info">
+
+                <div class="preference-icon">
+                  <i class="fa-solid fa-bell"></i>
+                </div>
+
+                <div>
+
+                  <strong>
+                    Booking Notifications
+                  </strong>
+
+                  <p>
+                    Receive notifications for new bookings.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="bookingNotifications"
+                  checked
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+            </div>
+
+
+            <div class="preference-row">
+
+              <div class="preference-info">
+
+                <div class="preference-icon">
+                  <i class="fa-solid fa-envelope"></i>
+                </div>
+
+                <div>
+
+                  <strong>
+                    Email Updates
+                  </strong>
+
+                  <p>
+                    Receive important account updates.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="emailUpdates"
+                  checked
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+            </div>
+
+
+            <div class="preference-row">
+
+              <div class="preference-info">
+
+                <div class="preference-icon">
+                  <i class="fa-solid fa-calendar-days"></i>
+                </div>
+
+                <div>
+
+                  <strong>
+                    Booking Reminders
+                  </strong>
+
+                  <p>
+                    Get reminders about upcoming bookings.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="bookingReminders"
+                  checked
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =====================
+             DANGER ZONE
+        ====================== -->
+        <section class="settings-card danger-card">
+
+          <div class="card-heading">
+
+            <div class="heading-icon red">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div>
+
+              <h3>Danger Zone</h3>
+
+              <p>
+                Actions in this section can affect your account.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="danger-content">
+
+            <div>
+
+              <strong>
+                Delete Account
+              </strong>
+
+              <p>
+                Permanently delete your QuickConnect
+                provider account and associated information.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="danger-btn"
+              id="deleteAccountButton"
+            >
+              <i class="fa-solid fa-trash"></i>
+              Delete Account
+            </button>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       MOBILE OVERLAY
+  ========================== -->
+  <div
+    class="mobile-overlay"
+    id="mobileOverlay"
+  ></div>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+  <script>
+
+    const API = "http://localhost:5000/api";
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+
+        const token =
+          localStorage.getItem("token");
+
+        const user =
+          JSON.parse(
+            localStorage.getItem("user") || "null"
+          );
+
+        if (!token || !user) {
+          window.location.href = "/login.html";
+          return;
+        }
+
+        if (user.role !== "serviceProvider") {
+          window.location.href = "/login.html";
+          return;
+        }
+
+        loadProfile(user);
+        loadProviderPlan(user);
+        initializeSettings();
+
+      }
+    );
+
+
+    /* =========================
+       LOAD PROFILE
+    ========================= */
+
+    function loadProfile(user) {
+
+      const name =
+        user.name ||
+        user.fullName ||
+        "Provider";
+
+      const email =
+        user.email ||
+        "No email available";
+
+      const phone =
+        user.phone ||
+        user.cellphone ||
+        "";
+
+      const location =
+        user.location ||
+        "";
+
+      const businessName =
+        user.businessName ||
+        "";
+
+      const businessCategory =
+        user.category ||
+        user.businessCategory ||
+        "";
+
+      const businessDescription =
+        user.businessDescription ||
+        "";
+
+      const businessLocation =
+        user.businessLocation ||
+        user.storeLocation ||
+        "";
+
+      const website =
+        user.website ||
+        "";
+
+
+      setValue(
+        "fullName",
+        name
+      );
+
+      setValue(
+        "email",
+        email
+      );
+
+      setValue(
+        "phone",
+        phone
+      );
+
+      setValue(
+        "location",
+        location
+      );
+
+      setValue(
+        "businessName",
+        businessName
+      );
+
+      setValue(
+        "businessCategory",
+        businessCategory
+      );
+
+      setValue(
+        "businessDescription",
+        businessDescription
+      );
+
+      setValue(
+        "businessLocation",
+        businessLocation
+      );
+
+      setValue(
+        "website",
+        website
+      );
+
+
+      setText(
+        "topProfileName",
+        name
+      );
+
+      setText(
+        "heroName",
+        name
+      );
+
+      setText(
+        "heroEmail",
+        email
+      );
+
+
+      const initials =
+        getInitials(name);
+
+      const avatar =
+        document.getElementById(
+          "profileAvatar"
+        );
+
+      const largeAvatar =
+        document.getElementById(
+          "largeAvatar"
+        );
+
+      if (avatar) {
+        avatar.innerHTML =
+          `<span>${initials}</span>`;
+      }
+
+      if (largeAvatar) {
+        largeAvatar.innerHTML =
+          `<span>${initials}</span>`;
+      }
+
+    }
+
+
+    /* =========================
+       PROVIDER PLAN
+    ========================= */
+
+    function loadProviderPlan(user) {
+
+      const plan =
+        String(
+          user.providerPlan ||
+          user.plan ||
+          "subscription"
+        ).toLowerCase();
+
+      const planEl =
+        document.getElementById(
+          "providerPlan"
+        );
+
+      const descriptionEl =
+        document.getElementById(
+          "providerPlanDescription"
+        );
+
+      const badgeEl =
+        document.getElementById(
+          "planBadge"
+        );
+
+
+      if (plan === "commission") {
+
+        if (planEl) {
+          planEl.textContent =
+            "Commission Plan";
+        }
+
+        if (descriptionEl) {
+          descriptionEl.textContent =
+            "Customers pay by card and QuickConnect applies the configured commission.";
+        }
+
+      } else {
+
+        if (planEl) {
+          planEl.textContent =
+            "Subscription Plan";
+        }
+
+        if (descriptionEl) {
+          descriptionEl.textContent =
+            "Your subscription allows customers to pay according to your provider payment options.";
+        }
+
+      }
+
+      if (badgeEl) {
+        badgeEl.textContent =
+          "ACTIVE";
+      }
+
+    }
+
+
+    /* =========================
+       FORM INITIALIZATION
+    ========================= */
+
+    function initializeSettings() {
+
+      const personalForm =
+        document.getElementById(
+          "personalInfoForm"
+        );
+
+      if (personalForm) {
+
+        personalForm.addEventListener(
+          "submit",
+          async e => {
+
+            e.preventDefault();
+
+            const user =
+              JSON.parse(
+                localStorage.getItem("user") || "{}"
+              );
+
+            const updatedUser = {
+              ...user,
+              name:
+                document.getElementById(
+                  "fullName"
+                )?.value.trim(),
+
+              email:
+                document.getElementById(
+                  "email"
+                )?.value.trim(),
+
+              phone:
+                document.getElementById(
+                  "phone"
+                )?.value.trim(),
+
+              location:
+                document.getElementById(
+                  "location"
+                )?.value.trim()
+            };
+
+            localStorage.setItem(
+              "user",
+              JSON.stringify(updatedUser)
+            );
+
+            loadProfile(updatedUser);
+
+            showMessage(
+              "personalMessage",
+              "Changes saved.",
+              "success"
+            );
+
+          }
+        );
+
+      }
+
+
+      const businessForm =
+        document.getElementById(
+          "businessInfoForm"
+        );
+
+      if (businessForm) {
+
+        businessForm.addEventListener(
+          "submit",
+          async e => {
+
+            e.preventDefault();
+
+            const user =
+              JSON.parse(
+                localStorage.getItem("user") || "{}"
+              );
+
+            const updatedUser = {
+              ...user,
+
+              businessName:
+                document.getElementById(
+                  "businessName"
+                )?.value.trim(),
+
+              businessCategory:
+                document.getElementById(
+                  "businessCategory"
+                )?.value,
+
+              businessDescription:
+                document.getElementById(
+                  "businessDescription"
+                )?.value.trim(),
+
+              businessLocation:
+                document.getElementById(
+                  "businessLocation"
+                )?.value.trim(),
+
+              website:
+                document.getElementById(
+                  "website"
+                )?.value.trim()
+            };
+
+            localStorage.setItem(
+              "user",
+              JSON.stringify(updatedUser)
+            );
+
+            showMessage(
+              "businessMessage",
+              "Business information saved.",
+              "success"
+            );
+
+          }
+        );
+
+      }
+
+
+      const passwordForm =
+        document.getElementById(
+          "passwordForm"
+        );
+
+      if (passwordForm) {
+
+        passwordForm.addEventListener(
+          "submit",
+          async e => {
+
+            e.preventDefault();
+
+            const currentPassword =
+              document.getElementById(
+                "currentPassword"
+              )?.value;
+
+            const newPassword =
+              document.getElementById(
+                "newPassword"
+              )?.value;
+
+            const confirmPassword =
+              document.getElementById(
+                "confirmPassword"
+              )?.value;
+
+
+            if (
+              !currentPassword ||
+              !newPassword ||
+              !confirmPassword
+            ) {
+
+              showMessage(
+                "passwordMessage",
+                "Please complete all password fields.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            if (
+              newPassword !==
+              confirmPassword
+            ) {
+
+              showMessage(
+                "passwordMessage",
+                "New passwords do not match.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            if (
+              newPassword.length < 6
+            ) {
+
+              showMessage(
+                "passwordMessage",
+                "Password must be at least 6 characters.",
+                "error"
+              );
+
+              return;
+
+            }
+
+
+            const token =
+              localStorage.getItem(
+                "token"
+              );
+
+
+            try {
+
+              const res =
+                await fetch(
+                  `${API}/auth/change-password`,
+                  {
+
+                    method: "PUT",
+
+                    headers: {
+                      "Content-Type":
+                        "application/json",
+
+                      Authorization:
+                        `Bearer ${token}`
+                    },
+
+                    body:
+                      JSON.stringify({
+                        currentPassword,
+                        newPassword
+                      })
+
+                  }
+                );
+
+
+              const data =
+                await res.json()
+                  .catch(
+                    () => ({})
+                  );
+
+
+              if (!res.ok) {
+
+                showMessage(
+                  "passwordMessage",
+                  data.message ||
+                  "Unable to update password.",
+                  "error"
+                );
+
+                return;
+
+              }
+
+
+              passwordForm.reset();
+
+              showMessage(
+                "passwordMessage",
+                "Password updated successfully.",
+                "success"
+              );
+
+
+            } catch (err) {
+
+              console.error(
+                "Password update error:",
+                err
+              );
+
+              showMessage(
+                "passwordMessage",
+                "Unable to update password.",
+                "error"
+              );
+
+            }
+
+          }
+        );
+
+      }
+
+
+      document
+        .querySelectorAll(
+          ".password-toggle"
+        )
+        .forEach(
+          button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                const target =
+                  document.getElementById(
+                    button.dataset.target
+                  );
+
+                if (!target) {
+                  return;
+                }
+
+                const visible =
+                  target.type ===
+                  "text";
+
+                target.type =
+                  visible
+                    ? "password"
+                    : "text";
+
+                button.innerHTML =
+                  visible
+                    ? `<i class="fa-solid fa-eye"></i>`
+                    : `<i class="fa-solid fa-eye-slash"></i>`;
+
+              }
+            );
+
+          }
+        );
+
+
+      document
+        .querySelectorAll(
+          ".switch input"
+        )
+        .forEach(
+          input => {
+
+            input.addEventListener(
+              "change",
+              () => {
+
+                localStorage.setItem(
+                  input.id,
+                  input.checked
+                );
+
+              }
+            );
+
+            const saved =
+              localStorage.getItem(
+                input.id
+              );
+
+            if (saved !== null) {
+              input.checked =
+                saved === "true";
+            }
+
+          }
+        );
+
+
+      const payoutButton =
+        document.getElementById(
+          "payoutButton"
+        );
+
+      if (payoutButton) {
+
+        payoutButton.addEventListener(
+          "click",
+          () => {
+
+            alert(
+              "Payout account management will be available here."
+            );
+
+          }
+        );
+
+      }
+
+
+      const deleteButton =
+        document.getElementById(
+          "deleteAccountButton"
+        );
+
+      if (deleteButton) {
+
+        deleteButton.addEventListener(
+          "click",
+          () => {
+
+            const confirmed =
+              confirm(
+                "Are you sure you want to delete your account? This action cannot be undone."
+              );
+
+            if (!confirmed) {
+              return;
+            }
+
+            alert(
+              "Account deletion requires server confirmation."
+            );
+
+          }
+        );
+
+      }
+
+    }
+
+
+    /* =========================
+       HELPERS
+    ========================= */
+
+    function setValue(
+      id,
+      value
+    ) {
+
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.value =
+          value || "";
+      }
+
+    }
+
+
+    function setText(
+      id,
+      value
+    ) {
+
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent =
+          value || "";
+      }
+
+    }
+
+
+    function getInitials(
+      name
+    ) {
+
+      return String(
+        name || "Provider"
+      )
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(
+          word =>
+            word
+              .charAt(0)
+              .toUpperCase()
+        )
+        .join("");
+
+    }
+
+
+    function showMessage(
+      id,
+      message,
+      type
+    ) {
+
+      const element =
+        document.getElementById(id);
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent =
+        message;
+
+      element.className =
+        `save-message ${type}`;
+
+      setTimeout(
+        () => {
+
+          element.textContent =
+            "";
+
+          element.className =
+            "save-message";
+
+        },
+        4000
+      );
+
+    }
+
+
+    function logout() {
+
+      localStorage.removeItem(
+        "token"
+      );
+
+      localStorage.removeItem(
+        "user"
+      );
+
+      window.location.href =
+        "/login.html";
+
+    }
+
+  </script>
+
+</body>
+</html>

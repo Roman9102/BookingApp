@@ -1,0 +1,772 @@
+<!-- my-services.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Services - Quick Connect</title>
+
+  <link rel="stylesheet" href="css/services.css">
+   <link rel="stylesheet" href="css/my-services.css">
+   <link rel="stylesheet" href="css/style.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+</head>
+
+<body>
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+  <aside class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+
+      <div>
+        <h2>Quick<span>Connect</span></h2>
+        <p>Provider Panel</p>
+      </div>
+
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <a href="admin.html">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="my-services.html" class="active">
+        <i class="fa-solid fa-briefcase"></i>
+        <span>My Services</span>
+      </a>
+
+      <a href="provider-bookings.html">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Bookings</span>
+      </a>
+
+      <a href="admin.html#analyticsSection">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
+      </a>
+
+      <a href="settings.html">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <button
+        type="button"
+        class="logout-btn"
+        onclick="logout()"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+      <div class="mobile-brand">
+
+        <div class="brand-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+
+        <strong>
+          Quick<span>Connect</span>
+        </strong>
+
+      </div>
+
+      <div class="topbar-title">
+
+        <p>Services</p>
+
+        <h1>My Services</h1>
+
+      </div>
+
+      <div class="profile-mini">
+
+        <div
+          class="profile-avatar"
+          id="profileAvatar"
+        >
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div class="profile-info">
+
+          <strong id="topProfileName">
+            Provider
+          </strong>
+
+          <span>
+            Service Provider
+          </span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         SERVICES CONTENT
+    ========================== -->
+    <section class="my-services-page">
+
+      <!-- PAGE HEADING -->
+      <div class="services-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            SERVICE MANAGEMENT
+          </span>
+
+          <h2>
+            Manage your services
+          </h2>
+
+          <p>
+            Create, manage and update the services
+            you offer to QuickConnect customers.
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="primary-btn"
+          id="addServiceButton"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Add Service
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           SERVICE SUMMARY
+      ========================== -->
+      <div class="service-summary-grid">
+
+        <div class="summary-card">
+
+          <div class="summary-icon blue">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+
+          <div>
+            <span>Total Services</span>
+            <strong id="totalServices">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Active Services</span>
+            <strong id="activeServices">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon purple">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </div>
+
+          <div>
+            <span>Mobile Services</span>
+            <strong id="mobileServices">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon orange">
+            <i class="fa-solid fa-store"></i>
+          </div>
+
+          <div>
+            <span>Store Services</span>
+            <strong id="storeServices">0</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           ADD SERVICE FORM
+      ========================== -->
+      <section
+        class="settings-card service-form-card"
+        id="serviceFormCard"
+      >
+
+        <div class="card-heading">
+
+          <div class="heading-icon purple">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+
+          <div>
+
+            <h3 id="serviceFormTitle">
+              Add New Service
+            </h3>
+
+            <p>
+              Add the details customers will see.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <form id="serviceForm" enctype="multipart/form-data">
+
+          <input
+            type="hidden"
+            id="serviceId"
+          >
+
+
+          <div class="form-grid">
+
+            <!-- SERVICE NAME -->
+            <div class="field">
+
+              <label for="serviceName">
+                Service Name
+              </label>
+
+              <div class="input-wrap">
+
+                <i class="fa-solid fa-tag"></i>
+
+                <input
+                  type="text"
+                  id="serviceName"
+                  name="name"
+                  placeholder="e.g. Hair Braiding"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- PRICE -->
+            <div class="field">
+
+              <label for="servicePrice">
+                Price
+              </label>
+
+              <div class="input-wrap">
+
+                <i class="fa-solid fa-rand-sign"></i>
+
+                <input
+                  type="number"
+                  id="servicePrice"
+                  name="price"
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 350"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- CATEGORY -->
+            <div class="field">
+
+              <label for="serviceCategory">
+                Category
+              </label>
+
+              <div class="input-wrap">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+                <select
+                  id="serviceCategory"
+                  name="category"
+                  required
+                >
+
+                  <option value="">
+                    Select category
+                  </option>
+
+                  <option value="Hair Services">
+                    Hair Services
+                  </option>
+
+                  <option value="Nail Services">
+                    Nail Services
+                  </option>
+
+                  <option value="Barber Services">
+                    Barber Services
+                  </option>
+
+                  <option value="Makeup Services">
+                    Makeup Services
+                  </option>
+
+                  <option value="Photography">
+                    Photography
+                  </option>
+
+                  <option value="Graphic Design">
+                    Graphic Design
+                  </option>
+
+                  <option value="Web Design">
+                    Web Design
+                  </option>
+
+                  <option value="Cleaning Services">
+                    Cleaning Services
+                  </option>
+
+                  <option value="Guest House">
+                    Guest House
+                  </option>
+
+                  <option value="Fitness">
+                    Fitness
+                  </option>
+
+                  <option value="Music/Band">
+                    Music/Band
+                  </option>
+
+                  <option value="Massage">
+                    Massage
+                  </option>
+
+                  <option value="Other">
+                    Other
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <!-- LOCATION -->
+            <div class="field">
+
+              <label for="serviceLocation">
+                Location
+              </label>
+
+              <div class="input-wrap">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                <input
+                  type="text"
+                  id="serviceLocation"
+                  name="location"
+                  placeholder="City / Area"
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+            <div class="field full">
+
+              <label for="serviceDescription">
+                Description
+              </label>
+
+              <textarea
+                id="serviceDescription"
+                name="description"
+                rows="5"
+                placeholder="Describe your service, what is included and what customers should know..."
+                required
+              ></textarea>
+
+            </div>
+
+
+            <!-- SERVICE MODES -->
+            <div class="field full">
+
+              <label>
+                Service Availability
+              </label>
+
+              <div class="mode-options">
+
+                <label class="mode-option">
+
+                  <input
+                    type="checkbox"
+                    id="storeMode"
+                    name="storeMode"
+                  >
+
+                  <span class="mode-box">
+
+                    <i class="fa-solid fa-store"></i>
+
+                    <span>
+                      <strong>Store</strong>
+                      <small>
+                        Customers visit your location
+                      </small>
+                    </span>
+
+                  </span>
+
+                </label>
+
+
+                <label class="mode-option">
+
+                  <input
+                    type="checkbox"
+                    id="mobileMode"
+                    name="mobileMode"
+                  >
+
+                  <span class="mode-box">
+
+                    <i class="fa-solid fa-car-side"></i>
+
+                    <span>
+                      <strong>Mobile</strong>
+                      <small>
+                        You travel to the customer
+                      </small>
+                    </span>
+
+                  </span>
+
+                </label>
+
+              </div>
+
+            </div>
+
+
+            <!-- STORE LOCATION -->
+            <div
+              class="field"
+              id="storeLocationField"
+            >
+
+              <label for="storeLocation">
+                Store Location
+              </label>
+
+              <div class="input-wrap">
+
+                <i class="fa-solid fa-location-dot"></i>
+
+                <input
+                  type="text"
+                  id="storeLocation"
+                  name="storeLocation"
+                  placeholder="Where customers can visit you"
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- IMAGE -->
+            <div class="field">
+
+              <label>
+                Service Images
+              </label>
+
+              <div class="image-upload">
+
+                <div class="upload-icon">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+
+                <div class="upload-content">
+
+                  <strong>
+                    Add service images
+                  </strong>
+
+                  <p>
+                    You can select up to 5 images.
+                  </p>
+
+                  <label
+                    for="serviceImage"
+                    class="upload-link"
+                  >
+                    Choose Images
+                  </label>
+
+                </div>
+
+                <input
+                  type="file"
+                  id="serviceImage"
+                  name="images"
+                  accept="image/*"
+                  multiple
+                  hidden
+                >
+
+              </div>
+
+              <div
+                class="image-preview"
+                id="imagePreview"
+                hidden
+              ></div>
+
+            </div>
+
+          </div>
+
+
+          <!-- FORM FOOTER -->
+          <div class="card-footer">
+
+            <span
+              class="save-message"
+              id="serviceMessage"
+            ></span>
+
+            <div class="form-actions">
+
+              <button
+                type="button"
+                class="secondary-btn"
+                id="cancelServiceButton"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="primary-btn"
+                id="saveServiceButton"
+              >
+                <i class="fa-solid fa-check"></i>
+
+                <span id="serviceSubmitText">
+                  Add Service
+                </span>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </section>
+
+
+      <!-- =========================
+           YOUR SERVICES
+      ========================== -->
+      <section class="settings-card services-list-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon blue">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+
+          <div>
+
+            <h3>
+              Your Services
+            </h3>
+
+            <p>
+              Services currently listed on QuickConnect.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- SEARCH + FILTER -->
+        <div class="services-toolbar">
+
+          <div class="service-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="search"
+              id="serviceSearch"
+              placeholder="Search your services..."
+              autocomplete="off"
+            >
+
+          </div>
+
+
+          <div class="service-filter">
+
+            <select id="serviceFilter">
+
+              <option value="all">
+                All Services
+              </option>
+
+              <option value="store">
+                Store Services
+              </option>
+
+              <option value="mobile">
+                Mobile Services
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- SERVICE GRID -->
+        <div
+          class="services-grid"
+          id="servicesGrid"
+        >
+
+          <div
+            class="services-loading"
+            id="servicesLoading"
+          >
+
+            <div class="loading-icon">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+
+            <strong>
+              Loading services...
+            </strong>
+
+            <p>
+              Please wait while your services are loaded.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- EMPTY STATE -->
+        <div
+          class="services-empty"
+          id="servicesEmpty"
+          hidden
+        >
+
+          <div class="empty-icon">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+
+          <h3>
+            No services yet
+          </h3>
+
+          <p>
+            Add your first service and start offering
+            it to QuickConnect customers.
+          </p>
+
+          <button
+            type="button"
+            class="primary-btn"
+            id="emptyAddServiceButton"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Add Your First Service
+          </button>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+
+  <!-- MOBILE OVERLAY -->
+  <div
+    class="mobile-overlay"
+    id="mobileOverlay"
+  ></div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="js/my-service.js"></script>
+
+</body>
+</html>

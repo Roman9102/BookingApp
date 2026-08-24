@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Ideas - Quick Connect</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ================================
+   BUSINESS IDEAS PAGE LAYOUT FIX
+================================ */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.dashboard {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    flex: 0 0 255px !important;
+    width: 255px !important;
+    max-width: 255px !important;
+    min-width: 255px !important;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+/* MAIN CONTENT */
+
+.main-content {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 30px 40px !important;
+    overflow-x: hidden !important;
+}
+
+/* TOP HEADER */
+
+.idea-header {
+    width: 100%;
+}
+
+/* CARDS */
+
+.idea-grid {
+    width: 100%;
+    max-width: 1400px;
+    margin: 30px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.idea-card {
+    width: 100%;
+    min-width: 0;
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    transition: .3s;
+}
+
+.idea-card:hover {
+    transform: translateY(-6px);
+}
+
+.idea-card img {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.idea-content {
+    padding: 20px;
+}
+
+.idea-content h3 {
+    margin: 0 0 10px;
+}
+
+.idea-content p {
+    color: #666;
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+
+.idea-content a {
+    display: inline-block;
+    text-decoration: none;
+    background: #2563eb;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.idea-content a:hover {
+    background: #1d4ed8;
+}
+
+/* FOOTER */
+
+.idea-footer {
+    width: 100%;
+    text-align: center;
+    padding: 25px 20px;
+    box-sizing: border-box;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .dashboard {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    /* SIDEBAR BECOMES TOP BAR */
+    .sidebar {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    .sidebar .logo {
+        width: 100%;
+        text-align: center;
+    }
+
+    .sidebar nav {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .sidebar nav a {
+        flex: 0 1 auto;
+        white-space: nowrap;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 20px 15px 35px !important;
+        box-sizing: border-box;
+    }
+
+    .topbar {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .idea-grid {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 20px;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        box-sizing: border-box;
+    }
+
+    .idea-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .idea-card img {
+        height: 200px;
+    }
+}
+
+/* SMALL PHONES */
+
+@media (max-width: 480px) {
+
+    .sidebar nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sidebar nav a {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .main-content {
+        padding: 15px 12px 30px !important;
+    }
+
+    .idea-card img {
+        height: 180px;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>QuickConnect</h2>
+            <p>Business Ideas Hub</p>
+        </div>
+
+        <nav>
+
+            <a href="index.html" id="homeLink">
+                <i class="fa-solid fa-house"></i>
+                Home
+            </a>
+
+            <a href="services.html" id="servicesLink">
+                <i class="fa-solid fa-briefcase"></i>
+                Services
+            </a>
+
+            <a href="booking.html" id="bookServiceLink">
+                <i class="fa-solid fa-calendar-check"></i>
+                Book Service
+            </a>
+
+            <a href="my-bookings.html" id="myBookingsLink">
+                <i class="fa-solid fa-list"></i>
+                My Bookings
+            </a>
+
+            <a href="businessIdeas.html" id="businessIdeasLink" class="active">
+                <i class="fa-solid fa-lightbulb"></i>
+                Business Ideas
+            </a>
+
+            <a href="admin.html" id="dashboardLink">
+                <i class="fa-solid fa-chart-line"></i>
+                Dashboard
+            </a>
+
+            <a href="#" onclick="logout(); return false;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <h1>Business Ideas</h1>
+            <p>Choose a business idea and learn how to start earning.</p>
+        </header>
+
+        <section class="idea-grid">
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-alexandre-saraiva-carniato-583650-6080361.jpg" alt="Beard Grooming">
+                <div class="idea-content">
+                    <h3>Beard Grooming</h3>
+                    <p>Professional beard trimming and grooming business.</p>
+                    <a href="business-ideas/beard-grooming.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-goumbik-590016.jpg" alt="CV Design">
+                <div class="idea-content">
+                    <h3>CV Design</h3>
+                    <p>Create modern CVs and resumes for job seekers.</p>
+                    <a href="business-ideas/cv-design.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-mike-jones-9461653.jpg" alt="Delivery Services">
+                <div class="idea-content">
+                    <h3>Delivery Services</h3>
+                    <p>Start a local delivery business in your community.</p>
+                    <a href="business-ideas/delivery-services.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-reiez-35042459.jpg" alt="Event Decor">
+                <div class="idea-content">
+                    <h3>Event Decor</h3>
+                    <p>Decorate weddings, birthdays and special events.</p>
+                    <a href="business-ideas/event-decor.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-eva-bronzini-7661590.jpg" alt="Graphic Design">
+                <div class="idea-content">
+                    <h3>Graphic Design</h3>
+                    <p>Create logos, posters and social media content.</p>
+                    <a href="business-ideas/graphic-design.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-malama-mushitu-2148898721-34191088.jpg" alt="Hair Braiding">
+                <div class="idea-content">
+                    <h3>Hair Braiding</h3>
+                    <p>Offer professional hair braiding services.</p>
+                    <a href="business-ideas/hair-braiding.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-polina-tankilevitch-3738377.jpg" alt="Nail Technician">
+                <div class="idea-content">
+                    <h3>Nail Technician</h3>
+                    <p>Provide manicure and nail art services.</p>
+                    <a href="business-ideas/nail-tech.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-cjanimus-7989740.jpg" alt="Phone Accessories">
+                <div class="idea-content">
+                    <h3>Phone Accessories</h3>
+                    <p>Sell phone covers, chargers and accessories.</p>
+                    <a href="business-ideas/phone-accessories.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-moonlightshotz-15861550.jpg" alt="Photography">
+                <div class="idea-content">
+                    <h3>Photography</h3>
+                    <p>Capture weddings, portraits and events.</p>
+                    <a href="business-ideas/photography.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-sora-shimazaki-5926224.jpg" alt="Reselling">
+                <div class="idea-content">
+                    <h3>Reselling</h3>
+                    <p>Buy products wholesale and sell for profit.</p>
+                    <a href="business-ideas/reselling.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-ai25studioai-6207756.jpg" alt="SHEIN Reselling">
+                <div class="idea-content">
+                    <h3>SHEIN Reselling</h3>
+                    <p>Resell SHEIN clothing within your community.</p>
+                    <a href="business-ideas/shein-reselling.html">View Idea</a>
+                </div>
+            </div>
+
+            <div class="idea-card">
+                <img src="Bimages/pexels-pixabay-270348.jpg" alt="Web Design">
+                <div class="idea-content">
+                    <h3>Web Design</h3>
+                    <p>Build websites for businesses and entrepreneurs.</p>
+                    <a href="business-ideas/web-design.html">View Idea</a>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<footer class="idea-footer">
+    &copy; 2026 Quick Connect
+</footer>
+
+<script src="js/auth.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const dashboardLink = document.getElementById("dashboardLink");
+    const businessIdeasLink = document.getElementById("businessIdeasLink");
+    const myBookingsLink = document.getElementById("myBookingsLink");
+
+    if (!user) {
+        if (dashboardLink) {
+            dashboardLink.style.display = "none";
+        }
+        return;
+    }
+
+    if (myBookingsLink) {
+        myBookingsLink.style.display = "block";
+    }
+
+    if (user.role === "user") {
+        if (dashboardLink) {
+            dashboardLink.style.display = "none";
+        }
+
+        if (businessIdeasLink) {
+            businessIdeasLink.style.display = "block";
+        }
+    }
+
+    if (user.role === "serviceProvider" || user.role === "admin") {
+
+        if (dashboardLink) {
+            dashboardLink.style.display = "block";
+        }
+
+        if (businessIdeasLink) {
+            businessIdeasLink.style.display = "none";
+        }
+    }
+
+});
+</script>
+
+</body>
+</html>

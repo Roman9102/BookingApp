@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Bookings - Quick Connect</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="js/navbar.js" defer></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>Quick Connect</h2>
+      <p>Your bookings</p>
+    </div>
+
+    <nav>
+
+      <a href="index.html">
+        <i class="fa fa-house"></i>
+        Home
+      </a>
+
+      <a href="services.html">
+        <i class="fa fa-briefcase"></i>
+        Services
+      </a>
+
+      <a href="booking.html">
+        <i class="fa fa-calendar-check"></i>
+        Book Service
+      </a>
+
+      <a href="my-bookings.html" class="active">
+        <i class="fa fa-list"></i>
+        My Bookings
+      </a>
+
+      <a href="booking-history.html">
+        <i class="fa fa-clock-rotate-left"></i>
+        History
+      </a>
+
+      <a href="businessIdeas.html" id="businessIdeasLink">
+        <i class="fa fa-lightbulb"></i>
+        Business Ideas
+      </a>
+
+      <a href="admin.html" id="dashboardLink">
+        <i class="fa fa-chart-line"></i>
+        Dashboard
+      </a>
+
+      <a href="#" onclick="logout()">
+        <i class="fa fa-right-from-bracket"></i>
+        Logout
+      </a>
+
+    </nav>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <header class="topbar">
+
+      <div>
+        <h1>My Bookings</h1>
+        <p>View and manage your service bookings</p>
+      </div>
+
+      <div class="admin-avatar">
+        <i class="fa fa-user"></i>
+      </div>
+
+    </header>
+
+    <section class="glass-card">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:15px;
+        flex-wrap:wrap;
+        margin-bottom:20px;
+      ">
+
+        <h2>Your Bookings</h2>
+
+        <a
+          href="booking-history.html"
+          class="btn-primary"
+          style="
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+          "
+        >
+          <i class="fa fa-clock-rotate-left"></i>
+          History
+        </a>
+
+      </div>
+
+      <div id="bookingsList" class="grid"></div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+
+/* ========================
+   LOGOUT
+======================== */
+
+function logout(){
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  window.location.href = "login.html";
+
+}
+
+
+/* =========================
+   ROLE BASED SIDEBAR
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const user =
+    JSON.parse(localStorage.getItem("user"));
+
+  const dashboardLink =
+    document.getElementById("dashboardLink");
+
+  const businessIdeasLink =
+    document.getElementById("businessIdeasLink");
+
+  if (!user) {
+
+    if (dashboardLink)
+      dashboardLink.style.display = "none";
+
+    if (businessIdeasLink)
+      businessIdeasLink.style.display = "none";
+
+    return;
+  }
+
+  if (user.role === "user") {
+
+    if (dashboardLink)
+      dashboardLink.style.display = "none";
+
+    if (businessIdeasLink)
+      businessIdeasLink.style.display = "block";
+
+  }
+
+  if (
+    user.role === "serviceProvider" ||
+    user.role === "admin"
+  ) {
+
+    if (dashboardLink)
+      dashboardLink.style.display = "block";
+
+    if (businessIdeasLink)
+      businessIdeasLink.style.display = "none";
+
+  }
+
+});
+
+
+/* =========================
+   LOAD MY BOOKINGS
+========================= */
+
+async function loadBookings(){
+
+  try{
+
+    const token =
+      localStorage.getItem("token");
+
+    if(!token){
+
+      window.location.href = "login.html";
+      return;
+
+    }
+
+    const res = await fetch(
+      "http://localhost:5000/api/bookings/my",
+      {
+        headers:{
+          "Authorization":
+            `Bearer ${token}`
+        }
+      }
+    );
+
+    if(!res.ok){
+
+      if(res.status === 401){
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        window.location.href = "login.html";
+        return;
+
+      }
+
+      throw new Error(
+        "Failed to load bookings"
+      );
+
+    }
+
+    const data =
+      await res.json();
+
+    const list =
+      document.getElementById(
+        "bookingsList"
+      );
+
+    if(!list) return;
+
+    list.innerHTML = "";
+
+    /*
+     * /my ONLY returns active bookings:
+     *
+     * pending
+     * accepted
+     * postponed
+     *
+     * Completed, declined and cancelled
+     * remain available through History.
+     */
+
+    if(
+      !Array.isArray(data) ||
+      data.length === 0
+    ){
+
+      list.innerHTML = `
+        <div class="service-card">
+
+          <h3>No active bookings yet.</h3>
+
+          <p>
+            Your completed, declined and
+            cancelled bookings are still
+            available in History.
+          </p>
+
+          <a
+            href="booking-history.html"
+            class="btn-primary"
+            style="
+              display:inline-flex;
+              align-items:center;
+              gap:8px;
+              margin-top:15px;
+              text-decoration:none;
+            "
+          >
+            <i class="fa fa-clock-rotate-left"></i>
+            View History
+          </a>
+
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    /* =========================
+       RENDER ACTIVE BOOKINGS
+    ========================= */
+
+    data.forEach(b => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "service-card";
+
+
+      const status =
+        String(
+          b.status || "pending"
+        ).toLowerCase();
+
+
+      const postponedResponse =
+        String(
+          b.postponedResponse ||
+          "pending"
+        ).toLowerCase();
+
+
+      const bookingDate =
+        b.bookingDate
+          ? new Date(
+              b.bookingDate
+            ).toLocaleDateString()
+          : "N/A";
+
+
+      const bookingTime =
+        b.bookingTime ||
+        "N/A";
+
+
+      const postponedDate =
+        b.postponedDate
+          ? new Date(
+              b.postponedDate
+            ).toLocaleDateString()
+          : "Not provided";
+
+
+      const postponedTime =
+        b.postponedTime ||
+        "Not provided";
+
+
+      /* =========================
+         STATUS CONTENT
+      ========================= */
+
+      let statusContent = "";
+
+
+      /* =========================
+         PENDING
+      ========================= */
+
+      if(status === "pending"){
+
+        statusContent = `
+
+          <p style="color:#f59e0b;">
+
+            <strong>
+              Waiting for service provider approval.
+            </strong>
+
+          </p>
+
+        `;
+
+      }
+
+
+      /* =========================
+         ACCEPTED
+      ========================= */
+
+      else if(status === "accepted"){
+
+        statusContent = `
+
+          <p style="color:#22c55e;">
+
+            <strong>
+              ✓ Your booking has been accepted.
+            </strong>
+
+          </p>
+
+        `;
+
+      }
+
+
+      /* =========================
+         POSTPONED
+      ========================= */
+
+      else if(status === "postponed"){
+
+        if(
+          postponedResponse ===
+          "pending"
+        ){
+
+          statusContent = `
+
+            <div style="
+              margin-top:15px;
+              padding:18px;
+              border-radius:12px;
+              background:rgba(245,158,11,.15);
+              border:1px solid #f59e0b;
+            ">
+
+              <h4 style="
+                margin-bottom:12px;
+              ">
+                <i class="fa fa-clock"></i>
+                Booking Postponed
+              </h4>
+
+              <p>
+                <strong>New Proposed Date:</strong><br>
+                ${postponedDate}
+              </p>
+
+              <p style="margin-top:10px;">
+                <strong>New Proposed Time:</strong><br>
+                ${postponedTime}
+              </p>
+
+              <p style="margin-top:10px;">
+                <strong>Reason:</strong><br>
+                ${b.postponedReason || "No reason provided"}
+              </p>
+
+              <p style="
+                margin-top:15px;
+                color:#f59e0b;
+              ">
+                <strong>
+                  Please choose whether you accept
+                  the new date or want another booking.
+                </strong>
+              </p>
+
+              <div style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                margin-top:15px;
+              ">
+
+                <button
+                  type="button"
+                  onclick="respondToPostponedBooking(
+                    '${b._id}',
+                    'approved'
+                  )"
+                  style="
+                    padding:10px 15px;
+                    border:none;
+                    border-radius:8px;
+                    background:#22c55e;
+                    color:#fff;
+                    font-weight:600;
+                    cursor:pointer;
+                  "
+                >
+                  <i class="fa fa-check"></i>
+                  Accept New Date
+                </button>
+
+                <button
+                  type="button"
+                  onclick="respondToPostponedBooking(
+                    '${b._id}',
+                    'rebook'
+                  )"
+                  style="
+                    padding:10px 15px;
+                    border:none;
+                    border-radius:8px;
+                    background:#ef4444;
+                    color:#fff;
+                    font-weight:600;
+                    cursor:pointer;
+                  "
+                >
+                  <i class="fa fa-calendar-plus"></i>
+                  Rebook Another Date
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+
+        else if(
+          postponedResponse ===
+          "approved"
+        ){
+
+          statusContent = `
+
+            <div style="
+              margin-top:15px;
+              padding:15px;
+              border-radius:12px;
+              background:rgba(34,197,94,.15);
+              border:1px solid #22c55e;
+            ">
+
+              <p style="color:#22c55e;">
+
+                <strong>
+                  ✓ New date approved.
+                </strong>
+
+              </p>
+
+              <p style="margin-top:10px;">
+                <strong>Date:</strong>
+                ${postponedDate}
+              </p>
+
+              <p style="margin-top:5px;">
+                <strong>Time:</strong>
+                ${postponedTime}
+              </p>
+
+              <p style="margin-top:10px;">
+                Your booking is now active
+                and waiting for completion.
+              </p>
+
+            </div>
+
+          `;
+
+        }
+
+        else if(
+          postponedResponse === "rebook" ||
+          b.rebookRequested === true
+        ){
+
+          statusContent = `
+
+            <div style="
+              margin-top:15px;
+              padding:15px;
+              border-radius:12px;
+              background:rgba(59,130,246,.15);
+              border:1px solid #3b82f6;
+            ">
+
+              <p style="color:#3b82f6;">
+
+                <strong>
+                  <i class="fa fa-calendar-plus"></i>
+                  Rebooking requested.
+                </strong>
+
+              </p>
+
+              <p style="margin-top:10px;">
+                Your original booking has been
+                closed. Please create a new booking
+                with your preferred date and time.
+              </p>
+
+              <a
+                href="booking.html"
+                class="btn-primary"
+                style="
+                  display:inline-flex;
+                  align-items:center;
+                  gap:8px;
+                  margin-top:12px;
+                  text-decoration:none;
+                "
+              >
+                <i class="fa fa-calendar-plus"></i>
+                Create New Booking
+              </a>
+
+            </div>
+
+          `;
+
+        }
+
+      }
+
+
+      /* =========================
+         CARD
+      ========================= */
+
+      div.innerHTML = `
+
+        <h3>
+          ${b.service?.name || "Service"}
+        </h3>
+
+        <p>
+          <strong>Booking Date:</strong>
+          ${bookingDate}
+        </p>
+
+        <p>
+          <strong>Booking Time:</strong>
+          ${bookingTime}
+        </p>
+
+        <p>
+          <strong>Payment:</strong>
+          ${b.paymentMethod || "N/A"}
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          ${status}
+        </p>
+
+        ${statusContent}
+
+        <a
+          href="booking-history.html"
+          style="
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            margin-top:12px;
+            color:#94a3b8;
+            text-decoration:none;
+          "
+        >
+          <i class="fa fa-clock-rotate-left"></i>
+          View History
+        </a>
+
+        <button
+          type="button"
+          onclick="deleteBooking('${b._id}')"
+          style="
+            margin-top:15px;
+            width:100%;
+            padding:10px;
+            border:none;
+            border-radius:8px;
+            background:#ef4444;
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+          "
+        >
+          <i class="fa fa-trash"></i>
+          Delete Booking
+        </button>
+
+      `;
+
+      list.appendChild(div);
+
+    });
+
+  }
+  catch(err){
+
+    console.error(
+      "LOAD MY BOOKINGS ERROR:",
+      err
+    );
+
+    const list =
+      document.getElementById(
+        "bookingsList"
+      );
+
+    if(list){
+
+      list.innerHTML = `
+
+        <div class="service-card">
+
+          <h3>
+            Failed to load bookings.
+          </h3>
+
+          <p>
+            Please try refreshing the page.
+          </p>
+
+          <a
+            href="booking-history.html"
+            class="btn-primary"
+            style="
+              display:inline-flex;
+              align-items:center;
+              gap:8px;
+              margin-top:15px;
+              text-decoration:none;
+            "
+          >
+            <i class="fa fa-clock-rotate-left"></i>
+            Check History
+          </a>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   CUSTOMER RESPONSE TO
+   POSTPONED BOOKING
+========================= */
+
+async function respondToPostponedBooking(
+  id,
+  response
+){
+
+  const message =
+    response === "approved"
+      ? "Accept the new proposed date and time?"
+      : "Request another booking instead?";
+
+  if(!confirm(message)){
+    return;
+  }
+
+  try{
+
+    const token =
+      localStorage.getItem("token");
+
+    const res = await fetch(
+      `http://localhost:5000/api/bookings/${id}/postponed-response`,
+      {
+        method:"PUT",
+
+        headers:{
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${token}`
+        },
+
+        body:JSON.stringify({
+          response
+        })
+      }
+    );
+
+    const data =
+      await res.json();
+
+    if(!res.ok){
+
+      alert(
+        data.message ||
+        "Failed to update postponed booking."
+      );
+
+      return;
+
+    }
+
+    if(response === "approved"){
+
+      alert(
+        "New booking date approved successfully."
+      );
+
+    }
+    else{
+
+      alert(
+        "Rebooking requested. Please create a new booking with your preferred date."
+      );
+
+    }
+
+    await loadBookings();
+
+  }
+  catch(err){
+
+    console.error(
+      "POSTPONED RESPONSE ERROR:",
+      err
+    );
+
+    alert(
+      "Server error. Please try again."
+    );
+
+  }
+
+}
+
+
+/* ========================
+   DELETE BOOKING
+======================== */
+
+async function deleteBooking(id){
+
+  if(
+    !confirm(
+      "Are you sure you want to remove this booking from your bookings?"
+    )
+  ){
+
+    return;
+
+  }
+
+  try{
+
+    const token =
+      localStorage.getItem("token");
+
+    const res = await fetch(
+      `http://localhost:5000/api/bookings/${id}`,
+      {
+        method:"DELETE",
+
+        headers:{
+          "Authorization":
+            `Bearer ${token}`
+        }
+      }
+    );
+
+    const data =
+      await res.json();
+
+    if(!res.ok){
+
+      alert(
+        data.message ||
+        "Failed to delete booking."
+      );
+
+      return;
+
+    }
+
+    alert(
+      "Booking removed from your bookings successfully."
+    );
+
+    await loadBookings();
+
+  }
+  catch(err){
+
+    console.error(
+      "DELETE BOOKING ERROR:",
+      err
+    );
+
+    alert(
+      "Server error."
+    );
+
+  }
+
+}
+
+
+/* ========================
+   START
+======================== */
+
+loadBookings();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services - Quick Connect</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+<aside class="sidebar">
+
+  <div class="logo">
+    <h2>QuickConnect</h2>
+    <p id="panelSubtitle">Business Ideas Hub</p>
+  </div>
+
+  <nav>
+
+    <a href="index.html" id="homeLink">
+      <i class="fa-solid fa-house"></i>
+      Home
+    </a>
+
+    <a href="services.html" id="servicesLink">
+      <i class="fa-solid fa-briefcase"></i>
+      Services
+    </a>
+
+    <a href="booking.html" id="bookServiceLink">
+      <i class="fa-solid fa-calendar-check"></i>
+      Book Service
+    </a>
+
+    <a href="my-bookings.html" id="myBookingsLink">
+      <i class="fa-solid fa-list"></i>
+      My Bookings
+    </a>
+
+    <a href="businessIdeas.html" id="businessIdeasLink" class="active">
+      <i class="fa-solid fa-lightbulb"></i>
+      Business Ideas
+    </a>
+
+    <a href="#" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </a>
+
+  </nav>
+
+</aside>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+<main class="main-content">
+
+  <header class="topbar">
+
+    <div>
+      <h1 id="pageTitle">
+        <i class="fa-solid fa-briefcase"></i>
+        Quick Connect Services
+      </h1>
+
+      <p id="pageSubtitle">
+        Choose a category to explore professional services.
+      </p>
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       CUSTOMER SERVICES
+  ====================================================== -->
+
+  <div id="customerServices">
+
+    <!-- SEARCH -->
+    <section class="glass-card">
+
+      <div class="search-box">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search services in this category..."
+          autocomplete="off">
+
+      </div>
+
+    </section>
+
+    <!-- CATEGORY VIEW -->
+    <section id="categoryView" class="services-grid"></section>
+
+    <!-- SERVICES VIEW -->
+    <section
+      id="servicesView"
+      class="services-grid"
+      style="display:none;">
+    </section>
+
+  </div>
+
+
+  <!-- =====================================================
+       PROVIDER SERVICE MANAGEMENT
+  ====================================================== -->
+
+  <div id="providerServices" style="display:none;">
+
+    <section class="glass-card">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:20px;
+        flex-wrap:wrap;
+      ">
+
+        <div>
+          <h2 style="margin-bottom:6px;">
+            <i class="fa-solid fa-briefcase"></i>
+            My Services
+          </h2>
+
+          <p>
+            Add, edit and manage the services you provide.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="openAddServiceForm()">
+
+          <i class="fa-solid fa-plus"></i>
+          Add Service
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ADD / EDIT FORM -->
+    <section
+      id="serviceFormCard"
+      class="glass-card"
+      style="display:none;">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+      ">
+
+        <h2 id="serviceFormTitle">
+          Add Service
+        </h2>
+
+        <button
+          type="button"
+          onclick="closeServiceForm()"
+          style="
+            background:none;
+            border:none;
+            color:inherit;
+            font-size:22px;
+            cursor:pointer;
+          ">
+
+          <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+      </div>
+
+
+      <form id="serviceForm" enctype="multipart/form-data">
+
+        <input
+          type="hidden"
+          id="serviceId">
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="serviceName">
+            Service Name
+          </label>
+
+          <input
+            id="serviceName"
+            name="name"
+            type="text"
+            required
+            placeholder="Enter service name"
+            style="width:100%;">
+
+        </div>
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="serviceDescription">
+            Description
+          </label>
+
+          <textarea
+            id="serviceDescription"
+            name="description"
+            rows="4"
+            required
+            placeholder="Describe your service"
+            style="width:100%;"></textarea>
+
+        </div>
+
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+          gap:16px;
+          margin-bottom:16px;
+        ">
+
+          <div>
+
+            <label for="servicePrice">
+              Price
+            </label>
+
+            <input
+              id="servicePrice"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              placeholder="0.00"
+              style="width:100%;">
+
+          </div>
+
+
+          <div>
+
+            <label for="serviceCategory">
+              Category
+            </label>
+
+            <input
+              id="serviceCategory"
+              name="category"
+              type="text"
+              placeholder="e.g. Hair Services"
+              style="width:100%;">
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="storeLocation">
+            Store Location
+          </label>
+
+          <input
+            id="storeLocation"
+            name="storeLocation"
+            type="text"
+            placeholder="Enter store location"
+            style="width:100%;">
+
+        </div>
+
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+          gap:16px;
+          margin-bottom:16px;
+        ">
+
+          <div>
+
+            <label for="storeMode">
+              Store Service
+            </label>
+
+            <select
+              id="storeMode"
+              name="storeMode"
+              style="width:100%;">
+
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label for="mobileMode">
+              Mobile Service
+            </label>
+
+            <select
+              id="mobileMode"
+              name="mobileMode"
+              style="width:100%;">
+
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-bottom:20px;">
+
+          <label for="serviceImages">
+            Service Pictures
+          </label>
+
+          <input
+            id="serviceImages"
+            name="images"
+            type="file"
+            accept="image/*"
+            multiple
+            style="width:100%;">
+
+          <small>
+            You can select multiple pictures.
+          </small>
+
+        </div>
+
+
+        <div
+          id="existingImages"
+          style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-bottom:20px;
+          ">
+        </div>
+
+
+        <div style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+        ">
+
+          <button
+            type="submit"
+            class="btn-primary">
+
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            <span id="saveServiceText">
+              Save Service
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            onclick="closeServiceForm()"
+            style="
+              padding:10px 18px;
+              border:none;
+              border-radius:8px;
+              cursor:pointer;
+            ">
+
+            Cancel
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+
+    <!-- PROVIDER SERVICES -->
+    <section
+      id="providerServicesGrid"
+      class="services-grid">
+    </section>
+
+  </div>
+
+</main>
+
+</div>
+
+
+<footer class="idea-footer">
+  &copy; 2026 Quick Connect
+</footer>
+
+
+<script src="js/auth.js"></script>
+
+<script>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+const API = "http://localhost:5000/api";
+
+const isAdminServices =
+  new URLSearchParams(window.location.search).get("admin") === "true";
+
+let allServices = [];
+let currentCategory = "";
+
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+
+let zoomed = false;
+let touchStartX = 0;
+let touchEndX = 0;
+
+
+/* =====================================================
+   USER
+===================================================== */
+
+let currentUser = null;
+
+try {
+
+  currentUser =
+    JSON.parse(localStorage.getItem("user"));
+
+} catch (error) {
+
+  currentUser = null;
+
+}
+
+
+/* =====================================================
+   AUTH HEADER
+===================================================== */
+
+function getToken() {
+
+  return localStorage.getItem("token");
+
+}
+
+
+function authHeaders() {
+
+  const token = getToken();
+
+  return token
+    ? {
+        Authorization: `Bearer ${token}`
+      }
+    : {};
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout() {
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  window.location.href = "login.html";
+
+}
+
+
+/* =====================================================
+   IMAGE HELPERS
+===================================================== */
+
+function getServiceImages(service) {
+
+  if (
+    Array.isArray(service.images) &&
+    service.images.length
+  ) {
+
+    return service.images;
+
+  }
+
+  if (service.image) {
+
+    return [service.image];
+
+  }
+
+  return [];
+
+}
+
+
+function getServiceImage(service, index = 0) {
+
+  const images =
+    getServiceImages(service);
+
+  if (!images.length) {
+
+    return "categories/Other.jpg";
+
+  }
+
+  const img =
+    images[index] || images[0];
+
+  if (
+    typeof img === "string" &&
+    img.startsWith("http")
+  ) {
+
+    return img;
+
+  }
+
+  return `${API.replace("/api", "")}${img}`;
+
+}
+
+
+/* =====================================================
+   INITIALIZE PAGE
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  if (isAdminServices) {
+
+    setupProviderServices();
+
+  } else {
+
+    setupCustomerServices();
+
+  }
+
+});
+
+
+/* =====================================================
+   CUSTOMER SERVICES
+===================================================== */
+
+function setupCustomerServices() {
+
+  document.getElementById(
+    "providerServices"
+  ).style.display = "none";
+
+  document.getElementById(
+    "customerServices"
+  ).style.display = "block";
+
+  if (typeof renderNavbar === "function") {
+
+    renderNavbar();
+
+  }
+
+  initCustomerServices();
+
+}
+
+
+/* =====================================================
+   13 CATEGORY IMAGES
+===================================================== */
+
+const categoryImages = {
+
+  "Hair Services":
+    "categories/Hair services.jpg",
+
+  "Nail Services":
+    "categories/Nail services.jpg",
+
+  "Barber Services":
+    "categories/Barber services.jpg",
+
+  "Makeup Services":
+    "categories/Makeup services.jpg",
+
+  "Photography":
+    "categories/Photography.jpg",
+
+  "Graphic Design":
+    "categories/Graphic design.jpg",
+
+  "Web Design":
+    "categories/Web design.jpg",
+
+  "Cleaning Services":
+    "categories/Cleaning services.jpg",
+
+  "Guest House":
+    "categories/Guest house.jpg",
+
+  "Fitness":
+    "categories/Fitness.jpg",
+
+  "Music/Band":
+    "categories/Music.jpg",
+
+  "Massage":
+    "categories/Massage.jpg",
+
+  "Other":
+    "categories/Other.jpg"
+
+};
+
+
+/* =====================================================
+   CUSTOMER SERVICES LOAD
+===================================================== */
+
+async function initCustomerServices() {
+
+  try {
+
+    const res =
+      await fetch(`${API}/services`);
+
+    if (!res.ok) {
+
+      throw new Error(
+        "Failed to load services"
+      );
+
+    }
+
+    allServices =
+      await res.json();
+
+    renderCategories();
+
+  } catch (err) {
+
+    console.error(err);
+
+    document.getElementById(
+      "categoryView"
+    ).innerHTML = `
+
+      <div class="service-card">
+
+        <h3>
+          Unable to load services
+        </h3>
+
+        <p>
+          Please check your connection and try again.
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   RENDER CATEGORIES
+===================================================== */
+
+function renderCategories() {
+
+  const container =
+    document.getElementById(
+      "categoryView"
+    );
+
+  container.innerHTML = "";
+
+  /*
+    Always use the 13 predefined categories.
+    This ensures all category pictures are shown
+    from the local categories folder.
+  */
+
+  const categories = Object.keys(
+    categoryImages
+  );
+
+  categories.forEach(cat => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "service-card";
+
+
+    const img =
+      categoryImages[cat];
+
+
+    card.innerHTML = `
+
+      <img
+        src="${img}"
+        alt="${cat}"
+        onerror="this.src='categories/Other.jpg';">
+
+
+      <h3>
+        ${cat}
+      </h3>
+
+
+      <p>
+        Explore all ${cat} services
+      </p>
+
+
+      <button
+        onclick="openCategory('${cat.replace(/'/g, "\\'")}')">
+
+        View Services
+
+      </button>
+
+    `;
+
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+/* =====================================================
+   OPEN CATEGORY
+===================================================== */
+
+function openCategory(category) {
+
+  currentCategory =
+    category;
+
+  document.getElementById(
+    "categoryView"
+  ).style.display = "none";
+
+  document.getElementById(
+    "servicesView"
+  ).style.display = "grid";
+
+  document.querySelector(
+    ".topbar h1"
+  ).innerHTML =
+    `<i class="fa-solid fa-folder-open"></i> ${category}`;
+
+  document.querySelector(
+    ".topbar p"
+  ).textContent =
+    "Browse available service providers";
+
+  renderServices(category);
+
+}
+
+
+/* =====================================================
+   BACK BUTTON
+===================================================== */
+
+function createBackButton() {
+
+  const searchSection =
+    document.querySelector(
+      "#customerServices .glass-card"
+    );
+
+  if (
+    document.getElementById(
+      "backBtn"
+    )
+  ) {
+
+    return;
+
+  }
+
+  const btn =
+    document.createElement("button");
+
+  btn.id =
+    "backBtn";
+
+  btn.className =
+    "btn-primary";
+
+  btn.style.marginTop =
+    "15px";
+
+  btn.style.marginBottom =
+    "15px";
+
+  btn.style.width =
+    "fit-content";
+
+  btn.innerHTML = `
+
+    <i class="fa-solid fa-arrow-left"></i>
+    Back to Categories
+
+  `;
+
+  btn.onclick = () => {
+
+    document.getElementById(
+      "servicesView"
+    ).style.display =
+      "none";
+
+    document.getElementById(
+      "categoryView"
+    ).style.display =
+      "grid";
+
+    currentCategory =
+      "";
+
+    document.getElementById(
+      "searchInput"
+    ).value =
+      "";
+
+    document.querySelector(
+      ".topbar h1"
+    ).innerHTML =
+      `<i class="fa-solid fa-briefcase"></i> Quick Connect Services`;
+
+    document.querySelector(
+      ".topbar p"
+    ).textContent =
+      "Choose a category to explore professional services.";
+
+    btn.remove();
+
+  };
+
+  searchSection.insertAdjacentElement(
+    "afterend",
+    btn
+  );
+
+}
+
+/* =====================================================
+   CUSTOMER SERVICE CARD
+===================================================== */
+
+function createProviderCard(service) {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "service-card";
+
+  const images =
+    getServiceImages(service);
+
+  const mainImage =
+    getServiceImage(service, 0);
+
+  /*
+    Provider information can come from different
+    backend formats, so safely support all of them.
+  */
+
+  const provider =
+    service.provider ||
+    service.providerId ||
+    service.user ||
+    service.createdBy ||
+    null;
+
+  const providerName =
+    service.providerName ||
+    (typeof provider === "object"
+      ? provider.name ||
+        provider.fullName ||
+        provider.businessName ||
+        provider.username
+      : null) ||
+    "Provider not specified";
+
+  const providerEmail =
+    service.providerEmail ||
+    (typeof provider === "object"
+      ? provider.email
+      : null);
+
+  const providerPhone =
+    service.providerPhone ||
+    (typeof provider === "object"
+      ? provider.phone ||
+        provider.phoneNumber ||
+        provider.mobile
+      : null);
+
+  const location =
+    service.storeLocation ||
+    service.location ||
+    service.area ||
+    service.city ||
+    "Location not specified";
+
+  const serviceMode = [];
+
+  if (
+    String(service.storeMode).toLowerCase() === "yes"
+  ) {
+    serviceMode.push("Store");
+  }
+
+  if (
+    String(service.mobileMode).toLowerCase() === "yes"
+  ) {
+    serviceMode.push("Mobile");
+  }
+
+  card.innerHTML = `
+
+    <div
+      class="service-gallery-preview"
+      style="
+        position:relative;
+        width:100%;
+        height:220px;
+        overflow:hidden;
+        border-radius:14px;
+        cursor:pointer;
+      "
+      onclick="openGallery('${service._id}')">
+
+      <img
+        src="${mainImage}"
+        alt="${service.name || "Service"}"
+        style="
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          display:block;
+        "
+        onerror="
+          this.onerror=null;
+          this.src='categories/Other.jpg';
+        ">
+
+      ${
+        images.length > 1
+        ? `
+          <div
+            class="gallery-preview-count"
+            style="
+              position:absolute;
+              right:10px;
+              bottom:10px;
+            ">
+
+            <i class="fa-solid fa-images"></i>
+            ${images.length}
+
+          </div>
+        `
+        : ""
+      }
+
+    </div>
+
+
+    ${
+      images.length
+      ? `
+
+        <div
+          class="thumb-strip"
+          style="
+            display:flex;
+            gap:8px;
+            margin-top:10px;
+            overflow-x:auto;
+            padding:2px 0 5px;
+          ">
+
+          ${images.slice(0,5).map(
+            (img,index) => `
+
+              <img
+                src="${getServiceImage(service,index)}"
+                alt="Preview ${index + 1}"
+                onclick="openGallery('${service._id}')"
+                style="
+                  width:58px;
+                  height:58px;
+                  min-width:58px;
+                  object-fit:cover;
+                  border-radius:8px;
+                  cursor:pointer;
+                  display:block;
+                ">
+
+            `
+          ).join("")}
+
+        </div>
+
+      `
+      : ""
+    }
+
+
+    <h3>
+      ${service.name || "Unnamed Service"}
+    </h3>
+
+
+    <p>
+      ${service.description || "No description available."}
+    </p>
+
+
+    <p>
+      <strong>Price:</strong>
+      R${Number(service.price || 0).toFixed(2)}
+    </p>
+
+
+    <p>
+      <strong>Category:</strong>
+      ${service.category || "Other"}
+    </p>
+
+
+    <!-- PROVIDER INFORMATION -->
+
+    <div style="
+      margin-top:14px;
+      padding:12px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.05);
+    ">
+
+      <p style="margin:0 0 7px;">
+        <strong>
+          <i class="fa-solid fa-user"></i>
+          Provider
+        </strong>
+      </p>
+
+      <p style="margin:4px 0;">
+        ${providerName}
+      </p>
+
+
+      <p style="margin:4px 0;">
+        <i class="fa-solid fa-location-dot"></i>
+        <strong>Area:</strong>
+        ${location}
+      </p>
+
+
+      ${
+        providerPhone
+        ? `
+          <p style="margin:4px 0;">
+            <i class="fa-solid fa-phone"></i>
+            ${providerPhone}
+          </p>
+        `
+        : ""
+      }
+
+
+      ${
+        providerEmail
+        ? `
+          <p style="margin:4px 0;">
+            <i class="fa-solid fa-envelope"></i>
+            ${providerEmail}
+          </p>
+        `
+        : ""
+      }
+
+
+      ${
+        serviceMode.length
+        ? `
+          <p style="margin:4px 0;">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <strong>Service:</strong>
+            ${serviceMode.join(" & ")}
+          </p>
+        `
+        : ""
+      }
+
+    </div>
+
+
+    <button
+      onclick="location.href='booking.html?service=${service._id}'">
+
+      <i class="fa-solid fa-calendar-check"></i>
+      Book Now
+
+    </button>
+
+  `;
+
+  return card;
+
+}
+
+/* =====================================================
+   RENDER SERVICES
+===================================================== */
+
+function renderServices(category) {
+
+  const container =
+    document.getElementById(
+      "servicesView"
+    );
+
+  container.innerHTML = "";
+
+  const filtered =
+    allServices.filter(
+      s =>
+        (s.category ||
+          "Other") ===
+        category
+    );
+
+  createBackButton();
+
+  if (!filtered.length) {
+
+    container.innerHTML = `
+
+      <div class="service-card">
+
+        <h3>
+          No services found
+        </h3>
+
+        <p>
+          There are currently no providers in this category.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  filtered.forEach(service => {
+
+    container.appendChild(
+      createProviderCard(service)
+    );
+
+  });
+
+}
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+document.getElementById(
+  "searchInput"
+).addEventListener(
+  "input",
+  e => {
+
+    const value =
+      e.target.value
+        .trim()
+        .toLowerCase();
+
+    const categoryView =
+      document.getElementById(
+        "categoryView"
+      );
+
+    const servicesView =
+      document.getElementById(
+        "servicesView"
+      );
+
+
+    /* =========================
+       EMPTY SEARCH
+    ========================= */
+
+    if (!value.length) {
+
+      servicesView.style.display =
+        "none";
+
+      categoryView.style.display =
+        "grid";
+
+      document.querySelector(
+        ".topbar h1"
+      ).innerHTML =
+        `<i class="fa-solid fa-briefcase"></i> Quick Connect Services`;
+
+      document.querySelector(
+        ".topbar p"
+      ).textContent =
+        "Choose a category to explore professional services.";
+
+      document.getElementById(
+        "backBtn"
+      )?.remove();
+
+      return;
+
+    }
+
+
+    /* =========================
+       SHOW SEARCH RESULTS
+    ========================= */
+
+    categoryView.style.display =
+      "none";
+
+    servicesView.style.display =
+      "grid";
+
+
+    document.querySelector(
+      ".topbar h1"
+    ).innerHTML =
+      `<i class="fa-solid fa-magnifying-glass"></i> Search Results`;
+
+
+    document.querySelector(
+      ".topbar p"
+    ).textContent =
+      "Showing matching services.";
+
+
+    createBackButton();
+
+    servicesView.innerHTML = "";
+
+
+    /* =========================
+       SEARCH TERMS
+
+       Supports:
+
+       hairstylist
+       witbank
+       hairstylist, witbank
+       hair, witbank
+    ========================= */
+
+    const searchTerms =
+      value
+        .split(",")
+        .map(term => term.trim())
+        .filter(Boolean);
+
+
+    /* =========================
+       FILTER SERVICES
+    ========================= */
+
+    const filtered =
+      allServices.filter(service => {
+
+        /*
+          Safely get provider.
+
+          Some services may have:
+          provider = null
+          provider = undefined
+          provider = object
+          provider = ID string
+        */
+
+        const provider =
+          service?.provider ||
+          service?.providerId ||
+          service?.user ||
+          service?.createdBy ||
+          null;
+
+
+        let providerName = "";
+        let providerEmail = "";
+        let providerPhone = "";
+
+
+        /*
+          ONLY read provider fields
+          if provider is actually an object.
+        */
+
+        if (
+          provider &&
+          typeof provider === "object"
+        ) {
+
+          providerName =
+            provider.name ||
+            provider.fullName ||
+            provider.businessName ||
+            provider.username ||
+            "";
+
+          providerEmail =
+            provider.email ||
+            "";
+
+          providerPhone =
+            provider.phone ||
+            provider.phoneNumber ||
+            provider.mobile ||
+            "";
+
+        }
+
+
+        /*
+          Service-level provider information
+          takes priority if your backend sends it.
+        */
+
+        providerName =
+          service?.providerName ||
+          providerName ||
+          "";
+
+        providerEmail =
+          service?.providerEmail ||
+          providerEmail ||
+          "";
+
+        providerPhone =
+          service?.providerPhone ||
+          providerPhone ||
+          "";
+
+
+        /*
+          Everything searchable is combined
+          into one safe string.
+        */
+
+        const searchableText = [
+
+          service?.name,
+
+          service?.description,
+
+          service?.category,
+
+          service?.storeLocation,
+
+          service?.location,
+
+          service?.area,
+
+          service?.city,
+
+          service?.storeMode,
+
+          service?.mobileMode,
+
+          providerName,
+
+          providerEmail,
+
+          providerPhone
+
+        ]
+          .filter(
+            value =>
+              value !== null &&
+              value !== undefined
+          )
+          .map(
+            value =>
+              String(value)
+          )
+          .join(" ")
+          .toLowerCase();
+
+
+        /*
+          ALL comma-separated terms must match.
+
+          Example:
+
+          hairstylist, witbank
+
+          means:
+
+          hairstylist AND witbank
+        */
+
+        return searchTerms.every(
+          term =>
+            searchableText.includes(term)
+        );
+
+      });
+
+
+    /* =========================
+       NO RESULTS
+    ========================= */
+
+    if (!filtered.length) {
+
+      servicesView.innerHTML = `
+
+        <div class="service-card">
+
+          <h3>
+            No matching services
+          </h3>
+
+          <p>
+            Try searching for a service and area.
+          </p>
+
+          <p style="margin-top:8px;">
+            Example:
+            <strong>hairstylist, witbank</strong>
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =========================
+       DISPLAY RESULTS
+    ========================= */
+
+    filtered.forEach(service => {
+
+      servicesView.appendChild(
+        createProviderCard(service)
+      );
+
+    });
+
+  }
+);
+
+/* =====================================================
+   PROVIDER SERVICE MANAGEMENT
+===================================================== */
+
+function setupProviderServices() {
+
+  document.getElementById(
+    "customerServices"
+  ).style.display =
+    "none";
+
+  document.getElementById(
+    "providerServices"
+  ).style.display =
+    "block";
+
+  document.getElementById(
+    "panelSubtitle"
+  ).textContent =
+    "Provider Dashboard";
+
+  document.getElementById(
+    "pageTitle"
+  ).innerHTML =
+    `<i class="fa-solid fa-briefcase"></i> My Services`;
+
+  document.getElementById(
+    "pageSubtitle"
+  ).textContent =
+    "Manage the services you provide.";
+
+  const businessIdeasLink =
+    document.getElementById(
+      "businessIdeasLink"
+    );
+
+  if (businessIdeasLink) {
+
+    businessIdeasLink.style.display =
+      "none";
+
+  }
+
+  loadProviderServices();
+
+}
+
+
+async function loadProviderServices() {
+
+  const container =
+    document.getElementById(
+      "providerServicesGrid"
+    );
+
+  container.innerHTML = `
+
+    <div class="service-card">
+
+      <p>
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Loading your services...
+      </p>
+
+    </div>
+
+  `;
+
+  try {
+
+    const res =
+      await fetch(
+        `${API}/services`,
+        {
+          headers: {
+            ...authHeaders()
+          }
+        }
+      );
+
+    if (!res.ok) {
+
+      throw new Error(
+        `Failed to load services (${res.status})`
+      );
+
+    }
+
+    const data =
+      await res.json();
+
+    const services =
+      Array.isArray(data)
+        ? data
+        : data.services || [];
+
+    const userId =
+      currentUser?._id ||
+      currentUser?.id ||
+      currentUser?.userId;
+
+    const myServices =
+      services.filter(service => {
+
+        const owner =
+          service.provider ||
+          service.providerId ||
+          service.user ||
+          service.userId ||
+          service.createdBy;
+
+        if (!owner) {
+
+          return false;
+
+        }
+
+        const ownerId =
+          typeof owner === "object"
+            ? owner._id || owner.id
+            : owner;
+
+        return String(ownerId) ===
+          String(userId);
+
+      });
+
+    renderProviderServices(
+      myServices
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+
+      <div class="service-card">
+
+        <h3>
+          Unable to load your services
+        </h3>
+
+        <p>
+          ${error.message}
+        </p>
+
+        <button
+          onclick="loadProviderServices()">
+
+          <i class="fa-solid fa-rotate"></i>
+          Try Again
+
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+function renderProviderServices(services) {
+
+  const container =
+    document.getElementById(
+      "providerServicesGrid"
+    );
+
+  container.innerHTML = "";
+
+  if (!services.length) {
+
+    container.innerHTML = `
+
+      <div class="service-card">
+
+        <div style="
+          text-align:center;
+          padding:30px;
+        ">
+
+          <i
+            class="fa-solid fa-briefcase"
+            style="
+              font-size:42px;
+              margin-bottom:15px;
+            ">
+          </i>
+
+          <h3>
+            You have no services yet
+          </h3>
+
+          <p>
+            Add your first service to start offering it to customers.
+          </p>
+
+          <button
+            class="btn-primary"
+            onclick="openAddServiceForm()">
+
+            <i class="fa-solid fa-plus"></i>
+            Add Service
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  services.forEach(service => {
+
+    container.appendChild(
+      createProviderManagementCard(
+        service
+      )
+    );
+
+  });
+
+}
+
+
+/* =====================================================
+   PROVIDER MANAGEMENT CARD
+===================================================== */
+
+function createProviderManagementCard(service) {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "service-card";
+
+  const images =
+    getServiceImages(service);
+
+  const mainImage =
+    getServiceImage(service, 0);
+
+  card.innerHTML = `
+
+    <div
+      style="
+        position:relative;
+        width:100%;
+        height:220px;
+        overflow:hidden;
+        border-radius:14px;
+        cursor:pointer;
+      "
+      onclick="openGallery('${service._id}')">
+
+      <img
+        src="${mainImage}"
+        alt="${service.name || "Service"}"
+        style="
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          display:block;
+        ">
+
+      ${
+        images.length
+        ? `
+
+          <div
+            style="
+              position:absolute;
+              right:10px;
+              bottom:10px;
+              padding:7px 10px;
+              border-radius:8px;
+              background:rgba(0,0,0,.7);
+              color:white;
+            ">
+
+            <i class="fa-solid fa-images"></i>
+            ${images.length}
+
+          </div>
+
+        `
+        : ""
+      }
+
+    </div>
+
+
+    ${
+      images.length
+      ? `
+
+        <div
+          style="
+            display:flex;
+            gap:8px;
+            margin-top:10px;
+            overflow-x:auto;
+            padding-bottom:5px;
+          ">
+
+          ${images.slice(0,5).map(
+            (img,index) => `
+
+              <img
+                src="${getServiceImage(service,index)}"
+                alt="Thumbnail ${index + 1}"
+                onclick="openGallery('${service._id}')"
+                style="
+                  width:58px;
+                  height:58px;
+                  min-width:58px;
+                  object-fit:cover;
+                  border-radius:8px;
+                  cursor:pointer;
+                ">
+
+            `
+          ).join("")}
+
+        </div>
+
+      `
+      : `
+
+        <div style="
+          margin-top:10px;
+          padding:10px;
+          text-align:center;
+          border-radius:8px;
+        ">
+
+          No pictures added
+
+        </div>
+
+      `
+    }
+
+
+    <h3 style="margin-top:15px;">
+      ${service.name || "Unnamed Service"}
+    </h3>
+
+
+    <p>
+      ${service.description || "No description available."}
+    </p>
+
+
+    <p>
+      <strong>Price:</strong>
+      R${Number(service.price || 0).toFixed(2)}
+    </p>
+
+
+    ${
+      service.category
+      ? `
+        <p>
+          <strong>Category:</strong>
+          ${service.category}
+        </p>
+      `
+      : ""
+    }
+
+
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:15px;
+    ">
+
+      <button
+        type="button"
+        onclick="editService('${service._id}')">
+
+        <i class="fa-solid fa-pen"></i>
+        Edit
+
+      </button>
+
+
+      <button
+        type="button"
+        onclick="openAddPictures('${service._id}')">
+
+        <i class="fa-solid fa-image"></i>
+        Add Pictures
+
+      </button>
+
+
+      <button
+        type="button"
+        onclick="deleteService('${service._id}')">
+
+        <i class="fa-solid fa-trash"></i>
+        Delete
+
+      </button>
+
+    </div>
+
+  `;
+
+  return card;
+
+}
+
+
+/* =====================================================
+   ADD SERVICE
+===================================================== */
+
+function openAddServiceForm() {
+
+  document.getElementById(
+    "serviceForm"
+  ).reset();
+
+  document.getElementById(
+    "serviceId"
+  ).value = "";
+
+  document.getElementById(
+    "existingImages"
+  ).innerHTML = "";
+
+  document.getElementById(
+    "serviceFormTitle"
+  ).textContent =
+    "Add Service";
+
+  document.getElementById(
+    "saveServiceText"
+  ).textContent =
+    "Save Service";
+
+  document.getElementById(
+    "serviceFormCard"
+  ).style.display =
+    "block";
+
+  document.getElementById(
+    "serviceFormCard"
+  ).scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}
+
+
+/* =====================================================
+   EDIT SERVICE
+===================================================== */
+
+async function editService(serviceId) {
+
+  const service =
+    await getServiceById(serviceId);
+
+  if (!service) return;
+
+  document.getElementById(
+    "serviceId"
+  ).value =
+    service._id;
+
+  document.getElementById(
+    "serviceName"
+  ).value =
+    service.name || "";
+
+  document.getElementById(
+    "serviceDescription"
+  ).value =
+    service.description || "";
+
+  document.getElementById(
+    "servicePrice"
+  ).value =
+    service.price || "";
+
+  document.getElementById(
+    "serviceCategory"
+  ).value =
+    service.category || "";
+
+  document.getElementById(
+    "storeLocation"
+  ).value =
+    service.storeLocation || "";
+
+  document.getElementById(
+    "storeMode"
+  ).value =
+    service.storeMode || "";
+
+  document.getElementById(
+    "mobileMode"
+  ).value =
+    service.mobileMode || "";
+
+  renderExistingImages(
+    service
+  );
+
+  document.getElementById(
+    "serviceFormTitle"
+  ).textContent =
+    "Edit Service";
+
+  document.getElementById(
+    "saveServiceText"
+  ).textContent =
+    "Update Service";
+
+  document.getElementById(
+    "serviceFormCard"
+  ).style.display =
+    "block";
+
+  document.getElementById(
+    "serviceFormCard"
+  ).scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+}
+
+
+/* =====================================================
+   GET SINGLE SERVICE
+===================================================== */
+
+async function getServiceById(serviceId) {
+
+  try {
+
+    const res =
+      await fetch(
+        `${API}/services/${serviceId}`,
+        {
+          headers: {
+            ...authHeaders()
+          }
+        }
+      );
+
+    if (res.ok) {
+
+      const data =
+        await res.json();
+
+      return data.service ||
+        data;
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        `${API}/services`,
+        {
+          headers:{
+            ...authHeaders()
+          }
+        }
+      );
+
+    const data =
+      await res.json();
+
+    const services =
+      Array.isArray(data)
+        ? data
+        : data.services || [];
+
+    return services.find(
+      s =>
+        String(s._id) ===
+        String(serviceId)
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  return null;
+
+}
+
+
+/* =====================================================
+   EXISTING IMAGES
+===================================================== */
+
+function renderExistingImages(service) {
+
+  const container =
+    document.getElementById(
+      "existingImages"
+    );
+
+  const images =
+    getServiceImages(service);
+
+  container.innerHTML = "";
+
+  images.forEach((img,index) => {
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.style.position =
+      "relative";
+
+    wrapper.innerHTML = `
+
+      <img
+        src="${getServiceImage(service,index)}"
+        alt="Service image"
+        style="
+          width:90px;
+          height:90px;
+          object-fit:cover;
+          border-radius:10px;
+        ">
+
+      <button
+        type="button"
+        onclick="deleteServiceImage('${service._id}', '${String(img).replace(/'/g, "\\'")}')"
+        style="
+          position:absolute;
+          top:4px;
+          right:4px;
+          width:25px;
+          height:25px;
+          border:none;
+          border-radius:50%;
+          cursor:pointer;
+          background:#dc2626;
+          color:white;
+        ">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </button>
+
+    `;
+
+    container.appendChild(
+      wrapper
+    );
+
+  });
+
+}
+
+
+/* =====================================================
+   ADD PICTURES
+===================================================== */
+
+function openAddPictures(serviceId) {
+
+  editService(serviceId);
+
+  setTimeout(() => {
+
+    document.getElementById(
+      "serviceImages"
+    ).focus();
+
+  },100);
+
+}
+
+
+/* =====================================================
+   SAVE / UPDATE SERVICE
+===================================================== */
+
+document.getElementById(
+  "serviceForm"
+).addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+    const serviceId =
+      document.getElementById(
+        "serviceId"
+      ).value;
+
+    const form =
+      document.getElementById(
+        "serviceForm"
+      );
+
+    const formData =
+      new FormData(form);
+
+    try {
+
+      let url =
+        `${API}/services`;
+
+      let method =
+        "POST";
+
+      if (serviceId) {
+
+        url =
+          `${API}/services/${serviceId}`;
+
+        method =
+          "PUT";
+
+      }
+
+      const res =
+        await fetch(
+          url,
+          {
+            method,
+            headers:{
+              ...authHeaders()
+            },
+            body:formData
+          }
+        );
+
+      const data =
+        await res.json()
+          .catch(() => ({}));
+
+      if (!res.ok) {
+
+        throw new Error(
+          data.message ||
+          "Unable to save service."
+        );
+
+      }
+
+      closeServiceForm();
+
+      await loadProviderServices();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        error.message
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   DELETE SERVICE
+===================================================== */
+
+async function deleteService(serviceId) {
+
+  if (
+    !confirm(
+      "Are you sure you want to delete this service?"
+    )
+  ) {
+
+    return;
+
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        `${API}/services/${serviceId}`,
+        {
+          method:"DELETE",
+          headers:{
+            ...authHeaders()
+          }
+        }
+      );
+
+    const data =
+      await res.json()
+        .catch(() => ({}));
+
+    if (!res.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to delete service."
+      );
+
+    }
+
+    await loadProviderServices();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   DELETE SERVICE IMAGE
+===================================================== */
+
+async function deleteServiceImage(
+  serviceId,
+  image
+) {
+
+  if (
+    !confirm(
+      "Delete this picture?"
+    )
+  ) {
+
+    return;
+
+  }
+
+  try {
+
+    const res =
+      await fetch(
+        `${API}/services/${serviceId}/images`,
+        {
+          method:"DELETE",
+          headers:{
+            "Content-Type":
+              "application/json",
+            ...authHeaders()
+          },
+          body:JSON.stringify({
+            image
+          })
+        }
+      );
+
+    const data =
+      await res.json()
+        .catch(() => ({}));
+
+    if (!res.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to delete picture."
+      );
+
+    }
+
+    const service =
+      await getServiceById(
+        serviceId
+      );
+
+    if (service) {
+
+      renderExistingImages(
+        service
+      );
+
+    }
+
+    await loadProviderServices();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE FORM
+===================================================== */
+
+function closeServiceForm() {
+
+  document.getElementById(
+    "serviceFormCard"
+  ).style.display =
+    "none";
+
+  document.getElementById(
+    "serviceForm"
+  ).reset();
+
+  document.getElementById(
+    "serviceId"
+  ).value = "";
+
+}
+
+
+/* =====================================================
+   GALLERY
+===================================================== */
+
+function openGallery(serviceId) {
+
+  let service =
+    allServices.find(
+      s =>
+        String(s._id) ===
+        String(serviceId)
+    );
+
+  if (!service) {
+
+    getServiceById(
+      serviceId
+    ).then(found => {
+
+      if (!found) return;
+
+      currentGalleryImages =
+        getServiceImages(found);
+
+      currentGalleryIndex =
+        0;
+
+      zoomed =
+        false;
+
+      renderGallery();
+
+    });
+
+    return;
+
+  }
+
+  currentGalleryImages =
+    getServiceImages(service);
+
+  currentGalleryIndex =
+    0;
+
+  zoomed =
+    false;
+
+  renderGallery();
+
+}
+
+
+function galleryImage(index) {
+
+  if (
+    !currentGalleryImages.length
+  ) {
+
+    return "categories/Other.jpg";
+
+  }
+
+  const img =
+    currentGalleryImages[index];
+
+  if (
+    typeof img === "string" &&
+    img.startsWith("http")
+  ) {
+
+    return img;
+
+  }
+
+  return `${API.replace("/api","")}${img}`;
+
+}
+
+
+/* =====================================================
+   RENDER GALLERY
+===================================================== */
+
+function renderGallery() {
+
+  document.getElementById(
+    "galleryModal"
+  )?.remove();
+
+  const modal =
+    document.createElement("div");
+
+  modal.id =
+    "galleryModal";
+
+  modal.innerHTML = `
+
+    <div class="gallery-overlay">
+
+      <button
+        class="gallery-close"
+        onclick="closeGallery()">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </button>
+
+
+      <div class="gallery-box">
+
+        <button
+          class="gallery-arrow left"
+          onclick="prevImage()">
+
+          <i class="fa-solid fa-chevron-left"></i>
+
+        </button>
+
+
+        <div class="gallery-center">
+
+          <img
+            id="galleryImage"
+            src="${galleryImage(currentGalleryIndex)}"
+            class="gallery-fade"
+            alt="Gallery Image">
+
+
+          <div class="gallery-counter">
+
+            ${
+              currentGalleryImages.length
+                ? currentGalleryIndex + 1
+                : 0
+            }
+
+            /
+
+            ${currentGalleryImages.length}
+
+          </div>
+
+
+          ${
+            currentGalleryImages.length > 1
+            ? `
+
+              <div class="gallery-thumbs">
+
+                ${currentGalleryImages.map(
+                  (img,i) => `
+
+                    <img
+                      src="${
+                        typeof img === "string" &&
+                        img.startsWith("http")
+                          ? img
+                          : API.replace("/api","") + img
+                      }"
+                      class="${
+                        i === currentGalleryIndex
+                          ? "active"
+                          : ""
+                      }"
+                      onclick="
+                        currentGalleryIndex=${i};
+                        zoomed=false;
+                        renderGallery();
+                      ">
+
+                  `
+                ).join("")}
+
+              </div>
+
+            `
+            : ""
+          }
+
+        </div>
+
+
+        <button
+          class="gallery-arrow right"
+          onclick="nextImage()">
+
+          <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.body.appendChild(
+    modal
+  );
+
+  registerGalleryEvents();
+
+  preloadImages();
+
+}
+
+
+/* =====================================================
+   NEXT IMAGE
+===================================================== */
+
+function nextImage() {
+
+  if (
+    !currentGalleryImages.length
+  ) {
+
+    return;
+
+  }
+
+  currentGalleryIndex++;
+
+  if (
+    currentGalleryIndex >=
+    currentGalleryImages.length
+  ) {
+
+    currentGalleryIndex =
+      0;
+
+  }
+
+  zoomed =
+    false;
+
+  renderGallery();
+
+}
+
+
+/* =====================================================
+   PREVIOUS IMAGE
+===================================================== */
+
+function prevImage() {
+
+  if (
+    !currentGalleryImages.length
+  ) {
+
+    return;
+
+  }
+
+  currentGalleryIndex--;
+
+  if (
+    currentGalleryIndex < 0
+  ) {
+
+    currentGalleryIndex =
+      currentGalleryImages.length - 1;
+
+  }
+
+  zoomed =
+    false;
+
+  renderGallery();
+
+}
+
+
+/* =====================================================
+   CLOSE GALLERY
+===================================================== */
+
+function closeGallery() {
+
+  document.getElementById(
+    "galleryModal"
+  )?.remove();
+
+}
+
+
+/* =====================================================
+   GALLERY EVENTS
+===================================================== */
+
+function registerGalleryEvents() {
+
+  const img =
+    document.getElementById(
+      "galleryImage"
+    );
+
+  if (!img) return;
+
+  img.ondblclick = () => {
+
+    zoomed =
+      !zoomed;
+
+    img.style.transform =
+      zoomed
+        ? "scale(2)"
+        : "scale(1)";
+
+    img.style.cursor =
+      zoomed
+        ? "zoom-out"
+        : "zoom-in";
+
+  };
+
+
+  let lastTap =
+    0;
+
+
+  img.addEventListener(
+    "touchend",
+    e => {
+
+      const now =
+        Date.now();
+
+      if (
+        now - lastTap < 300
+      ) {
+
+        zoomed =
+          !zoomed;
+
+        img.style.transform =
+          zoomed
+            ? "scale(2)"
+            : "scale(1)";
+
+        e.preventDefault();
+
+      }
+
+      lastTap =
+        now;
+
+    }
+  );
+
+
+  img.addEventListener(
+    "touchstart",
+    e => {
+
+      touchStartX =
+        e.changedTouches[0]
+          .clientX;
+
+    }
+  );
+
+
+  img.addEventListener(
+    "touchend",
+    e => {
+
+      touchEndX =
+        e.changedTouches[0]
+          .clientX;
+
+      handleSwipe();
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SWIPE
+===================================================== */
+
+function handleSwipe() {
+
+  const distance =
+    touchStartX -
+    touchEndX;
+
+  if (
+    Math.abs(distance) < 50
+  ) {
+
+    return;
+
+  }
+
+  if (distance > 0) {
+
+    nextImage();
+
+  } else {
+
+    prevImage();
+
+  }
+
+}
+
+
+/* =====================================================
+   PRELOAD
+===================================================== */
+
+function preloadImages() {
+
+  if (
+    !currentGalleryImages.length
+  ) {
+
+    return;
+
+  }
+
+  const next =
+    (
+      currentGalleryIndex + 1
+    ) %
+    currentGalleryImages.length;
+
+  const prev =
+    currentGalleryIndex === 0
+      ? currentGalleryImages.length - 1
+      : currentGalleryIndex - 1;
+
+  [next,prev].forEach(i => {
+
+    const image =
+      new Image();
+
+    image.src =
+      galleryImage(i);
+
+  });
+
+}
+
+
+/* =====================================================
+   KEYBOARD GALLERY CONTROLS
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  e => {
+
+    if (
+      !document.getElementById(
+        "galleryModal"
+      )
+    ) {
+
+      return;
+
+    }
+
+    if (
+      e.key === "ArrowRight"
+    ) {
+
+      nextImage();
+
+    }
+
+    if (
+      e.key === "ArrowLeft"
+    ) {
+
+      prevImage();
+
+    }
+
+    if (
+      e.key === "Escape"
+    ) {
+
+      closeGallery();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Connect - Home</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <script src="./js/navbar.js" defer></script>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>QuickConnect</h2>
+      <p>Find & Book Services</p>
+    </div>
+
+    <nav>
+      <a href="index.html" id="homeLink" class="active">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
+
+      <a href="services.html" id="browseAppLink">
+        <i class="fa-solid fa-briefcase"></i> Services
+      </a>
+
+      <a href="booking.html" id="bookServiceLink">
+        <i class="fa-solid fa-calendar-check"></i> Book Service
+      </a>
+
+      <a href="my-bookings.html" id="providerBookingsLink">
+        <i class="fa-solid fa-list"></i> My Bookings
+      </a>
+
+      <a href="admin.html" id="dashboardLink">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </a>
+
+      <a href="admin-services.html" id="adminServicesLink">
+        <i class="fa-solid fa-store"></i> Admin Services
+      </a>
+
+      <a href="admin-bookings.html" id="adminBookingsLink">
+        <i class="fa-solid fa-calendar"></i> Admin Bookings
+      </a>
+
+      <a href="#" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </nav>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <h1>Welcome to Quick Connect</h1>
+        <p>Book services and connect with providers</p>
+      </div>
+    </header>
+
+    <section class="glass-card">
+      <h2>Find Trusted Services Near You</h2>
+      <p>Browse services and book instantly</p>
+    </section>
+
+    <!-- =========================
+         BUSINESS IDEAS SECTION
+    ========================== -->
+    <section class="glass-card" id="businessIdeasCard">
+      <h2>Become a Service Provider</h2>
+
+      <p>
+        Turn your skills into income by joining Quick Connect as a service provider.
+        Not sure what business to start? Browse our collection of business ideas and
+        discover opportunities that match your interests.
+      </p>
+
+      <br>
+
+      <a href="businessIdeas.html" class="btn-primary" id="businessIdeasBtn">
+        <i class="fa-solid fa-lightbulb"></i>
+        Explore Business Ideas
+      </a>
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
+/* =========================
+   ROLE-BASED SIDEBAR LOGIC
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const bookServiceLink = document.getElementById("bookServiceLink");
+  const providerBookingsLink = document.getElementById("providerBookingsLink");
+  const dashboardLink = document.getElementById("dashboardLink");
+  const adminServicesLink = document.getElementById("adminServicesLink");
+  const adminBookingsLink = document.getElementById("adminBookingsLink");
+  const browseAppLink = document.getElementById("browseAppLink");
+
+  const businessIdeasCard = document.getElementById("businessIdeasCard");
+
+  [
+    bookServiceLink,
+    providerBookingsLink,
+    dashboardLink,
+    adminServicesLink,
+    adminBookingsLink,
+    browseAppLink
+  ].forEach(el => {
+    if (el) el.style.display = "block";
+  });
+
+  // Guests
+  if (!user) {
+    if (businessIdeasCard) businessIdeasCard.style.display = "block";
+    return;
+  }
+
+  const role = user.role;
+
+  // =========================
+  // NORMAL USER
+  // =========================
+  if (role === "user") {
+
+    // Keep My Bookings visible
+
+    if (dashboardLink) dashboardLink.style.display = "none";
+    if (adminServicesLink) adminServicesLink.style.display = "none";
+    if (adminBookingsLink) adminBookingsLink.style.display = "none";
+
+    if (businessIdeasCard) businessIdeasCard.style.display = "block";
+  }
+
+  // =========================
+  // SERVICE PROVIDER
+  // =========================
+  if (role === "serviceProvider") {
+
+    if (adminServicesLink) adminServicesLink.style.display = "none";
+    if (adminBookingsLink) adminBookingsLink.style.display = "none";
+
+    if (businessIdeasCard) businessIdeasCard.style.display = "none";
+  }
+
+  // =========================
+  // ADMIN
+  // =========================
+  if (role === "admin") {
+
+    if (businessIdeasCard) businessIdeasCard.style.display = "none";
+  }
+
+});
+</script>
+
+</body>
+</html>

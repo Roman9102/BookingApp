@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Payment Confirmation - Quick Connect</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- LEFT SIDE -->
+  <div class="auth-left">
+
+    <h1>Quick Connect</h1>
+
+    <p>
+      Secure payment confirmation
+    </p>
+
+    <div class="auth-badges">
+
+      <div class="badge">
+        <i class="fa fa-lock"></i>
+        Secure Payments
+      </div>
+
+      <div class="badge">
+        <i class="fa fa-credit-card"></i>
+        Card Payment
+      </div>
+
+      <div class="badge">
+        <i class="fa fa-circle-check"></i>
+        Payment Confirmation
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- RIGHT SIDE -->
+  <div class="auth-right">
+
+    <div class="auth-card payment-result-card">
+
+
+      <!-- PAYMENT LOADING -->
+
+      <div id="paymentLoading">
+
+        <i class="fa fa-spinner fa-spin"></i>
+
+        <h2>
+          Verifying Payment
+        </h2>
+
+        <p>
+          Please wait while we confirm your payment.
+        </p>
+
+      </div>
+
+
+      <!-- PAYMENT SUCCESS -->
+
+      <div
+        id="paymentSuccess"
+        style="display: none;"
+      >
+
+        <i class="fa fa-circle-check"></i>
+
+        <h2>
+          Payment Successful
+        </h2>
+
+        <p id="paymentSuccessMessage">
+          Your payment has been successfully confirmed.
+        </p>
+
+        <p id="paymentReference"></p>
+
+        <p id="subscriptionStatusMessage"></p>
+
+        <p>
+          Returning you to Quick Connect in
+          <strong id="redirectCountdown">5</strong>
+          seconds...
+        </p>
+
+        <button
+          type="button"
+          onclick="window.location.replace('index.html')"
+        >
+          <i class="fa fa-house"></i>
+          Continue to Home
+        </button>
+
+      </div>
+
+
+      <!-- PAYMENT FAILED -->
+
+      <div
+        id="paymentFailed"
+        style="display: none;"
+      >
+
+        <i class="fa fa-circle-xmark"></i>
+
+        <h2>
+          Payment Could Not Be Verified
+        </h2>
+
+        <p id="paymentError">
+          We could not confirm your payment.
+        </p>
+
+        <button
+          type="button"
+          onclick="window.location.replace('index.html')"
+        >
+          <i class="fa fa-house"></i>
+          Return Home
+        </button>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+  <!-- PAYMENT SUCCESS SCRIPT -->
+
+  <script src="js/payment-success.js"></script>
+
+</body>
+</html>

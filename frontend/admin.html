@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Connect Admin</title>
+
+  <link rel="stylesheet" href="./css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="./js/navbar.js"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h2>QuickConnect</h2>
+      <p>Admin Panel</p>
+    </div>
+
+    <nav>
+
+      <!-- DASHBOARD -->
+      <a href="admin.html" class="active">
+        <i class="fa fa-chart-line"></i>
+        Dashboard
+      </a>
+
+      <!-- MY SERVICES -->
+      <!-- Provider's own services + Add Service -->
+      <a href="my-services.html">
+        <i class="fa fa-briefcase"></i>
+        My Services
+      </a>
+
+      
+
+      <!-- BOOKINGS -->
+      <a href="provider-bookings.html">
+        <i class="fa fa-calendar"></i>
+        Bookings
+      </a>
+
+      <!-- SETTINGS -->
+      <a href="settings.html" id="settingsNavLink">
+        <i class="fa fa-gear"></i>
+        Settings
+      </a>
+
+      <!-- BROWSE APP -->
+      <a href="index.html">
+        <i class="fa fa-globe"></i>
+        Browse App
+      </a>
+
+      <!-- LOGOUT -->
+      <a href="#" onclick="logout()">
+        <i class="fa fa-sign-out"></i>
+        Logout
+      </a>
+
+    </nav>
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar" id="dashboardSection">
+
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Revenue, bookings & analytics</p>
+      </div>
+
+      <div class="admin-avatar">A</div>
+
+    </header>
+
+
+    <!-- ANALYTICS -->
+    <section class="stats-wrapper">
+
+      <!-- TOP CARDS -->
+      <div class="stats-grid">
+
+        <div class="stat-card blue">
+          <div>
+            <h3>Total Services</h3>
+            <p id="serviceCount">0</p>
+          </div>
+
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+
+
+        <div class="stat-card green">
+          <div>
+            <h3>Total Bookings</h3>
+            <p id="bookingCount">0</p>
+          </div>
+
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+
+
+        <div class="stat-card purple">
+          <div>
+            <h3>Total Revenue</h3>
+            <p id="revenueTotal">R0.00</p>
+          </div>
+
+          <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+
+
+        <div class="stat-card orange">
+          <div>
+            <h3>Completed</h3>
+            <p id="completedCount">0</p>
+          </div>
+
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+
+        <div class="stat-card red">
+          <div>
+            <h3>Declined</h3>
+            <p id="declinedCount">0</p>
+          </div>
+
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+
+
+        <div class="stat-card yellow">
+          <div>
+            <h3>Pending</h3>
+            <p id="pendingCount">0</p>
+          </div>
+
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+
+
+        <div class="stat-card cyan">
+          <div>
+            <h3>Average Booking</h3>
+            <p id="averageBooking">R0.00</p>
+          </div>
+
+          <i class="fa-solid fa-chart-column"></i>
+        </div>
+
+      </div>
+
+
+      <!-- FIRST ROW -->
+      <div class="analytics-grid">
+
+        <div class="chart-card">
+
+          <h3>Weekly Revenue</h3>
+
+          <canvas id="weeklyRevenueChart"></canvas>
+
+        </div>
+
+
+        <div class="chart-card">
+
+          <h3>Weekly Bookings</h3>
+
+          <canvas id="weeklyBookingsChart"></canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- SECOND ROW -->
+      <div class="analytics-grid">
+
+        <div class="chart-card small-chart">
+
+          <h3>Payment Methods</h3>
+
+          <canvas id="paymentChart"></canvas>
+
+        </div>
+
+
+        <div class="chart-card">
+
+          <h3>Top 5 Services</h3>
+
+          <canvas id="topServicesChart"></canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- MONTHLY -->
+      <div class="chart-card">
+
+        <h3>Monthly Revenue</h3>
+
+        <canvas id="monthlyRevenueChart"></canvas>
+
+      </div>
+
+
+      <!-- RECENT BOOKINGS -->
+      <div class="chart-card">
+
+        <h3>Recent Bookings</h3>
+
+        <table class="analytics-table">
+
+          <thead>
+
+            <tr>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Date</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="recentBookingsTable"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+</script>
+
+<script src="./js/admin.js"></script>
+
+</body>
+</html>
