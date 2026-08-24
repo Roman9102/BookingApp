@@ -1,9 +1,9 @@
-const API = "http://localhost:5000/api";
+const API = "http://quickconnect-api-m617.onrender.com/api";
 
 /* ========================
    SOCKET.IO
 ======================== */
-const socket = io("http://localhost:5000");
+const socket = io("http://quickconnect-api-m617.onrender.com");
 
 socket.on("bookingUpdate", () => {
   loadAnalytics();

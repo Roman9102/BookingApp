@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "http://quickconnect-api-m617.onrender.com/api";
 
 /* =====================================================
    CATEGORY IMAGES
@@ -97,7 +97,7 @@ async function loadServices() {
         } else {
 
           image =
-            `http://localhost:5000${serviceImage}`;
+            `http://quickconnect-api-m617.onrender.com${serviceImage}`;
 
         }
 

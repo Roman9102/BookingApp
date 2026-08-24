@@ -12,8 +12,8 @@
    - Provider services remain separated
 ========================================================= */
 
-const API = "http://localhost:5000/api";
-const SERVER = "http://localhost:5000";
+const API = "http://quickconnect-api-m617.onrender.com/api";
+const SERVER = "http://quickconnect-api-m617.onrender.com";
 
 console.log("🔥 MY-SERVICES.JS FILE LOADED");
 

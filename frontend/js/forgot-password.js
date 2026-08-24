@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "http://quickconnect-api-m617.onrender.com/api";
 
 /* ========================
    SEND OTP
