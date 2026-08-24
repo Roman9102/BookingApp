@@ -3341,3 +3341,55 @@ textarea {
         grid-template-columns: 1fr;
     }
 }
+/* =========================================================
+   DESKTOP LAYOUT FIX
+   Keeps the sidebar separate from the main content
+========================================================= */
+
+.dashboard {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.sidebar {
+    flex: 0 0 255px;
+    width: 255px;
+}
+
+.main-content {
+    flex: 1 1 auto;
+    width: calc(100% - 255px);
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+/* Business idea content must stay inside main area */
+.main-content > * {
+    max-width: 100%;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .dashboard {
+        display: block;
+        width: 100%;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+        height: auto;
+    }
+
+    .main-content {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+}
