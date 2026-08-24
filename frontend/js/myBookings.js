@@ -11,7 +11,7 @@ const token =
 async function loadMyBookings() {
   try {
     const res = await fetch(
-      "http://quickconnect-api-m617.onrender.com/api/bookings/my",
+      "https://quickconnect-api-m617.onrender.com/api/bookings/my",
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -452,7 +452,7 @@ async function respondToPostponedBooking(
     }
 
     const res = await fetch(
-      `http://quickconnect-api-m617.onrender.com/api/bookings/${bookingId}/postponed-response`,
+      `https://quickconnect-api-m617.onrender.com/api/bookings/${bookingId}/postponed-response`,
       {
         method: "PUT",
 

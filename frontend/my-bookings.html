@@ -210,7 +210,7 @@ async function loadBookings(){
     }
 
     const res = await fetch(
-      "http://quickconnect-api-m617.onrender.com/api/bookings/my",
+      "https://quickconnect-api-m617.onrender.com/api/bookings/my",
       {
         headers:{
           "Authorization":
@@ -756,7 +756,7 @@ async function respondToPostponedBooking(
       localStorage.getItem("token");
 
     const res = await fetch(
-      `http://quickconnect-api-m617.onrender.com/api/bookings/${id}/postponed-response`,
+      `https://quickconnect-api-m617.onrender.com/api/bookings/${id}/postponed-response`,
       {
         method:"PUT",
 
@@ -844,7 +844,7 @@ async function deleteBooking(id){
       localStorage.getItem("token");
 
     const res = await fetch(
-      `http://quickconnect-api-m617.onrender.com/api/bookings/${id}`,
+      `https://quickconnect-api-m617.onrender.com/api/bookings/${id}`,
       {
         method:"DELETE",
 

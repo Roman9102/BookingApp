@@ -134,7 +134,7 @@ function galleryImage(index) {
     if (img.startsWith("http"))
         return img;
 
-    return "http://quickconnect-api-m617.onrender.com" + img;
+    return "https://quickconnect-api-m617.onrender.com" + img;
 
 }
 
@@ -480,7 +480,7 @@ ${
 src="${
 img.startsWith("http")
 ? img
-: "http://quickconnect-api-m617.onrender.com"+img
+: "https://quickconnect-api-m617.onrender.com"+img
 }"
 
 onclick="openGallery('${s._id}')"

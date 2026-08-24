@@ -39,7 +39,7 @@ async function populateServices() {
   try {
 
     const res = await fetch(
-      "http://quickconnect-api-m617.onrender.com/api/services"
+      "https://quickconnect-api-m617.onrender.com/api/services"
     );
 
     services = await res.json();
@@ -369,7 +369,7 @@ if (bookingForm) {
       );
 
       const res = await fetch(
-        "http://quickconnect-api-m617.onrender.com/api/bookings",
+        "https://quickconnect-api-m617.onrender.com/api/bookings",
         {
           method: "POST",
 
@@ -438,7 +438,7 @@ if (bookingForm) {
 
         const paymentRes =
           await fetch(
-            "http://quickconnect-api-m617.onrender.com/api/payments/initialize",
+            "https://quickconnect-api-m617.onrender.com/api/payments/initialize",
             {
               method: "POST",
 

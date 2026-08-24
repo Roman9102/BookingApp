@@ -3,7 +3,7 @@
    provider-bookings.js
 ========================================================= */
 
-const API = "http://quickconnect-api-m617.onrender.com/api";
+const API = "https://quickconnect-api-m617.onrender.com/api";
 
 let allBookings = [];
 let currentFilter = "all";

@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const res =
       await fetch(
-        `http://quickconnect-api-m617.onrender.com/api/subscriptions/verify/${encodeURIComponent(reference)}`,
+        `https://quickconnect-api-m617.onrender.com/api/subscriptions/verify/${encodeURIComponent(reference)}`,
         {
           method: "GET",
 

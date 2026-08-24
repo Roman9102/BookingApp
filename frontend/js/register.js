@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const res =
           await fetch(
-            "http://quickconnect-api-m617.onrender.com/api/auth/register",
+            "https://quickconnect-api-m617.onrender.com/api/auth/register",
             {
               method: "POST",
 
@@ -453,7 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
               const subscriptionRes =
                 await fetch(
-                  "http://quickconnect-api-m617.onrender.com/api/subscriptions/initialize",
+                  "https://quickconnect-api-m617.onrender.com/api/subscriptions/initialize",
                   {
                     method: "POST",
 
