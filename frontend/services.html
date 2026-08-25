@@ -13,6 +13,9 @@
 
 <div class="dashboard">
 
+<!-- =========================
+     SIDEBAR
+========================= -->
 <aside class="sidebar">
 
   <div class="logo">
@@ -56,349 +59,389 @@
 
 </aside>
 
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
 <main class="main-content">
 
-<header class="topbar">
-
-  <div>
-    <h1 id="pageTitle">
-      <i class="fa-solid fa-briefcase"></i>
-      Quick Connect Services
-    </h1>
-
-    <p id="pageSubtitle">
-      Choose a category to explore professional services.
-    </p>
-  </div>
-
-</header>
-
-<div id="customerServices">
-
-<section class="glass-card">
-
-  <div class="search-box">
-
-    <i class="fa-solid fa-magnifying-glass"></i>
-
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="Search services in this category..."
-      autocomplete="off">
-
-  </div>
-
-</section>
-
-<section id="categoryView" class="services-grid"></section>
-
-<section
-  id="servicesView"
-  class="services-grid"
-  style="display:none;">
-</section>
-
-</div>
-
-<div id="providerServices" style="display:none;">
-
-<section class="glass-card">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
-  ">
+  <header class="topbar">
 
     <div>
-      <h2 style="margin-bottom:6px;">
+      <h1 id="pageTitle">
         <i class="fa-solid fa-briefcase"></i>
-        My Services
-      </h2>
+        Quick Connect Services
+      </h1>
 
-      <p>
-        Add, edit and manage the services you provide.
+      <p id="pageSubtitle">
+        Choose a category to explore professional services.
       </p>
     </div>
 
-    <button
-      type="button"
-      class="btn-primary"
-      onclick="openAddServiceForm()">
+  </header>
 
-      <i class="fa-solid fa-plus"></i>
-      Add Service
 
-    </button>
+  <!-- =====================================================
+       CUSTOMER SERVICES
+  ====================================================== -->
+
+  <div id="customerServices">
+
+    <section class="glass-card">
+
+      <div class="search-box">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search services in this category..."
+          autocomplete="off">
+
+      </div>
+
+    </section>
+
+    <section id="categoryView" class="services-grid"></section>
+
+    <section
+      id="servicesView"
+      class="services-grid"
+      style="display:none;">
+    </section>
 
   </div>
 
-</section>
 
-<section
-  id="serviceFormCard"
-  class="glass-card"
-  style="display:none;">
+  <!-- =====================================================
+       PROVIDER SERVICE MANAGEMENT
+  ====================================================== -->
 
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-  ">
+  <div id="providerServices" style="display:none;">
 
-    <h2 id="serviceFormTitle">
-      Add Service
-    </h2>
+    <section class="glass-card">
 
-    <button
-      type="button"
-      onclick="closeServiceForm()"
-      style="
-        background:none;
-        border:none;
-        color:inherit;
-        font-size:22px;
-        cursor:pointer;
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:20px;
+        flex-wrap:wrap;
       ">
 
-      <i class="fa-solid fa-xmark"></i>
+        <div>
+          <h2 style="margin-bottom:6px;">
+            <i class="fa-solid fa-briefcase"></i>
+            My Services
+          </h2>
 
-    </button>
+          <p>
+            Add, edit and manage the services you provide.
+          </p>
+        </div>
 
-  </div>
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="openAddServiceForm()">
 
-  <form id="serviceForm" enctype="multipart/form-data">
+          <i class="fa-solid fa-plus"></i>
+          Add Service
 
-    <input type="hidden" id="serviceId">
-
-    <div style="margin-bottom:16px;">
-
-      <label for="serviceName">
-        Service Name
-      </label>
-
-      <input
-        id="serviceName"
-        name="name"
-        type="text"
-        required
-        placeholder="Enter service name"
-        style="width:100%;">
-
-    </div>
-
-    <div style="margin-bottom:16px;">
-
-      <label for="serviceDescription">
-        Description
-      </label>
-
-      <textarea
-        id="serviceDescription"
-        name="description"
-        rows="4"
-        required
-        placeholder="Describe your service"
-        style="width:100%;"></textarea>
-
-    </div>
-
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin-bottom:16px;
-    ">
-
-      <div>
-
-        <label for="servicePrice">
-          Price
-        </label>
-
-        <input
-          id="servicePrice"
-          name="price"
-          type="number"
-          min="0"
-          step="0.01"
-          required
-          placeholder="0.00"
-          style="width:100%;">
+        </button>
 
       </div>
 
-      <div>
+    </section>
 
-        <label for="serviceCategory">
-          Category
-        </label>
 
-        <input
-          id="serviceCategory"
-          name="category"
-          type="text"
-          placeholder="e.g. Hair Services"
-          style="width:100%;">
+    <!-- ADD / EDIT FORM -->
+    <section
+      id="serviceFormCard"
+      class="glass-card"
+      style="display:none;">
 
-      </div>
-
-    </div>
-
-    <div style="margin-bottom:16px;">
-
-      <label for="storeLocation">
-        Store Location
-      </label>
-
-      <input
-        id="storeLocation"
-        name="storeLocation"
-        type="text"
-        placeholder="Enter store location"
-        style="width:100%;">
-
-    </div>
-
-    <div style="
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:16px;
-      margin-bottom:16px;
-    ">
-
-      <div>
-
-        <label for="storeMode">
-          Store Service
-        </label>
-
-        <select
-          id="storeMode"
-          name="storeMode"
-          style="width:100%;">
-
-          <option value="">Select</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-
-        </select>
-
-      </div>
-
-      <div>
-
-        <label for="mobileMode">
-          Mobile Service
-        </label>
-
-        <select
-          id="mobileMode"
-          name="mobileMode"
-          style="width:100%;">
-
-          <option value="">Select</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-
-        </select>
-
-      </div>
-
-    </div>
-
-    <div style="margin-bottom:20px;">
-
-      <label for="serviceImages">
-        Service Pictures
-      </label>
-
-      <input
-        id="serviceImages"
-        name="images"
-        type="file"
-        accept="image/*"
-        multiple
-        style="width:100%;">
-
-      <small>
-        You can select multiple pictures.
-      </small>
-
-    </div>
-
-    <div
-      id="existingImages"
-      style="
+      <div style="
         display:flex;
-        flex-wrap:wrap;
-        gap:10px;
+        justify-content:space-between;
+        align-items:center;
         margin-bottom:20px;
       ">
-    </div>
 
-    <div style="
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    ">
+        <h2 id="serviceFormTitle">
+          Add Service
+        </h2>
 
-      <button
-        type="submit"
-        class="btn-primary">
+        <button
+          type="button"
+          onclick="closeServiceForm()"
+          style="
+            background:none;
+            border:none;
+            color:inherit;
+            font-size:22px;
+            cursor:pointer;
+          ">
 
-        <i class="fa-solid fa-floppy-disk"></i>
+          <i class="fa-solid fa-xmark"></i>
 
-        <span id="saveServiceText">
-          Save Service
-        </span>
+        </button>
 
-      </button>
+      </div>
 
-      <button
-        type="button"
-        onclick="closeServiceForm()"
-        style="
-          padding:10px 18px;
-          border:none;
-          border-radius:8px;
-          cursor:pointer;
+
+      <form id="serviceForm" enctype="multipart/form-data">
+
+        <input
+          type="hidden"
+          id="serviceId">
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="serviceName">
+            Service Name
+          </label>
+
+          <input
+            id="serviceName"
+            name="name"
+            type="text"
+            required
+            placeholder="Enter service name"
+            style="width:100%;">
+
+        </div>
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="serviceDescription">
+            Description
+          </label>
+
+          <textarea
+            id="serviceDescription"
+            name="description"
+            rows="4"
+            required
+            placeholder="Describe your service"
+            style="width:100%;"></textarea>
+
+        </div>
+
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+          gap:16px;
+          margin-bottom:16px;
         ">
 
-        Cancel
+          <div>
 
-      </button>
+            <label for="servicePrice">
+              Price
+            </label>
 
-    </div>
+            <input
+              id="servicePrice"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              placeholder="0.00"
+              style="width:100%;">
 
-  </form>
+          </div>
 
-</section>
 
-<section
-  id="providerServicesGrid"
-  class="services-grid">
-</section>
+          <div>
 
-</div>
+            <label for="serviceCategory">
+              Category
+            </label>
+
+            <input
+              id="serviceCategory"
+              name="category"
+              type="text"
+              placeholder="e.g. Hair Services"
+              style="width:100%;">
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-bottom:16px;">
+
+          <label for="storeLocation">
+            Store Location
+          </label>
+
+          <input
+            id="storeLocation"
+            name="storeLocation"
+            type="text"
+            placeholder="Enter store location"
+            style="width:100%;">
+
+        </div>
+
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+          gap:16px;
+          margin-bottom:16px;
+        ">
+
+          <div>
+
+            <label for="storeMode">
+              Store Service
+            </label>
+
+            <select
+              id="storeMode"
+              name="storeMode"
+              style="width:100%;">
+
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label for="mobileMode">
+              Mobile Service
+            </label>
+
+            <select
+              id="mobileMode"
+              name="mobileMode"
+              style="width:100%;">
+
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-bottom:20px;">
+
+          <label for="serviceImages">
+            Service Pictures
+          </label>
+
+          <input
+            id="serviceImages"
+            name="images"
+            type="file"
+            accept="image/*"
+            multiple
+            style="width:100%;">
+
+          <small>
+            You can select multiple pictures.
+          </small>
+
+        </div>
+
+
+        <div
+          id="existingImages"
+          style="
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-bottom:20px;
+          ">
+        </div>
+
+
+        <div style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+        ">
+
+          <button
+            type="submit"
+            class="btn-primary">
+
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            <span id="saveServiceText">
+              Save Service
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            onclick="closeServiceForm()"
+            style="
+              padding:10px 18px;
+              border:none;
+              border-radius:8px;
+              cursor:pointer;
+            ">
+
+            Cancel
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+
+    <!-- PROVIDER SERVICES -->
+    <section
+      id="providerServicesGrid"
+      class="services-grid">
+    </section>
+
+  </div>
 
 </main>
 
 </div>
 
+
 <footer class="idea-footer">
   &copy; 2026 Quick Connect
 </footer>
+
 
 <script src="js/auth.js"></script>
 
 <script>
 
+/* =====================================================
+   GLOBAL
+===================================================== */
+
 const API = "https://quickconnect-api-m617.onrender.com/api";
+
+const API_ROOT = API.replace(/\/api\/?$/, "");
 
 const isAdminServices =
   new URLSearchParams(window.location.search).get("admin") === "true";
@@ -413,27 +456,52 @@ let zoomed = false;
 let touchStartX = 0;
 let touchEndX = 0;
 
+
+/* =====================================================
+   USER
+===================================================== */
+
 let currentUser = null;
 
 try {
-  currentUser = JSON.parse(localStorage.getItem("user"));
+
+  currentUser =
+    JSON.parse(localStorage.getItem("user"));
+
 } catch (error) {
+
   currentUser = null;
+
 }
 
+
+/* =====================================================
+   AUTH HEADER
+===================================================== */
+
 function getToken() {
+
   return localStorage.getItem("token");
+
 }
+
 
 function authHeaders() {
 
   const token = getToken();
 
   return token
-    ? { Authorization: `Bearer ${token}` }
+    ? {
+        Authorization: `Bearer ${token}`
+      }
     : {};
 
 }
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 function logout() {
 
@@ -447,119 +515,300 @@ function logout() {
 
 /* =====================================================
    IMAGE HELPERS
-   FIXED:
-   - Local category images now resolve relative to this page.
-   - Uploaded backend images resolve from the Render API.
-   - Absolute URLs remain unchanged.
+   IMPORTANT:
+   Provider images must ALWAYS come from the service
+   itself. Category images are ONLY fallbacks.
 ===================================================== */
-
-const BACKEND_URL =
-  API.replace("/api", "");
-
-const DEFAULT_CATEGORY_IMAGE =
-  "categories/Other.jpg";
-
-
-function getImageUrl(img) {
-
-  if (!img) {
-    return DEFAULT_CATEGORY_IMAGE;
-  }
-
-  const value = String(img).trim();
-
-  if (!value) {
-    return DEFAULT_CATEGORY_IMAGE;
-  }
-
-  if (
-    value.startsWith("http://") ||
-    value.startsWith("https://") ||
-    value.startsWith("data:") ||
-    value.startsWith("blob:")
-  ) {
-    return value;
-  }
-
-  /*
-    Local category images such as:
-    categories/Hair services.jpg
-
-    must NOT be sent to the backend.
-  */
-
-  if (
-    value.startsWith("categories/") ||
-    value.startsWith("./categories/") ||
-    value.startsWith("/categories/")
-  ) {
-
-    return value
-      .replace(/^\.?\//, "")
-      .replace(/^\/+/, "");
-
-  }
-
-  /*
-    Backend-uploaded images.
-  */
-
-  if (value.startsWith("/")) {
-    return `${BACKEND_URL}${value}`;
-  }
-
-  return `${BACKEND_URL}/${value}`;
-}
-
 
 function getServiceImages(service) {
 
-  if (
-    Array.isArray(service.images) &&
-    service.images.length
+  if (!service || typeof service !== "object") {
+    return [];
+  }
+
+
+  let rawImages = null;
+
+
+  /*
+    Normal backend format:
+    service.images = [...]
+  */
+  if (Array.isArray(service.images)) {
+
+    rawImages = service.images;
+
+  }
+
+
+  /*
+    Some backend versions may return:
+    service.images = { ... }
+  */
+  else if (
+    service.images &&
+    typeof service.images === "object"
   ) {
 
-    return service.images;
+    if (Array.isArray(service.images.urls)) {
+
+      rawImages = service.images.urls;
+
+    } else if (Array.isArray(service.images.files)) {
+
+      rawImages = service.images.files;
+
+    } else if (Array.isArray(service.images.images)) {
+
+      rawImages = service.images.images;
+
+    }
 
   }
 
-  if (service.image) {
 
-    return [service.image];
+  /*
+    Support common alternative backend fields
+    without replacing the real provider pictures.
+  */
+  if (!rawImages) {
+
+    if (Array.isArray(service.imageUrls)) {
+
+      rawImages = service.imageUrls;
+
+    }
+
+    else if (Array.isArray(service.photos)) {
+
+      rawImages = service.photos;
+
+    }
+
+    else if (Array.isArray(service.pictures)) {
+
+      rawImages = service.pictures;
+
+    }
+
+    else if (Array.isArray(service.files)) {
+
+      rawImages = service.files;
+
+    }
 
   }
 
-  return [];
+
+  /*
+    Single-image fields.
+  */
+  if (!rawImages) {
+
+    const singleImage =
+      service.image ||
+      service.imageUrl ||
+      service.photo ||
+      service.picture ||
+      service.imagePath ||
+      service.photoUrl;
+
+    if (singleImage) {
+
+      rawImages = [singleImage];
+
+    }
+
+  }
+
+
+  if (!Array.isArray(rawImages)) {
+
+    return [];
+
+  }
+
+
+  /*
+    Normalize every image.
+
+    Backend may return:
+      "/uploads/a.jpg"
+      "uploads/a.jpg"
+      "a.jpg"
+      "https://..."
+      { url: "..." }
+      { path: "..." }
+      { filename: "..." }
+      { secure_url: "..." }
+
+    This prevents [object Object] and incorrect
+    fallback images.
+  */
+  return rawImages
+    .map(image => {
+
+      if (!image) {
+        return null;
+      }
+
+
+      if (typeof image === "string") {
+
+        return image.trim();
+
+      }
+
+
+      if (typeof image === "object") {
+
+        return (
+          image.url ||
+          image.secure_url ||
+          image.path ||
+          image.src ||
+          image.filePath ||
+          image.filename ||
+          image.file ||
+          null
+        );
+
+      }
+
+
+      return null;
+
+    })
+    .filter(Boolean)
+    .map(image => String(image).trim())
+    .filter(Boolean);
 
 }
 
+
+/* =====================================================
+   CONVERT PROVIDER IMAGE TO REAL URL
+===================================================== */
+
+function getImageUrl(image) {
+
+  if (!image) {
+
+    return null;
+
+  }
+
+
+  let value = String(image).trim();
+
+
+  if (!value) {
+
+    return null;
+
+  }
+
+
+  /*
+    Full external URL.
+  */
+  if (
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("//")
+  ) {
+
+    return value.startsWith("//")
+      ? `${window.location.protocol}${value}`
+      : value;
+
+  }
+
+
+  /*
+    Remove accidental API prefix if backend
+    returned something like /api/uploads/...
+  */
+  value = value.replace(/^\/api\/?/i, "");
+
+
+  /*
+    Remove localhost backend URL if an old image
+    was stored with it.
+  */
+  value = value.replace(
+    /^https?:\/\/localhost:\d+\/?/i,
+    ""
+  );
+
+
+  /*
+    Make sure the path starts with /.
+  */
+  if (!value.startsWith("/")) {
+
+    value = `/${value}`;
+
+  }
+
+
+  return `${API_ROOT}${value}`;
+
+}
+
+
+/* =====================================================
+   SERVICE IMAGE
+===================================================== */
 
 function getServiceImage(service, index = 0) {
 
   const images =
     getServiceImages(service);
 
+
   if (!images.length) {
-    return DEFAULT_CATEGORY_IMAGE;
+
+    return "categories/Other.jpg";
+
   }
 
-  return getImageUrl(
-    images[index] || images[0]
-  );
+
+  const image =
+    images[index] || images[0];
+
+
+  const url =
+    getImageUrl(image);
+
+
+  return url || "categories/Other.jpg";
 
 }
 
 
+/* =====================================================
+   INITIALIZE PAGE
+===================================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
 
   if (isAdminServices) {
+
     setupProviderServices();
+
   } else {
+
     setupCustomerServices();
+
   }
 
 });
 
+
+/* =====================================================
+   CUSTOMER SERVICES
+===================================================== */
 
 function setupCustomerServices() {
 
@@ -572,7 +821,9 @@ function setupCustomerServices() {
   ).style.display = "block";
 
   if (typeof renderNavbar === "function") {
+
     renderNavbar();
+
   }
 
   initCustomerServices();
@@ -628,6 +879,10 @@ const categoryImages = {
 };
 
 
+/* =====================================================
+   CUSTOMER SERVICES LOAD
+===================================================== */
+
 async function initCustomerServices() {
 
   try {
@@ -636,11 +891,34 @@ async function initCustomerServices() {
       await fetch(`${API}/services`);
 
     if (!res.ok) {
-      throw new Error("Failed to load services");
+
+      throw new Error(
+        "Failed to load services"
+      );
+
     }
 
-    allServices =
+    const data =
       await res.json();
+
+
+    allServices =
+      Array.isArray(data)
+        ? data
+        : data.services || [];
+
+
+    /*
+      Normalize images immediately after loading.
+      We do NOT replace them with category pictures.
+    */
+    allServices.forEach(service => {
+
+      service.__normalizedImages =
+        getServiceImages(service);
+
+    });
+
 
     renderCategories();
 
@@ -671,15 +949,23 @@ async function initCustomerServices() {
 }
 
 
+/* =====================================================
+   RENDER CATEGORIES
+===================================================== */
+
 function renderCategories() {
 
   const container =
-    document.getElementById("categoryView");
+    document.getElementById(
+      "categoryView"
+    );
 
   container.innerHTML = "";
 
+
   const categories =
     Object.keys(categoryImages);
+
 
   categories.forEach(cat => {
 
@@ -689,26 +975,28 @@ function renderCategories() {
     card.className =
       "service-card";
 
+
     const img =
-      getImageUrl(categoryImages[cat]);
+      categoryImages[cat];
+
 
     card.innerHTML = `
 
       <img
         src="${img}"
         alt="${cat}"
-        onerror="
-          this.onerror=null;
-          this.src='${DEFAULT_CATEGORY_IMAGE}';
-        ">
+        onerror="this.src='categories/Other.jpg';">
+
 
       <h3>
         ${cat}
       </h3>
 
+
       <p>
         Explore all ${cat} services
       </p>
+
 
       <button
         onclick="openCategory('${cat.replace(/'/g, "\\'")}')">
@@ -719,12 +1007,17 @@ function renderCategories() {
 
     `;
 
+
     container.appendChild(card);
 
   });
 
 }
 
+
+/* =====================================================
+   OPEN CATEGORY
+===================================================== */
 
 function openCategory(category) {
 
@@ -739,20 +1032,27 @@ function openCategory(category) {
     "servicesView"
   ).style.display = "grid";
 
+
   document.querySelector(
     ".topbar h1"
   ).innerHTML =
     `<i class="fa-solid fa-folder-open"></i> ${category}`;
+
 
   document.querySelector(
     ".topbar p"
   ).textContent =
     "Browse available service providers";
 
+
   renderServices(category);
 
 }
 
+
+/* =====================================================
+   BACK BUTTON
+===================================================== */
 
 function createBackButton() {
 
@@ -761,21 +1061,39 @@ function createBackButton() {
       "#customerServices .glass-card"
     );
 
+
   if (
-    document.getElementById("backBtn")
+    document.getElementById(
+      "backBtn"
+    )
   ) {
+
     return;
+
   }
+
 
   const btn =
     document.createElement("button");
 
-  btn.id = "backBtn";
-  btn.className = "btn-primary";
 
-  btn.style.marginTop = "15px";
-  btn.style.marginBottom = "15px";
-  btn.style.width = "fit-content";
+  btn.id =
+    "backBtn";
+
+
+  btn.className =
+    "btn-primary";
+
+
+  btn.style.marginTop =
+    "15px";
+
+  btn.style.marginBottom =
+    "15px";
+
+  btn.style.width =
+    "fit-content";
+
 
   btn.innerHTML = `
 
@@ -784,40 +1102,117 @@ function createBackButton() {
 
   `;
 
+
   btn.onclick = () => {
 
     document.getElementById(
       "servicesView"
-    ).style.display = "none";
+    ).style.display =
+      "none";
+
 
     document.getElementById(
       "categoryView"
-    ).style.display = "grid";
+    ).style.display =
+      "grid";
 
-    currentCategory = "";
+
+    currentCategory =
+      "";
+
 
     document.getElementById(
       "searchInput"
-    ).value = "";
+    ).value =
+      "";
+
 
     document.querySelector(
       ".topbar h1"
     ).innerHTML =
       `<i class="fa-solid fa-briefcase"></i> Quick Connect Services`;
 
+
     document.querySelector(
       ".topbar p"
     ).textContent =
       "Choose a category to explore professional services.";
 
+
     btn.remove();
 
   };
+
 
   searchSection.insertAdjacentElement(
     "afterend",
     btn
   );
+
+}
+
+
+/* =====================================================
+   PROVIDER INFORMATION
+===================================================== */
+
+function getProviderData(service) {
+
+  const provider =
+    service?.provider ||
+    service?.providerId ||
+    service?.user ||
+    service?.createdBy ||
+    null;
+
+
+  const hasProviderObject =
+    provider !== null &&
+    typeof provider === "object";
+
+
+  const providerName =
+    service?.providerName ||
+    (
+      hasProviderObject
+        ? (
+            provider.name ||
+            provider.fullName ||
+            provider.businessName ||
+            provider.username
+          )
+        : null
+    ) ||
+    "Provider not specified";
+
+
+  const providerEmail =
+    service?.providerEmail ||
+    (
+      hasProviderObject
+        ? provider.email
+        : null
+    );
+
+
+  const providerPhone =
+    service?.providerPhone ||
+    (
+      hasProviderObject
+        ? (
+            provider.phone ||
+            provider.phoneNumber ||
+            provider.mobile
+          )
+        : null
+    );
+
+
+  return {
+    providerName,
+    providerEmail,
+    providerPhone
+  };
 
 }
 
@@ -834,56 +1229,28 @@ function createProviderCard(service) {
   card.className =
     "service-card";
 
+
+  /*
+    CRITICAL:
+    Images are taken ONLY from this service.
+    No category image is inserted here unless the
+    provider genuinely has no image.
+  */
   const images =
     getServiceImages(service);
+
 
   const mainImage =
     getServiceImage(service, 0);
 
-  const provider =
-    service.provider ||
-    service.providerId ||
-    service.user ||
-    service.createdBy ||
-    null;
 
-  const hasProviderObject =
-    provider !== null &&
-    typeof provider === "object";
+  const {
+    providerName,
+    providerEmail,
+    providerPhone
+  } =
+    getProviderData(service);
 
-  const providerName =
-    service.providerName ||
-    (
-      hasProviderObject
-        ? (
-          provider.name ||
-          provider.fullName ||
-          provider.businessName ||
-          provider.username
-        )
-        : null
-    ) ||
-    "Provider not specified";
-
-  const providerEmail =
-    service.providerEmail ||
-    (
-      hasProviderObject
-        ? provider.email
-        : null
-    );
-
-  const providerPhone =
-    service.providerPhone ||
-    (
-      hasProviderObject
-        ? (
-          provider.phone ||
-          provider.phoneNumber ||
-          provider.mobile
-        )
-        : null
-    );
 
   const location =
     service.storeLocation ||
@@ -892,19 +1259,31 @@ function createProviderCard(service) {
     service.city ||
     "Location not specified";
 
+
   const serviceMode = [];
+
 
   if (
     String(service.storeMode || "").toLowerCase() === "yes"
   ) {
+
     serviceMode.push("Store");
+
   }
+
 
   if (
     String(service.mobileMode || "").toLowerCase() === "yes"
   ) {
+
     serviceMode.push("Mobile");
+
   }
+
+
+  const serviceId =
+    String(service._id || "");
+
 
   card.innerHTML = `
 
@@ -918,7 +1297,7 @@ function createProviderCard(service) {
         border-radius:14px;
         cursor:pointer;
       "
-      onclick="openGallery('${service._id}')">
+      onclick="openGallery('${serviceId}')">
 
       <img
         src="${mainImage}"
@@ -931,7 +1310,7 @@ function createProviderCard(service) {
         "
         onerror="
           this.onerror=null;
-          this.src='${DEFAULT_CATEGORY_IMAGE}';
+          this.src='categories/Other.jpg';
         ">
 
       ${
@@ -955,9 +1334,11 @@ function createProviderCard(service) {
 
     </div>
 
+
     ${
       images.length
       ? `
+
         <div
           class="thumb-strip"
           style="
@@ -968,13 +1349,13 @@ function createProviderCard(service) {
             padding:2px 0 5px;
           ">
 
-          ${images.slice(0,5).map(
-            (img,index) => `
+          ${images.slice(0, 5).map(
+            (img, index) => `
 
               <img
-                src="${getServiceImage(service,index)}"
+                src="${getImageUrl(img)}"
                 alt="Preview ${index + 1}"
-                onclick="openGallery('${service._id}')"
+                onclick="openGallery('${serviceId}')"
                 style="
                   width:58px;
                   height:58px;
@@ -986,34 +1367,40 @@ function createProviderCard(service) {
                 "
                 onerror="
                   this.onerror=null;
-                  this.src='${DEFAULT_CATEGORY_IMAGE}';
+                  this.src='categories/Other.jpg';
                 ">
 
             `
           ).join("")}
 
         </div>
+
       `
       : ""
     }
+
 
     <h3>
       ${service.name || "Unnamed Service"}
     </h3>
 
+
     <p>
       ${service.description || "No description available."}
     </p>
+
 
     <p>
       <strong>Price:</strong>
       R${Number(service.price || 0).toFixed(2)}
     </p>
 
+
     <p>
       <strong>Category:</strong>
       ${service.category || "Other"}
     </p>
+
 
     <div style="
       margin-top:14px;
@@ -1023,51 +1410,75 @@ function createProviderCard(service) {
     ">
 
       <p style="margin:0 0 7px;">
+
         <strong>
+
           <i class="fa-solid fa-user"></i>
+
           Provider
+
         </strong>
+
       </p>
+
 
       <p style="margin:4px 0;">
         ${providerName}
       </p>
 
+
       <p style="margin:4px 0;">
+
         <i class="fa-solid fa-location-dot"></i>
+
         <strong>Area:</strong>
+
         ${location}
+
       </p>
+
 
       ${
         providerPhone
         ? `
           <p style="margin:4px 0;">
+
             <i class="fa-solid fa-phone"></i>
+
             ${providerPhone}
+
           </p>
         `
         : ""
       }
+
 
       ${
         providerEmail
         ? `
           <p style="margin:4px 0;">
+
             <i class="fa-solid fa-envelope"></i>
+
             ${providerEmail}
+
           </p>
         `
         : ""
       }
 
+
       ${
         serviceMode.length
         ? `
           <p style="margin:4px 0;">
+
             <i class="fa-solid fa-location-crosshairs"></i>
+
             <strong>Service:</strong>
+
             ${serviceMode.join(" & ")}
+
           </p>
         `
         : ""
@@ -1075,36 +1486,52 @@ function createProviderCard(service) {
 
     </div>
 
+
     <button
-      onclick="location.href='booking.html?service=${service._id}'">
+      onclick="location.href='booking.html?service=${serviceId}'">
 
       <i class="fa-solid fa-calendar-check"></i>
+
       Book Now
 
     </button>
 
   `;
 
+
   return card;
 
 }
 
 
+/* =====================================================
+   RENDER SERVICES
+===================================================== */
+
 function renderServices(category) {
 
   const container =
-    document.getElementById("servicesView");
+    document.getElementById(
+      "servicesView"
+    );
+
 
   container.innerHTML = "";
 
+
   const filtered =
     allServices.filter(
-      s =>
-        (s.category || "Other") ===
-        category
+      service =>
+        String(
+          service.category ||
+          "Other"
+        ).trim().toLowerCase() ===
+        String(category).trim().toLowerCase()
     );
 
+
   createBackButton();
+
 
   if (!filtered.length) {
 
@@ -1127,6 +1554,7 @@ function renderServices(category) {
     return;
 
   }
+
 
   filtered.forEach(service => {
 
@@ -1154,11 +1582,18 @@ document.getElementById(
         .trim()
         .toLowerCase();
 
+
     const categoryView =
-      document.getElementById("categoryView");
+      document.getElementById(
+        "categoryView"
+      );
+
 
     const servicesView =
-      document.getElementById("servicesView");
+      document.getElementById(
+        "servicesView"
+      );
+
 
     if (!value.length) {
 
@@ -1168,43 +1603,54 @@ document.getElementById(
       categoryView.style.display =
         "grid";
 
+
       document.querySelector(
         ".topbar h1"
       ).innerHTML =
         `<i class="fa-solid fa-briefcase"></i> Quick Connect Services`;
+
 
       document.querySelector(
         ".topbar p"
       ).textContent =
         "Choose a category to explore professional services.";
 
+
       document.getElementById(
         "backBtn"
       )?.remove();
+
 
       return;
 
     }
 
+
     categoryView.style.display =
       "none";
 
+
     servicesView.style.display =
       "grid";
+
 
     document.querySelector(
       ".topbar h1"
     ).innerHTML =
       `<i class="fa-solid fa-magnifying-glass"></i> Search Results`;
 
+
     document.querySelector(
       ".topbar p"
     ).textContent =
       "Showing matching services.";
 
+
     createBackButton();
 
+
     servicesView.innerHTML = "";
+
 
     const searchTerms =
       value
@@ -1212,71 +1658,42 @@ document.getElementById(
         .map(term => term.trim())
         .filter(Boolean);
 
+
     const filtered =
       allServices.filter(service => {
 
-        const provider =
-          service?.provider ||
-          service?.providerId ||
-          service?.user ||
-          service?.createdBy ||
-          null;
+        const {
+          providerName,
+          providerEmail,
+          providerPhone
+        } =
+          getProviderData(service);
 
-        let providerName = "";
-        let providerEmail = "";
-        let providerPhone = "";
-
-        if (
-          provider &&
-          typeof provider === "object"
-        ) {
-
-          providerName =
-            provider.name ||
-            provider.fullName ||
-            provider.businessName ||
-            provider.username ||
-            "";
-
-          providerEmail =
-            provider.email || "";
-
-          providerPhone =
-            provider.phone ||
-            provider.phoneNumber ||
-            provider.mobile ||
-            "";
-
-        }
-
-        providerName =
-          service?.providerName ||
-          providerName ||
-          "";
-
-        providerEmail =
-          service?.providerEmail ||
-          providerEmail ||
-          "";
-
-        providerPhone =
-          service?.providerPhone ||
-          providerPhone ||
-          "";
 
         const searchableText = [
 
           service?.name,
+
           service?.description,
+
           service?.category,
+
           service?.storeLocation,
+
           service?.location,
+
           service?.area,
+
           service?.city,
+
           service?.storeMode,
+
           service?.mobileMode,
+
           providerName,
+
           providerEmail,
+
           providerPhone
 
         ]
@@ -1286,10 +1703,12 @@ document.getElementById(
               value !== undefined
           )
           .map(
-            value => String(value)
+            value =>
+              String(value)
           )
           .join(" ")
           .toLowerCase();
+
 
         return searchTerms.every(
           term =>
@@ -1297,6 +1716,7 @@ document.getElementById(
         );
 
       });
+
 
     if (!filtered.length) {
 
@@ -1313,8 +1733,10 @@ document.getElementById(
           </p>
 
           <p style="margin-top:8px;">
+
             Example:
             <strong>hairstylist, witbank</strong>
+
           </p>
 
         </div>
@@ -1324,6 +1746,7 @@ document.getElementById(
       return;
 
     }
+
 
     filtered.forEach(service => {
 
@@ -1345,38 +1768,56 @@ function setupProviderServices() {
 
   document.getElementById(
     "customerServices"
-  ).style.display = "none";
+  ).style.display =
+    "none";
+
 
   document.getElementById(
     "providerServices"
-  ).style.display = "block";
+  ).style.display =
+    "block";
+
 
   document.getElementById(
     "panelSubtitle"
   ).textContent =
     "Provider Dashboard";
 
+
   document.getElementById(
     "pageTitle"
   ).innerHTML =
     `<i class="fa-solid fa-briefcase"></i> My Services`;
+
 
   document.getElementById(
     "pageSubtitle"
   ).textContent =
     "Manage the services you provide.";
 
+
   const businessIdeasLink =
-    document.getElementById("businessIdeasLink");
+    document.getElementById(
+      "businessIdeasLink"
+    );
+
 
   if (businessIdeasLink) {
-    businessIdeasLink.style.display = "none";
+
+    businessIdeasLink.style.display =
+      "none";
+
   }
+
 
   loadProviderServices();
 
 }
 
+
+/* =====================================================
+   LOAD PROVIDER SERVICES
+===================================================== */
 
 async function loadProviderServices() {
 
@@ -1385,18 +1826,23 @@ async function loadProviderServices() {
       "providerServicesGrid"
     );
 
+
   container.innerHTML = `
 
     <div class="service-card">
 
       <p>
+
         <i class="fa-solid fa-spinner fa-spin"></i>
+
         Loading your services...
+
       </p>
 
     </div>
 
   `;
+
 
   try {
 
@@ -1410,24 +1856,51 @@ async function loadProviderServices() {
         }
       );
 
+
     if (!res.ok) {
+
       throw new Error(
         `Failed to load services (${res.status})`
       );
+
     }
+
 
     const data =
       await res.json();
+
 
     const services =
       Array.isArray(data)
         ? data
         : data.services || [];
 
+
+    /*
+      Keep provider images exactly as returned.
+    */
+    services.forEach(service => {
+
+      service.__normalizedImages =
+        getServiceImages(service);
+
+    });
+
+
+    /*
+      Save these services globally too.
+      This is important because provider gallery
+      needs the exact service object.
+    */
+    allServices =
+      services;
+
+
     const userId =
       currentUser?._id ||
       currentUser?.id ||
       currentUser?.userId;
+
 
     const myServices =
       services.filter(service => {
@@ -1439,25 +1912,35 @@ async function loadProviderServices() {
           service.userId ||
           service.createdBy;
 
+
         if (!owner) {
+
           return false;
+
         }
+
 
         const ownerId =
           typeof owner === "object"
             ? owner._id || owner.id
             : owner;
 
+
         return String(ownerId) ===
           String(userId);
 
       });
 
-    renderProviderServices(myServices);
+
+    renderProviderServices(
+      myServices
+    );
+
 
   } catch (error) {
 
     console.error(error);
+
 
     container.innerHTML = `
 
@@ -1471,9 +1954,11 @@ async function loadProviderServices() {
           ${error.message}
         </p>
 
-        <button onclick="loadProviderServices()">
+        <button
+          onclick="loadProviderServices()">
 
           <i class="fa-solid fa-rotate"></i>
+
           Try Again
 
         </button>
@@ -1487,6 +1972,10 @@ async function loadProviderServices() {
 }
 
 
+/* =====================================================
+   RENDER PROVIDER SERVICES
+===================================================== */
+
 function renderProviderServices(services) {
 
   const container =
@@ -1494,7 +1983,9 @@ function renderProviderServices(services) {
       "providerServicesGrid"
     );
 
+
   container.innerHTML = "";
+
 
   if (!services.length) {
 
@@ -1528,6 +2019,7 @@ function renderProviderServices(services) {
             onclick="openAddServiceForm()">
 
             <i class="fa-solid fa-plus"></i>
+
             Add Service
 
           </button>
@@ -1542,10 +2034,13 @@ function renderProviderServices(services) {
 
   }
 
+
   services.forEach(service => {
 
     container.appendChild(
-      createProviderManagementCard(service)
+      createProviderManagementCard(
+        service
+      )
     );
 
   });
@@ -1553,19 +2048,31 @@ function renderProviderServices(services) {
 }
 
 
+/* =====================================================
+   PROVIDER MANAGEMENT CARD
+===================================================== */
+
 function createProviderManagementCard(service) {
 
   const card =
     document.createElement("div");
 
+
   card.className =
     "service-card";
+
 
   const images =
     getServiceImages(service);
 
+
   const mainImage =
     getServiceImage(service, 0);
+
+
+  const serviceId =
+    String(service._id || "");
+
 
   card.innerHTML = `
 
@@ -1578,7 +2085,7 @@ function createProviderManagementCard(service) {
         border-radius:14px;
         cursor:pointer;
       "
-      onclick="openGallery('${service._id}')">
+      onclick="openGallery('${serviceId}')">
 
       <img
         src="${mainImage}"
@@ -1591,12 +2098,14 @@ function createProviderManagementCard(service) {
         "
         onerror="
           this.onerror=null;
-          this.src='${DEFAULT_CATEGORY_IMAGE}';
+          this.src='categories/Other.jpg';
         ">
+
 
       ${
         images.length
         ? `
+
           <div
             style="
               position:absolute;
@@ -1609,18 +2118,22 @@ function createProviderManagementCard(service) {
             ">
 
             <i class="fa-solid fa-images"></i>
+
             ${images.length}
 
           </div>
+
         `
         : ""
       }
 
     </div>
 
+
     ${
       images.length
       ? `
+
         <div
           style="
             display:flex;
@@ -1634,9 +2147,9 @@ function createProviderManagementCard(service) {
             (img,index) => `
 
               <img
-                src="${getServiceImage(service,index)}"
+                src="${getImageUrl(img)}"
                 alt="Thumbnail ${index + 1}"
-                onclick="openGallery('${service._id}')"
+                onclick="openGallery('${serviceId}')"
                 style="
                   width:58px;
                   height:58px;
@@ -1647,49 +2160,69 @@ function createProviderManagementCard(service) {
                 "
                 onerror="
                   this.onerror=null;
-                  this.src='${DEFAULT_CATEGORY_IMAGE}';
+                  this.src='categories/Other.jpg';
                 ">
 
             `
           ).join("")}
 
         </div>
+
       `
       : `
+
         <div style="
           margin-top:10px;
           padding:10px;
           text-align:center;
           border-radius:8px;
         ">
+
           No pictures added
+
         </div>
+
       `
     }
 
+
     <h3 style="margin-top:15px;">
+
       ${service.name || "Unnamed Service"}
+
     </h3>
 
-    <p>
-      ${service.description || "No description available."}
-    </p>
 
     <p>
-      <strong>Price:</strong>
-      R${Number(service.price || 0).toFixed(2)}
+
+      ${service.description || "No description available."}
+
     </p>
+
+
+    <p>
+
+      <strong>Price:</strong>
+
+      R${Number(service.price || 0).toFixed(2)}
+
+    </p>
+
 
     ${
       service.category
       ? `
         <p>
+
           <strong>Category:</strong>
+
           ${service.category}
+
         </p>
       `
       : ""
     }
+
 
     <div style="
       display:flex;
@@ -1700,27 +2233,32 @@ function createProviderManagementCard(service) {
 
       <button
         type="button"
-        onclick="editService('${service._id}')">
+        onclick="editService('${serviceId}')">
 
         <i class="fa-solid fa-pen"></i>
+
         Edit
 
       </button>
 
+
       <button
         type="button"
-        onclick="openAddPictures('${service._id}')">
+        onclick="openAddPictures('${serviceId}')">
 
         <i class="fa-solid fa-image"></i>
+
         Add Pictures
 
       </button>
 
+
       <button
         type="button"
-        onclick="deleteService('${service._id}')">
+        onclick="deleteService('${serviceId}')">
 
         <i class="fa-solid fa-trash"></i>
+
         Delete
 
       </button>
@@ -1729,10 +2267,15 @@ function createProviderManagementCard(service) {
 
   `;
 
+
   return card;
 
 }
 
+
+/* =====================================================
+   ADD SERVICE
+===================================================== */
 
 function openAddServiceForm() {
 
@@ -1740,28 +2283,34 @@ function openAddServiceForm() {
     "serviceForm"
   ).reset();
 
+
   document.getElementById(
     "serviceId"
   ).value = "";
 
+
   document.getElementById(
     "existingImages"
   ).innerHTML = "";
+
 
   document.getElementById(
     "serviceFormTitle"
   ).textContent =
     "Add Service";
 
+
   document.getElementById(
     "saveServiceText"
   ).textContent =
     "Save Service";
 
+
   document.getElementById(
     "serviceFormCard"
   ).style.display =
     "block";
+
 
   document.getElementById(
     "serviceFormCard"
@@ -1772,70 +2321,90 @@ function openAddServiceForm() {
 
 }
 
+
+/* =====================================================
+   EDIT SERVICE
+===================================================== */
 
 async function editService(serviceId) {
 
   const service =
     await getServiceById(serviceId);
 
+
   if (!service) return;
+
 
   document.getElementById(
     "serviceId"
   ).value =
     service._id;
 
+
   document.getElementById(
     "serviceName"
   ).value =
     service.name || "";
+
 
   document.getElementById(
     "serviceDescription"
   ).value =
     service.description || "";
 
+
   document.getElementById(
     "servicePrice"
   ).value =
     service.price || "";
+
 
   document.getElementById(
     "serviceCategory"
   ).value =
     service.category || "";
 
+
   document.getElementById(
     "storeLocation"
   ).value =
     service.storeLocation || "";
+
 
   document.getElementById(
     "storeMode"
   ).value =
     service.storeMode || "";
 
+
   document.getElementById(
     "mobileMode"
   ).value =
     service.mobileMode || "";
 
-  renderExistingImages(service);
+
+  renderExistingImages(
+    service
+  );
+
 
   document.getElementById(
     "serviceFormTitle"
   ).textContent =
     "Edit Service";
 
+
   document.getElementById(
     "saveServiceText"
   ).textContent =
     "Update Service";
 
+
   document.getElementById(
     "serviceFormCard"
   ).style.display =
     "block";
+
 
   document.getElementById(
     "serviceFormCard"
@@ -1846,6 +2415,10 @@ async function editService(serviceId) {
 
 }
 
+
+/* =====================================================
+   GET SINGLE SERVICE
+===================================================== */
 
 async function getServiceById(serviceId) {
 
@@ -1861,12 +2434,27 @@ async function getServiceById(serviceId) {
         }
       );
 
+
     if (res.ok) {
 
       const data =
         await res.json();
 
-      return data.service || data;
+
+      const service =
+        data.service ||
+        data;
+
+
+      if (service) {
+
+        service.__normalizedImages =
+          getServiceImages(service);
+
+      }
+
+
+      return service;
 
     }
 
@@ -1875,6 +2463,7 @@ async function getServiceById(serviceId) {
     console.error(error);
 
   }
+
 
   try {
 
@@ -1888,19 +2477,35 @@ async function getServiceById(serviceId) {
         }
       );
 
+
     const data =
       await res.json();
+
 
     const services =
       Array.isArray(data)
         ? data
         : data.services || [];
 
-    return services.find(
-      s =>
-        String(s._id) ===
-        String(serviceId)
-    );
+
+    const service =
+      services.find(
+        s =>
+          String(s._id) ===
+          String(serviceId)
+      );
+
+
+    if (service) {
+
+      service.__normalizedImages =
+        getServiceImages(service);
+
+    }
+
+
+    return service;
+
 
   } catch (error) {
 
@@ -1908,10 +2513,15 @@ async function getServiceById(serviceId) {
 
   }
 
+
   return null;
 
 }
 
+
+/* =====================================================
+   EXISTING IMAGES
+===================================================== */
 
 function renderExistingImages(service) {
 
@@ -1920,23 +2530,32 @@ function renderExistingImages(service) {
       "existingImages"
     );
 
+
   const images =
     getServiceImages(service);
 
+
   container.innerHTML = "";
+
 
   images.forEach((img,index) => {
 
     const wrapper =
       document.createElement("div");
 
+
     wrapper.style.position =
       "relative";
+
+
+    const imageUrl =
+      getImageUrl(img);
+
 
     wrapper.innerHTML = `
 
       <img
-        src="${getServiceImage(service,index)}"
+        src="${imageUrl || "categories/Other.jpg"}"
         alt="Service image"
         style="
           width:90px;
@@ -1946,13 +2565,14 @@ function renderExistingImages(service) {
         "
         onerror="
           this.onerror=null;
-          this.src='${DEFAULT_CATEGORY_IMAGE}';
+          this.src='categories/Other.jpg';
         ">
+
 
       <button
         type="button"
         onclick="deleteServiceImage(
-          '${service._id}',
+          '${String(service._id).replace(/'/g, "\\'")}',
           '${String(img).replace(/'/g, "\\'")}'
         )"
         style="
@@ -1974,16 +2594,24 @@ function renderExistingImages(service) {
 
     `;
 
-    container.appendChild(wrapper);
+
+    container.appendChild(
+      wrapper
+    );
 
   });
 
 }
 
 
+/* =====================================================
+   ADD PICTURES
+===================================================== */
+
 function openAddPictures(serviceId) {
 
   editService(serviceId);
+
 
   setTimeout(() => {
 
@@ -1996,6 +2624,10 @@ function openAddPictures(serviceId) {
 }
 
 
+/* =====================================================
+   SAVE / UPDATE SERVICE
+===================================================== */
+
 document.getElementById(
   "serviceForm"
 ).addEventListener(
@@ -2004,36 +2636,44 @@ document.getElementById(
 
     event.preventDefault();
 
+
     const serviceId =
       document.getElementById(
         "serviceId"
       ).value;
+
 
     const form =
       document.getElementById(
         "serviceForm"
       );
 
+
     const formData =
       new FormData(form);
+
 
     try {
 
       let url =
         `${API}/services`;
 
+
       let method =
         "POST";
+
 
       if (serviceId) {
 
         url =
           `${API}/services/${serviceId}`;
 
+
         method =
           "PUT";
 
       }
+
 
       const res =
         await fetch(
@@ -2047,9 +2687,11 @@ document.getElementById(
           }
         );
 
+
       const data =
         await res.json()
           .catch(() => ({}));
+
 
       if (!res.ok) {
 
@@ -2060,7 +2702,9 @@ document.getElementById(
 
       }
 
+
       closeServiceForm();
+
 
       await loadProviderServices();
 
@@ -2068,13 +2712,20 @@ document.getElementById(
 
       console.error(error);
 
-      alert(error.message);
+
+      alert(
+        error.message
+      );
 
     }
 
   }
 );
 
+
+/* =====================================================
+   DELETE SERVICE
+===================================================== */
 
 async function deleteService(serviceId) {
 
@@ -2083,8 +2734,11 @@ async function deleteService(serviceId) {
       "Are you sure you want to delete this service?"
     )
   ) {
+
     return;
+
   }
+
 
   try {
 
@@ -2099,9 +2753,11 @@ async function deleteService(serviceId) {
         }
       );
 
+
     const data =
       await res.json()
         .catch(() => ({}));
+
 
     if (!res.ok) {
 
@@ -2112,18 +2768,27 @@ async function deleteService(serviceId) {
 
     }
 
+
     await loadProviderServices();
+
 
   } catch (error) {
 
     console.error(error);
 
-    alert(error.message);
+
+    alert(
+      error.message
+    );
 
   }
 
 }
 
+
+/* =====================================================
+   DELETE SERVICE IMAGE
+===================================================== */
 
 async function deleteServiceImage(
   serviceId,
@@ -2135,8 +2800,11 @@ async function deleteServiceImage(
       "Delete this picture?"
     )
   ) {
+
     return;
+
   }
+
 
   try {
 
@@ -2146,7 +2814,8 @@ async function deleteServiceImage(
         {
           method:"DELETE",
           headers:{
-            "Content-Type":"application/json",
+            "Content-Type":
+              "application/json",
             ...authHeaders()
           },
           body:JSON.stringify({
@@ -2155,9 +2824,11 @@ async function deleteServiceImage(
         }
       );
 
+
     const data =
       await res.json()
         .catch(() => ({}));
+
 
     if (!res.ok) {
 
@@ -2168,25 +2839,42 @@ async function deleteServiceImage(
 
     }
 
+
     const service =
-      await getServiceById(serviceId);
+      await getServiceById(
+        serviceId
+      );
+
 
     if (service) {
-      renderExistingImages(service);
+
+      renderExistingImages(
+        service
+      );
+
     }
 
+
     await loadProviderServices();
+
 
   } catch (error) {
 
     console.error(error);
 
-    alert(error.message);
+
+    alert(
+      error.message
+    );
 
   }
 
 }
 
+
+/* =====================================================
+   CLOSE FORM
+===================================================== */
 
 function closeServiceForm() {
 
@@ -2195,13 +2883,16 @@ function closeServiceForm() {
   ).style.display =
     "none";
 
+
   document.getElementById(
     "serviceForm"
   ).reset();
 
+
   document.getElementById(
     "serviceId"
-  ).value = "";
+  ).value =
+    "";
 
 }
 
@@ -2210,7 +2901,7 @@ function closeServiceForm() {
    GALLERY
 ===================================================== */
 
-function openGallery(serviceId) {
+async function openGallery(serviceId) {
 
   let service =
     allServices.find(
@@ -2219,52 +2910,80 @@ function openGallery(serviceId) {
         String(serviceId)
     );
 
+
+  /*
+    If the service isn't already in memory,
+    get the exact service from the backend.
+  */
   if (!service) {
 
-    getServiceById(serviceId)
-      .then(found => {
+    service =
+      await getServiceById(
+        serviceId
+      );
 
-        if (!found) return;
+  }
 
-        currentGalleryImages =
-          getServiceImages(found);
 
-        currentGalleryIndex = 0;
-        zoomed = false;
-
-        renderGallery();
-
-      });
+  if (!service) {
 
     return;
 
   }
 
+
+  /*
+    IMPORTANT:
+    Never use categoryImages here.
+    The gallery receives ONLY this provider's images.
+  */
   currentGalleryImages =
     getServiceImages(service);
 
-  currentGalleryIndex = 0;
-  zoomed = false;
+
+  currentGalleryIndex =
+    0;
+
+
+  zoomed =
+    false;
+
 
   renderGallery();
 
 }
 
 
+/* =====================================================
+   GALLERY IMAGE URL
+===================================================== */
+
 function galleryImage(index) {
 
   if (
     !currentGalleryImages.length
   ) {
-    return DEFAULT_CATEGORY_IMAGE;
+
+    return "categories/Other.jpg";
+
   }
 
-  return getImageUrl(
-    currentGalleryImages[index]
+
+  const img =
+    currentGalleryImages[index];
+
+
+  return (
+    getImageUrl(img) ||
+    "categories/Other.jpg"
   );
 
 }
 
+
+/* =====================================================
+   RENDER GALLERY
+===================================================== */
 
 function renderGallery() {
 
@@ -2272,11 +2991,14 @@ function renderGallery() {
     "galleryModal"
   )?.remove();
 
+
   const modal =
     document.createElement("div");
 
+
   modal.id =
     "galleryModal";
+
 
   modal.innerHTML = `
 
@@ -2290,6 +3012,7 @@ function renderGallery() {
 
       </button>
 
+
       <div class="gallery-box">
 
         <button
@@ -2300,6 +3023,7 @@ function renderGallery() {
 
         </button>
 
+
         <div class="gallery-center">
 
           <img
@@ -2309,8 +3033,9 @@ function renderGallery() {
             alt="Gallery Image"
             onerror="
               this.onerror=null;
-              this.src='${DEFAULT_CATEGORY_IMAGE}';
+              this.src='categories/Other.jpg';
             ">
+
 
           <div class="gallery-counter">
 
@@ -2326,6 +3051,7 @@ function renderGallery() {
 
           </div>
 
+
           ${
             currentGalleryImages.length > 1
             ? `
@@ -2336,12 +3062,13 @@ function renderGallery() {
                   (img,i) => `
 
                     <img
-                      src="${getImageUrl(img)}"
+                      src="${getImageUrl(img) || "categories/Other.jpg"}"
                       class="${
                         i === currentGalleryIndex
                           ? "active"
                           : ""
                       }"
+                      alt="Gallery thumbnail ${i + 1}"
                       onclick="
                         currentGalleryIndex=${i};
                         zoomed=false;
@@ -2349,7 +3076,7 @@ function renderGallery() {
                       "
                       onerror="
                         this.onerror=null;
-                        this.src='${DEFAULT_CATEGORY_IMAGE}';
+                        this.src='categories/Other.jpg';
                       ">
 
                   `
@@ -2362,6 +3089,7 @@ function renderGallery() {
           }
 
         </div>
+
 
         <button
           class="gallery-arrow right"
@@ -2377,62 +3105,98 @@ function renderGallery() {
 
   `;
 
-  document.body.appendChild(modal);
+
+  document.body.appendChild(
+    modal
+  );
+
 
   registerGalleryEvents();
+
 
   preloadImages();
 
 }
 
 
+/* =====================================================
+   NEXT IMAGE
+===================================================== */
+
 function nextImage() {
 
   if (
     !currentGalleryImages.length
   ) {
+
     return;
+
   }
 
+
   currentGalleryIndex++;
+
 
   if (
     currentGalleryIndex >=
     currentGalleryImages.length
   ) {
-    currentGalleryIndex = 0;
+
+    currentGalleryIndex =
+      0;
+
   }
 
-  zoomed = false;
+
+  zoomed =
+    false;
+
 
   renderGallery();
 
 }
 
+
+/* =====================================================
+   PREVIOUS IMAGE
+===================================================== */
 
 function prevImage() {
 
   if (
     !currentGalleryImages.length
   ) {
+
     return;
+
   }
 
+
   currentGalleryIndex--;
+
 
   if (
     currentGalleryIndex < 0
   ) {
+
     currentGalleryIndex =
       currentGalleryImages.length - 1;
+
   }
 
-  zoomed = false;
+
+  zoomed =
+    false;
+
 
   renderGallery();
 
 }
 
+
+/* =====================================================
+   CLOSE GALLERY
+===================================================== */
 
 function closeGallery() {
 
@@ -2443,6 +3207,10 @@ function closeGallery() {
 }
 
 
+/* =====================================================
+   GALLERY EVENTS
+===================================================== */
+
 function registerGalleryEvents() {
 
   const img =
@@ -2450,16 +3218,21 @@ function registerGalleryEvents() {
       "galleryImage"
     );
 
+
   if (!img) return;
+
 
   img.ondblclick = () => {
 
-    zoomed = !zoomed;
+    zoomed =
+      !zoomed;
+
 
     img.style.transform =
       zoomed
         ? "scale(2)"
         : "scale(1)";
+
 
     img.style.cursor =
       zoomed
@@ -2468,7 +3241,10 @@ function registerGalleryEvents() {
 
   };
 
-  let lastTap = 0;
+
+  let lastTap =
+    0;
+
 
   img.addEventListener(
     "touchend",
@@ -2477,42 +3253,53 @@ function registerGalleryEvents() {
       const now =
         Date.now();
 
+
       if (
         now - lastTap < 300
       ) {
 
-        zoomed = !zoomed;
+        zoomed =
+          !zoomed;
+
 
         img.style.transform =
           zoomed
             ? "scale(2)"
             : "scale(1)";
 
+
         e.preventDefault();
 
       }
 
-      lastTap = now;
+
+      lastTap =
+        now;
 
     }
   );
+
 
   img.addEventListener(
     "touchstart",
     e => {
 
       touchStartX =
-        e.changedTouches[0].clientX;
+        e.changedTouches[0]
+          .clientX;
 
     }
   );
+
 
   img.addEventListener(
     "touchend",
     e => {
 
       touchEndX =
-        e.changedTouches[0].clientX;
+        e.changedTouches[0]
+          .clientX;
+
 
       handleSwipe();
 
@@ -2522,33 +3309,53 @@ function registerGalleryEvents() {
 }
 
 
+/* =====================================================
+   SWIPE
+===================================================== */
+
 function handleSwipe() {
 
   const distance =
-    touchStartX - touchEndX;
+    touchStartX -
+    touchEndX;
+
 
   if (
     Math.abs(distance) < 50
   ) {
+
     return;
+
   }
 
+
   if (distance > 0) {
+
     nextImage();
+
   } else {
+
     prevImage();
+
   }
 
 }
 
+
+/* =====================================================
+   PRELOAD
+===================================================== */
 
 function preloadImages() {
 
   if (
     !currentGalleryImages.length
   ) {
+
     return;
+
   }
+
 
   const next =
     (
@@ -2556,15 +3363,18 @@ function preloadImages() {
     ) %
     currentGalleryImages.length;
 
+
   const prev =
     currentGalleryIndex === 0
       ? currentGalleryImages.length - 1
       : currentGalleryIndex - 1;
 
+
   [next,prev].forEach(i => {
 
     const image =
       new Image();
+
 
     image.src =
       galleryImage(i);
@@ -2573,6 +3383,10 @@ function preloadImages() {
 
 }
 
+
+/* =====================================================
+   KEYBOARD GALLERY CONTROLS
+===================================================== */
 
 document.addEventListener(
   "keydown",
@@ -2583,19 +3397,36 @@ document.addEventListener(
         "galleryModal"
       )
     ) {
+
       return;
+
     }
 
-    if (e.key === "ArrowRight") {
+
+    if (
+      e.key === "ArrowRight"
+    ) {
+
       nextImage();
+
     }
 
-    if (e.key === "ArrowLeft") {
+
+    if (
+      e.key === "ArrowLeft"
+    ) {
+
       prevImage();
+
     }
 
-    if (e.key === "Escape") {
+
+    if (
+      e.key === "Escape"
+    ) {
+
       closeGallery();
+
     }
 
   }
