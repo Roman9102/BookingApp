@@ -385,3 +385,73 @@
     padding: 15px;
   }
 }
+/* =========================================================
+   BUSINESS IDEA DESKTOP SIDEBAR SPACING FIX
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .dashboard {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .dashboard .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 255px;
+    height: 100vh;
+    z-index: 1000;
+  }
+
+  .dashboard .main-content {
+    width: calc(100% - 255px);
+    max-width: none;
+    margin-left: 255px;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .idea-header {
+    width: 100%;
+  }
+
+  .idea-container {
+    width: 100%;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .idea-footer {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   MOBILE — KEEP CURRENT MOBILE LAYOUT
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dashboard .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    left: auto;
+    top: auto;
+  }
+
+  .dashboard .main-content {
+    width: 100%;
+    margin-left: 0;
+  }
+}
