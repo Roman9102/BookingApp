@@ -1,6 +1,12 @@
 /* =========================================================
    QUICKCONNECT — PROVIDER BOOKINGS
    provider-bookings.js
+
+   FIXED:
+   - Postpone booking now sends bookingDate + bookingTime
+   - Keeps postponedDate + postponedTime for reschedule tracking
+   - Customer can respond to proposed date
+   - Existing booking actions preserved
 ========================================================= */
 
 const API = "https://quickconnect-api-m617.onrender.com/api";
@@ -816,20 +822,6 @@ async function updateBookingStatus(
     }
 
 
-    /* ========================
-       USE THE EXISTING BACKEND
-       ROUTES
-
-       accepted:
-       /admin/:id/accept
-
-       declined:
-       /admin/:id/decline
-
-       completed:
-       /admin/:id/complete
-    ======================== */
-
     let statusEndpoint = "";
 
     if (status === "accepted") {
@@ -980,7 +972,13 @@ async function updateBookingStatus(
 
 /* =========================================================
    POSTPONE BOOKING
-   Beautiful booking card/modal
+   FIXED:
+   Sends both:
+   - bookingDate / bookingTime
+   - postponedDate / postponedTime
+
+   This fixes backend validation:
+   "A new booking date is required."
 ========================================================= */
 
 function postponeBooking(id) {
@@ -994,10 +992,12 @@ function postponeBooking(id) {
     existing.remove();
   }
 
+
   const booking =
     allBookings.find(
       item => item._id === id
     );
+
 
   if (!booking) {
 
@@ -1009,11 +1009,13 @@ function postponeBooking(id) {
 
   }
 
+
   const service =
     booking.service || {};
 
   const customer =
     booking.user || {};
+
 
   const overlay =
     document.createElement("div");
@@ -1023,6 +1025,7 @@ function postponeBooking(id) {
 
   overlay.className =
     "postpone-booking-overlay";
+
 
   overlay.innerHTML = `
 
@@ -1250,7 +1253,9 @@ function postponeBooking(id) {
     );
 
 
-  /* Prevent selecting a date in the past */
+  /* ========================
+     DATE MINIMUM
+  ======================== */
 
   const today =
     new Date();
@@ -1271,6 +1276,10 @@ function postponeBooking(id) {
   dateInput.min =
     `${year}-${month}-${day}`;
 
+
+  /* ========================
+     CLOSE MODAL
+  ======================== */
 
   function closeModal() {
 
@@ -1331,17 +1340,23 @@ function postponeBooking(id) {
 
   }
 
+
   document.addEventListener(
     "keydown",
     escapePostpone
   );
 
 
+  /* ========================
+     SUBMIT POSTPONE
+  ======================== */
+
   form.addEventListener(
     "submit",
     async event => {
 
       event.preventDefault();
+
 
       const date =
         dateInput.value;
@@ -1362,6 +1377,10 @@ function postponeBooking(id) {
           "submitPostpone"
         );
 
+
+      /* ========================
+         VALIDATION
+      ======================== */
 
       if (!date) {
 
@@ -1431,6 +1450,7 @@ function postponeBooking(id) {
             "token"
           );
 
+
         if (!token) {
 
           window.location.href =
@@ -1440,36 +1460,74 @@ function postponeBooking(id) {
 
         }
 
-        const res = await fetch(
-          `${API}/bookings/admin/${id}/postpone`,
-          {
-            method: "PUT",
 
-            headers: {
+        /* =====================================================
+           IMPORTANT FIX
 
-              "Content-Type":
-                "application/json",
+           The backend validates the new booking date using
+           bookingDate.
 
-              Authorization:
-                `Bearer ${token}`
+           We therefore send BOTH naming formats:
 
-            },
+           bookingDate / bookingTime
+           AND
+           postponedDate / postponedTime
 
-            body: JSON.stringify({
+           This keeps the postponement information while
+           satisfying the booking controller validation.
+        ===================================================== */
 
-              postponedDate:
-                date,
+        const postponePayload = {
 
-              postponedTime:
-                time,
+          /* Backend booking fields */
+          bookingDate:
+            date,
 
-              postponedReason:
-                reason
+          bookingTime:
+            time,
 
-            })
+          /* Existing postponement fields */
+          postponedDate:
+            date,
 
-          }
+          postponedTime:
+            time,
+
+          postponedReason:
+            reason
+
+        };
+
+
+        console.log(
+          "POSTPONE BOOKING PAYLOAD:",
+          postponePayload
         );
+
+
+        const res =
+          await fetch(
+            `${API}/bookings/admin/${id}/postpone`,
+            {
+              method: "PUT",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${token}`
+
+              },
+
+              body:
+                JSON.stringify(
+                  postponePayload
+                )
+
+            }
+          );
 
 
         const contentType =
@@ -1479,6 +1537,7 @@ function postponeBooking(id) {
 
 
         let data = {};
+
 
         if (
           contentType.includes(
@@ -1520,6 +1579,13 @@ function postponeBooking(id) {
           return;
 
         }
+
+
+        console.log(
+          "POSTPONE RESPONSE:",
+          res.status,
+          data
+        );
 
 
         if (!res.ok) {
@@ -1589,7 +1655,9 @@ function postponeBooking(id) {
 
 
   setTimeout(() => {
+
     dateInput.focus();
+
   }, 100);
 
 }
@@ -1605,6 +1673,7 @@ async function viewBookingDetails(id) {
     allBookings.find(
       item => item._id === id
     );
+
 
   if (!booking) {
 
@@ -1623,6 +1692,7 @@ async function viewBookingDetails(id) {
   const service =
     booking.service || {};
 
+
   const bookingDate =
     booking.bookingDate
       ? new Date(
@@ -1630,13 +1700,16 @@ async function viewBookingDetails(id) {
         ).toLocaleDateString()
       : "-";
 
+
   const bookingTime =
     booking.bookingTime || "-";
+
 
   const amount =
     Number(
       booking.price || 0
     ).toLocaleString();
+
 
   const payment =
     String(
@@ -1780,3 +1853,20 @@ function escapeHtml(value) {
     );
 
 }
+
+
+/* ========================
+   GLOBAL FUNCTIONS
+======================== */
+
+window.loadBookings =
+  loadBookings;
+
+window.updateBookingStatus =
+  updateBookingStatus;
+
+window.postponeBooking =
+  postponeBooking;
+
+window.viewBookingDetails =
+  viewBookingDetails;
