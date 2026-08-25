@@ -1,10 +1,13 @@
 /* =========================================================
    my-services.js
    QUICKCONNECT PROVIDER SERVICES
+
    FIXED:
-   - Service images display as controlled thumbnails
+   - Service images display correctly
    - Existing images can be viewed
    - Individual images can be deleted
+   - Uses the correct DELETE /services/:id/images endpoint
+   - Handles non-JSON server responses safely
    - New images can be added
    - Form image previews work
    - Preview images can be removed before submitting
@@ -52,11 +55,74 @@ function getToken() {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    console.error("No authentication token found.");
+
+    console.error(
+      "No authentication token found."
+    );
+
     return null;
+
   }
 
   return token;
+
+}
+
+
+/* =========================================================
+   SAFE RESPONSE READER
+   Prevents:
+   Unexpected token '<'
+   when server returns HTML instead of JSON.
+========================================================= */
+
+async function readResponse(response) {
+
+  const contentType =
+    response.headers.get("content-type") || "";
+
+  const text =
+    await response.text();
+
+  if (
+    contentType.includes("application/json")
+  ) {
+
+    try {
+
+      return text
+        ? JSON.parse(text)
+        : {};
+
+    } catch (error) {
+
+      console.error(
+        "JSON PARSE ERROR:",
+        error,
+        text
+      );
+
+      return {
+        message:
+          "The server returned invalid JSON."
+      };
+
+    }
+
+  }
+
+  console.error(
+    "SERVER RETURNED NON-JSON RESPONSE:",
+    response.status,
+    text
+  );
+
+  return {
+    message:
+      text && text.trim()
+        ? `Server returned an unexpected response (${response.status}).`
+        : `Request failed (${response.status}).`
+  };
 
 }
 
@@ -82,25 +148,37 @@ function setupProfile() {
       "Provider";
 
     const topName =
-      document.getElementById("topProfileName");
+      document.getElementById(
+        "topProfileName"
+      );
 
     if (topName) {
-      topName.textContent = name;
+
+      topName.textContent =
+        name;
+
     }
 
     const avatar =
-      document.getElementById("profileAvatar");
+      document.getElementById(
+        "profileAvatar"
+      );
 
     if (avatar) {
 
       avatar.textContent =
-        name.charAt(0).toUpperCase();
+        name
+          .charAt(0)
+          .toUpperCase();
 
     }
 
   } catch (err) {
 
-    console.error("PROFILE ERROR:", err);
+    console.error(
+      "PROFILE ERROR:",
+      err
+    );
 
   }
 
@@ -114,13 +192,19 @@ function setupProfile() {
 async function loadMyServices() {
 
   const loading =
-    document.getElementById("servicesLoading");
+    document.getElementById(
+      "servicesLoading"
+    );
 
   const empty =
-    document.getElementById("servicesEmpty");
+    document.getElementById(
+      "servicesEmpty"
+    );
 
   const grid =
-    document.getElementById("servicesGrid");
+    document.getElementById(
+      "servicesGrid"
+    );
 
   if (loading) {
     loading.hidden = false;
@@ -132,7 +216,8 @@ async function loadMyServices() {
 
   try {
 
-    const token = getToken();
+    const token =
+      getToken();
 
     if (!token) {
 
@@ -149,14 +234,18 @@ async function loadMyServices() {
         `${API}/services/my`,
         {
           method: "GET",
+
           headers: {
-            "Authorization": `Bearer ${token}`
+            "Authorization":
+              `Bearer ${token}`
           }
         }
       );
 
     const data =
-      await response.json();
+      await readResponse(
+        response
+      );
 
     console.log(
       "MY SERVICES:",
@@ -181,7 +270,8 @@ async function loadMyServices() {
 
     }
 
-    myServices = data;
+    myServices =
+      data;
 
     updateSummary();
     renderServices();
@@ -213,16 +303,24 @@ async function loadMyServices() {
    ERROR
 ========================================================= */
 
-function showServicesError(message) {
+function showServicesError(
+  message
+) {
 
   const loading =
-    document.getElementById("servicesLoading");
+    document.getElementById(
+      "servicesLoading"
+    );
 
   const empty =
-    document.getElementById("servicesEmpty");
+    document.getElementById(
+      "servicesEmpty"
+    );
 
   const grid =
-    document.getElementById("servicesGrid");
+    document.getElementById(
+      "servicesGrid"
+    );
 
   if (loading) {
     loading.hidden = true;
@@ -244,7 +342,9 @@ function showServicesError(message) {
 
         <h3>Could not load services</h3>
 
-        <p>${escapeHTML(message)}</p>
+        <p>
+          ${escapeHTML(message)}
+        </p>
 
         <button
           type="button"
@@ -276,27 +376,50 @@ function updateSummary() {
   let mobile = 0;
   let store = 0;
 
-  myServices.forEach(service => {
+  myServices.forEach(
+    service => {
 
-    const modes =
-      Array.isArray(service.serviceMode)
-        ? service.serviceMode
-        : [];
+      const modes =
+        Array.isArray(
+          service.serviceMode
+        )
+          ? service.serviceMode
+          : [];
 
-    if (modes.includes("mobile")) {
-      mobile++;
+      if (
+        modes.includes("mobile")
+      ) {
+        mobile++;
+      }
+
+      if (
+        modes.includes("store")
+      ) {
+        store++;
+      }
+
     }
+  );
 
-    if (modes.includes("store")) {
-      store++;
-    }
+  setText(
+    "totalServices",
+    total
+  );
 
-  });
+  setText(
+    "activeServices",
+    total
+  );
 
-  setText("totalServices", total);
-  setText("activeServices", total);
-  setText("mobileServices", mobile);
-  setText("storeServices", store);
+  setText(
+    "mobileServices",
+    mobile
+  );
+
+  setText(
+    "storeServices",
+    store
+  );
 
 }
 
@@ -308,22 +431,32 @@ function updateSummary() {
 function renderServices() {
 
   const grid =
-    document.getElementById("servicesGrid");
+    document.getElementById(
+      "servicesGrid"
+    );
 
   const empty =
-    document.getElementById("servicesEmpty");
+    document.getElementById(
+      "servicesEmpty"
+    );
 
   if (!grid) return;
 
   const searchInput =
-    document.getElementById("serviceSearch");
+    document.getElementById(
+      "serviceSearch"
+    );
 
   const filter =
-    document.getElementById("serviceFilter");
+    document.getElementById(
+      "serviceFilter"
+    );
 
   const search =
     searchInput
-      ? searchInput.value.trim().toLowerCase()
+      ? searchInput.value
+          .trim()
+          .toLowerCase()
       : "";
 
   const filterValue =
@@ -332,38 +465,55 @@ function renderServices() {
       : "all";
 
   const filtered =
-    myServices.filter(service => {
+    myServices.filter(
+      service => {
 
-      const name =
-        String(service.name || "").toLowerCase();
+        const name =
+          String(
+            service.name || ""
+          ).toLowerCase();
 
-      const description =
-        String(service.description || "").toLowerCase();
+        const description =
+          String(
+            service.description || ""
+          ).toLowerCase();
 
-      const category =
-        String(service.category || "").toLowerCase();
+        const category =
+          String(
+            service.category || ""
+          ).toLowerCase();
 
-      const matchesSearch =
-        !search ||
-        name.includes(search) ||
-        description.includes(search) ||
-        category.includes(search);
+        const matchesSearch =
+          !search ||
+          name.includes(search) ||
+          description.includes(search) ||
+          category.includes(search);
 
-      const modes =
-        Array.isArray(service.serviceMode)
-          ? service.serviceMode
-          : [];
+        const modes =
+          Array.isArray(
+            service.serviceMode
+          )
+            ? service.serviceMode
+            : [];
 
-      const matchesFilter =
-        filterValue === "all" ||
-        modes.includes(filterValue);
+        const matchesFilter =
+          filterValue === "all" ||
+          modes.includes(
+            filterValue
+          );
 
-      return matchesSearch && matchesFilter;
+        return (
+          matchesSearch &&
+          matchesFilter
+        );
 
-    });
+      }
+    );
 
 
-  if (myServices.length === 0) {
+  if (
+    myServices.length === 0
+  ) {
 
     grid.innerHTML = "";
 
@@ -381,7 +531,9 @@ function renderServices() {
   }
 
 
-  if (filtered.length === 0) {
+  if (
+    filtered.length === 0
+  ) {
 
     grid.innerHTML = `
 
@@ -393,7 +545,9 @@ function renderServices() {
 
         <h3>No matching services</h3>
 
-        <p>Try another search or filter.</p>
+        <p>
+          Try another search or filter.
+        </p>
 
       </div>
 
@@ -406,7 +560,10 @@ function renderServices() {
 
   grid.innerHTML =
     filtered
-      .map(service => createServiceCard(service))
+      .map(
+        service =>
+          createServiceCard(service)
+      )
       .join("");
 
 }
@@ -416,10 +573,14 @@ function renderServices() {
    SERVICE CARD
 ========================================================= */
 
-function createServiceCard(service) {
+function createServiceCard(
+  service
+) {
 
   const images =
-    getServiceImages(service);
+    getServiceImages(
+      service
+    );
 
   const firstImage =
     images.length
@@ -450,27 +611,35 @@ function createServiceCard(service) {
     ).toFixed(2);
 
   const modes =
-    Array.isArray(service.serviceMode)
+    Array.isArray(
+      service.serviceMode
+    )
       ? service.serviceMode
       : [];
 
   const modeHTML =
     modes.length
-      ? modes.map(mode => `
 
-          <span class="service-mode-tag">
+      ? modes
+          .map(
+            mode => `
 
-            <i class="fa-solid ${
-              mode === "mobile"
-                ? "fa-car-side"
-                : "fa-store"
-            }"></i>
+              <span class="service-mode-tag">
 
-            ${escapeHTML(mode)}
+                <i class="fa-solid ${
+                  mode === "mobile"
+                    ? "fa-car-side"
+                    : "fa-store"
+                }"></i>
 
-          </span>
+                ${escapeHTML(mode)}
 
-        `).join("")
+              </span>
+
+            `
+          )
+          .join("")
+
       : `
 
           <span class="service-mode-tag">
@@ -486,6 +655,7 @@ function createServiceCard(service) {
 
   const imageHTML =
     firstImage
+
       ? `
 
           <img
@@ -500,6 +670,7 @@ function createServiceCard(service) {
           >
 
         `
+
       : `
 
           <div class="service-no-image">
@@ -517,8 +688,6 @@ function createServiceCard(service) {
       class="service-card"
       data-id="${service._id}"
     >
-
-      <!-- IMAGE -->
 
       <div class="service-card-image">
 
@@ -542,8 +711,6 @@ function createServiceCard(service) {
 
       </div>
 
-
-      <!-- CONTENT -->
 
       <div class="service-card-content">
 
@@ -585,7 +752,9 @@ function createServiceCard(service) {
 
                 <i class="fa-solid fa-location-dot"></i>
 
-                ${escapeHTML(service.location)}
+                ${escapeHTML(
+                  service.location
+                )}
 
               </div>
 
@@ -593,8 +762,6 @@ function createServiceCard(service) {
             : ""
         }
 
-
-        <!-- ACTIONS -->
 
         <div class="service-card-actions">
 
@@ -660,16 +827,21 @@ function createServiceCard(service) {
    GET ALL SERVICE IMAGES
 ========================================================= */
 
-function getServiceImages(service) {
+function getServiceImages(
+  service
+) {
 
   let images = [];
 
   if (
-    Array.isArray(service.images)
+    Array.isArray(
+      service.images
+    )
   ) {
 
     images =
-      service.images.filter(Boolean);
+      service.images
+        .filter(Boolean);
 
   }
 
@@ -678,12 +850,15 @@ function getServiceImages(service) {
     service.image
   ) {
 
-    images = [service.image];
+    images = [
+      service.image
+    ];
 
   }
 
   return images.map(
-    image => normalizeImageURL(image)
+    image =>
+      normalizeImageURL(image)
   );
 
 }
@@ -693,13 +868,16 @@ function getServiceImages(service) {
    NORMALIZE IMAGE URL
 ========================================================= */
 
-function normalizeImageURL(image) {
+function normalizeImageURL(
+  image
+) {
 
   if (!image) {
     return "";
   }
 
-  image = String(image);
+  image =
+    String(image);
 
   if (
     image.startsWith("http://") ||
@@ -710,7 +888,9 @@ function normalizeImageURL(image) {
 
   }
 
-  if (image.startsWith("/")) {
+  if (
+    image.startsWith("/")
+  ) {
 
     return `${SERVER}${image}`;
 
@@ -725,7 +905,9 @@ function normalizeImageURL(image) {
    ADD IMAGE BUTTON
 ========================================================= */
 
-function triggerServiceImageUpload(serviceId) {
+function triggerServiceImageUpload(
+  serviceId
+) {
 
   const input =
     document.getElementById(
@@ -762,7 +944,9 @@ async function uploadServiceImages(
     event.target;
 
   const files =
-    Array.from(input.files || []);
+    Array.from(
+      input.files || []
+    );
 
   if (!files.length) {
     return;
@@ -770,19 +954,24 @@ async function uploadServiceImages(
 
   const service =
     myServices.find(
-      item => item._id === serviceId
+      item =>
+        item._id === serviceId
     );
 
   const existingImages =
     service
-      ? getServiceImages(service).length
+      ? getServiceImages(
+          service
+        ).length
       : 0;
 
   const availableSlots =
     5 - existingImages;
 
 
-  if (availableSlots <= 0) {
+  if (
+    availableSlots <= 0
+  ) {
 
     alert(
       "This service already has the maximum of 5 images."
@@ -795,11 +984,16 @@ async function uploadServiceImages(
   }
 
 
-  if (files.length > availableSlots) {
+  if (
+    files.length >
+    availableSlots
+  ) {
 
     alert(
       `You can only add ${availableSlots} more image${
-        availableSlots === 1 ? "" : "s"
+        availableSlots === 1
+          ? ""
+          : "s"
       }. Maximum is 5 images per service.`
     );
 
@@ -829,14 +1023,16 @@ async function uploadServiceImages(
   const formData =
     new FormData();
 
-  files.forEach(file => {
+  files.forEach(
+    file => {
 
-    formData.append(
-      "images",
-      file
-    );
+      formData.append(
+        "images",
+        file
+      );
 
-  });
+    }
+  );
 
 
   try {
@@ -865,7 +1061,9 @@ async function uploadServiceImages(
 
 
     const data =
-      await response.json();
+      await readResponse(
+        response
+      );
 
 
     console.log(
@@ -888,17 +1086,26 @@ async function uploadServiceImages(
     input.value = "";
 
 
-    /* Replace local service with updated service */
+    const updatedService =
+      data.service ||
+      data;
+
 
     const index =
       myServices.findIndex(
-        item => item._id === serviceId
+        item =>
+          item._id === serviceId
       );
 
-    if (index !== -1) {
+
+    if (
+      index !== -1 &&
+      updatedService &&
+      updatedService._id
+    ) {
 
       myServices[index] =
-        data;
+        updatedService;
 
     }
 
@@ -961,11 +1168,14 @@ function setupGallery() {
    OPEN SERVICE GALLERY
 ========================================================= */
 
-function openServiceGallery(serviceId) {
+function openServiceGallery(
+  serviceId
+) {
 
   const service =
     myServices.find(
-      item => item._id === serviceId
+      item =>
+        item._id === serviceId
     );
 
   if (!service) {
@@ -973,7 +1183,9 @@ function openServiceGallery(serviceId) {
   }
 
   const images =
-    getServiceImages(service);
+    getServiceImages(
+      service
+    );
 
   if (!images.length) {
     return;
@@ -989,15 +1201,12 @@ function openServiceGallery(serviceId) {
     );
 
 
-  /*
-    Create modal automatically if
-    it does not exist in HTML.
-  */
-
   if (!modal) {
 
     modal =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     modal.id =
       "serviceImageModal";
@@ -1005,7 +1214,9 @@ function openServiceGallery(serviceId) {
     modal.className =
       "service-modal";
 
-    document.body.appendChild(modal);
+    document.body.appendChild(
+      modal
+    );
 
   }
 
@@ -1055,45 +1266,49 @@ function openServiceGallery(serviceId) {
         id="galleryThumbnails"
       >
 
-        ${images.map(
-          (image, index) => `
+        ${images
+          .map(
+            (image, index) => `
 
-            <div
-              class="gallery-thumbnail-item"
-              data-index="${index}"
-            >
-
-              <img
-                src="${image}"
-                alt="Image ${index + 1}"
-                class="${
-                  index === 0
-                    ? "active"
-                    : ""
-                }"
-                onclick="selectGalleryImage(${index})"
+              <div
+                class="gallery-thumbnail-item"
+                data-index="${index}"
               >
 
+                <img
+                  src="${image}"
+                  alt="Image ${index + 1}"
+                  class="${
+                    index === 0
+                      ? "active"
+                      : ""
+                  }"
+                  onclick="selectGalleryImage(${index})"
+                >
 
-              <button
-                type="button"
-                class="gallery-delete-image"
-                onclick="
-                  event.stopPropagation();
-                  deleteServiceImage(
-                    '${service._id}',
-                    ${index}
-                  );
-                "
-                title="Delete image"
-              >
-                <i class="fa-solid fa-trash"></i>
-              </button>
 
-            </div>
+                <button
+                  type="button"
+                  class="gallery-delete-image"
+                  onclick="
+                    event.stopPropagation();
+                    deleteServiceImage(
+                      '${service._id}',
+                      ${index}
+                    );
+                  "
+                  title="Delete image"
+                >
 
-          `
-        ).join("")}
+                  <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+              </div>
+
+            `
+          )
+          .join("")}
 
       </div>
 
@@ -1102,7 +1317,9 @@ function openServiceGallery(serviceId) {
   `;
 
 
-  modal.classList.add("show");
+  modal.classList.add(
+    "show"
+  );
 
   document.body.style.overflow =
     "hidden";
@@ -1114,9 +1331,13 @@ function openServiceGallery(serviceId) {
    SELECT GALLERY IMAGE
 ========================================================= */
 
-function selectGalleryImage(index) {
+function selectGalleryImage(
+  index
+) {
 
-  if (!currentGalleryService) {
+  if (
+    !currentGalleryService
+  ) {
     return;
   }
 
@@ -1163,6 +1384,14 @@ function selectGalleryImage(index) {
 
 /* =========================================================
    DELETE SINGLE SERVICE IMAGE
+   CORRECT BACKEND ROUTE:
+
+   DELETE /api/services/:id/images
+
+   BODY:
+   {
+      image: "original database image path"
+   }
 ========================================================= */
 
 async function deleteServiceImage(
@@ -1172,17 +1401,27 @@ async function deleteServiceImage(
 
   const service =
     myServices.find(
-      item => item._id === serviceId
+      item =>
+        item._id === serviceId
     );
 
   if (!service) {
+
+    console.error(
+      "Service not found:",
+      serviceId
+    );
+
     return;
+
   }
 
 
   const images =
-    Array.isArray(service.images)
-      ? service.images
+    Array.isArray(
+      service.images
+    )
+      ? service.images.filter(Boolean)
       : [];
 
 
@@ -1190,10 +1429,26 @@ async function deleteServiceImage(
     !images[imageIndex]
   ) {
 
+    console.error(
+      "Image not found at index:",
+      imageIndex
+    );
+
     return;
 
   }
 
+
+  /*
+    IMPORTANT:
+
+    We send the ORIGINAL database
+    value.
+
+    Do NOT send normalizeImageURL()
+    here because the backend needs
+    the stored image path.
+  */
 
   const image =
     images[imageIndex];
@@ -1226,16 +1481,39 @@ async function deleteServiceImage(
 
   try {
 
+    console.log(
+      "🗑️ DELETING SERVICE IMAGE"
+    );
+
+    console.log(
+      "Service ID:",
+      serviceId
+    );
+
+    console.log(
+      "Image index:",
+      imageIndex
+    );
+
+    console.log(
+      "Original image:",
+      image
+    );
+
+
     /*
-      IMPORTANT:
-      Send the original database
-      image path, not the full
-      localhost URL.
+      CORRECT ROUTE:
+
+      /services/:id/images
+
+      NOT:
+
+      /services/:id/image
     */
 
     const response =
       await fetch(
-        `${API}/services/${serviceId}/image`,
+        `${API}/services/${serviceId}/images`,
         {
           method: "DELETE",
 
@@ -1244,18 +1522,24 @@ async function deleteServiceImage(
               `Bearer ${token}`,
 
             "Content-Type":
+              "application/json",
+
+            "Accept":
               "application/json"
           },
 
-          body: JSON.stringify({
-            image: image
-          })
+          body:
+            JSON.stringify({
+              image: image
+            })
         }
       );
 
 
     const data =
-      await response.json();
+      await readResponse(
+        response
+      );
 
 
     console.log(
@@ -1269,7 +1553,41 @@ async function deleteServiceImage(
 
       throw new Error(
         data.message ||
-        "Unable to delete image."
+        `Unable to delete image (${response.status}).`
+      );
+
+    }
+
+
+    /*
+      Backend returns:
+
+      {
+        message:
+          "Image deleted successfully",
+
+        service: updatedService
+      }
+    */
+
+    const updatedService =
+      data.service ||
+      null;
+
+
+    const serviceIndex =
+      myServices.findIndex(
+        item =>
+          item._id === serviceId
+      );
+
+
+    if (
+      serviceIndex === -1
+    ) {
+
+      throw new Error(
+        "The service could not be found after deleting the image."
       );
 
     }
@@ -1277,29 +1595,56 @@ async function deleteServiceImage(
 
     /*
       Use the updated service
-      returned by the backend.
+      returned from backend.
     */
 
-    const updatedService =
-      data.service;
-
-
-    const index =
-      myServices.findIndex(
-        item => item._id === serviceId
-      );
-
-
     if (
-      index !== -1 &&
-      updatedService
+      updatedService &&
+      updatedService._id
     ) {
 
-      myServices[index] =
+      myServices[
+        serviceIndex
+      ] =
         updatedService;
 
       currentGalleryService =
         updatedService;
+
+    } else {
+
+      /*
+        Fallback in case backend
+        confirms deletion but does
+        not return the service.
+      */
+
+      const localService =
+        {
+          ...myServices[
+            serviceIndex
+          ]
+        };
+
+
+      localService.images =
+        Array.isArray(
+          localService.images
+        )
+          ? localService.images.filter(
+              (_, index) =>
+                index !== imageIndex
+            )
+          : [];
+
+
+      myServices[
+        serviceIndex
+      ] =
+        localService;
+
+      currentGalleryService =
+        localService;
 
     }
 
@@ -1309,13 +1654,14 @@ async function deleteServiceImage(
 
 
     /*
-      Reopen gallery if images
-      still remain.
+      Refresh gallery with the
+      updated service.
     */
 
     const refreshedService =
       myServices.find(
-        item => item._id === serviceId
+        item =>
+          item._id === serviceId
       );
 
 
@@ -1323,7 +1669,7 @@ async function deleteServiceImage(
       refreshedService &&
       getServiceImages(
         refreshedService
-      ).length
+      ).length > 0
     ) {
 
       openServiceGallery(
@@ -1335,6 +1681,11 @@ async function deleteServiceImage(
       closeServiceGallery();
 
     }
+
+
+    console.log(
+      "✅ SERVICE IMAGE DELETED SUCCESSFULLY"
+    );
 
 
   } catch (err) {
@@ -1571,20 +1922,25 @@ async function createService() {
   }
 
 
-  const getValue = id => {
+  const getValue =
+    id => {
 
-    const element =
-      document.getElementById(id);
+      const element =
+        document.getElementById(
+          id
+        );
 
-    return element
-      ? element.value.trim()
-      : "";
+      return element
+        ? element.value.trim()
+        : "";
 
-  };
+    };
 
 
   const name =
-    getValue("serviceName");
+    getValue(
+      "serviceName"
+    );
 
   const price =
     document.getElementById(
@@ -1597,10 +1953,14 @@ async function createService() {
     )?.value || "";
 
   const location =
-    getValue("serviceLocation");
+    getValue(
+      "serviceLocation"
+    );
 
   const description =
-    getValue("serviceDescription");
+    getValue(
+      "serviceDescription"
+    );
 
   const storeMode =
     Boolean(
@@ -1617,7 +1977,9 @@ async function createService() {
     );
 
   const storeLocation =
-    getValue("storeLocation");
+    getValue(
+      "storeLocation"
+    );
 
 
   if (
@@ -1729,8 +2091,10 @@ async function createService() {
     }
 
     if (submitText) {
+
       submitText.textContent =
         "Adding...";
+
     }
 
     setMessage(
@@ -1756,7 +2120,9 @@ async function createService() {
 
 
     const data =
-      await response.json();
+      await readResponse(
+        response
+      );
 
 
     console.log(
@@ -1781,11 +2147,6 @@ async function createService() {
       false
     );
 
-
-    /*
-      Add the returned service
-      immediately to the page.
-    */
 
     if (
       data &&
@@ -1845,8 +2206,10 @@ async function createService() {
     }
 
     if (submitText) {
+
       submitText.textContent =
         "Add Service";
+
     }
 
   }
@@ -1944,7 +2307,9 @@ function updateImagePreview() {
         (file, index) => {
 
           const url =
-            URL.createObjectURL(file);
+            URL.createObjectURL(
+              file
+            );
 
           return `
 
@@ -1965,7 +2330,9 @@ function updateImagePreview() {
                 onclick="removeSelectedImage(${index})"
                 title="Remove image"
               >
+
                 <i class="fa-solid fa-xmark"></i>
+
               </button>
 
 
@@ -1988,7 +2355,9 @@ function updateImagePreview() {
    REMOVE FORM PREVIEW IMAGE
 ========================================================= */
 
-function removeSelectedImage(index) {
+function removeSelectedImage(
+  index
+) {
 
   if (
     index < 0 ||
@@ -2010,12 +2379,6 @@ function removeSelectedImage(index) {
     );
 
 
-  /*
-    File inputs cannot be edited
-    directly, so rebuild the
-    FileList using DataTransfer.
-  */
-
   if (input) {
 
     const transfer =
@@ -2023,7 +2386,11 @@ function removeSelectedImage(index) {
 
     selectedImages.forEach(
       file => {
-        transfer.items.add(file);
+
+        transfer.items.add(
+          file
+        );
+
       }
     );
 
@@ -2127,14 +2494,19 @@ async function deleteMyService(
 
           headers: {
             "Authorization":
-              `Bearer ${token}`
+              `Bearer ${token}`,
+
+            "Accept":
+              "application/json"
           }
         }
       );
 
 
     const data =
-      await response.json();
+      await readResponse(
+        response
+      );
 
 
     if (!response.ok) {
@@ -2201,7 +2573,8 @@ function setMessage(
 
   message.classList.toggle(
     "success",
-    !isError && Boolean(text)
+    !isError &&
+    Boolean(text)
   );
 
 }
@@ -2217,11 +2590,15 @@ function setText(
 ) {
 
   const element =
-    document.getElementById(id);
+    document.getElementById(
+      id
+    );
 
   if (element) {
+
     element.textContent =
       value;
+
   }
 
 }
@@ -2231,14 +2608,31 @@ function setText(
    ESCAPE HTML
 ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
