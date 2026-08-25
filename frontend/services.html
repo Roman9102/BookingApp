@@ -13,9 +13,6 @@
 
 <div class="dashboard">
 
-<!-- =========================
-     SIDEBAR
-========================= -->
 <aside class="sidebar">
 
   <div class="logo">
@@ -60,9 +57,6 @@
 </aside>
 
 
-<!-- =========================
-     MAIN CONTENT
-========================= -->
 <main class="main-content">
 
   <header class="topbar">
@@ -80,10 +74,6 @@
 
   </header>
 
-
-  <!-- =====================================================
-       CUSTOMER SERVICES
-  ====================================================== -->
 
   <div id="customerServices">
 
@@ -113,10 +103,6 @@
 
   </div>
 
-
-  <!-- =====================================================
-       PROVIDER SERVICE MANAGEMENT
-  ====================================================== -->
 
   <div id="providerServices" style="display:none;">
 
@@ -156,7 +142,6 @@
     </section>
 
 
-    <!-- ADD / EDIT FORM -->
     <section
       id="serviceFormCard"
       class="glass-card"
@@ -355,7 +340,7 @@
             multiple
             style="width:100%;">
 
-          <small>
+          <small id="imageHelpText">
             You can select multiple pictures.
           </small>
 
@@ -413,7 +398,6 @@
     </section>
 
 
-    <!-- PROVIDER SERVICES -->
     <section
       id="providerServicesGrid"
       class="services-grid">
@@ -435,10 +419,6 @@
 
 <script>
 
-/* =====================================================
-   GLOBAL
-===================================================== */
-
 const API = "https://quickconnect-api-m617.onrender.com/api";
 
 const API_ROOT = API.replace(/\/api\/?$/, "");
@@ -456,10 +436,15 @@ let zoomed = false;
 let touchStartX = 0;
 let touchEndX = 0;
 
+/*
+  IMPORTANT:
+  Controls whether the form is being used for:
+  1. Creating a service
+  2. Editing a service
+  3. Adding pictures only
+*/
+let serviceFormMode = "create";
 
-/* =====================================================
-   USER
-===================================================== */
 
 let currentUser = null;
 
@@ -474,10 +459,6 @@ try {
 
 }
 
-
-/* =====================================================
-   AUTH HEADER
-===================================================== */
 
 function getToken() {
 
@@ -499,10 +480,6 @@ function authHeaders() {
 }
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
-
 function logout() {
 
   localStorage.removeItem("token");
@@ -515,9 +492,6 @@ function logout() {
 
 /* =====================================================
    IMAGE HELPERS
-   IMPORTANT:
-   Provider images must ALWAYS come from the service
-   itself. Category images are ONLY fallbacks.
 ===================================================== */
 
 function getServiceImages(service) {
@@ -530,10 +504,6 @@ function getServiceImages(service) {
   let rawImages = null;
 
 
-  /*
-    Normal backend format:
-    service.images = [...]
-  */
   if (Array.isArray(service.images)) {
 
     rawImages = service.images;
@@ -541,10 +511,6 @@ function getServiceImages(service) {
   }
 
 
-  /*
-    Some backend versions may return:
-    service.images = { ... }
-  */
   else if (
     service.images &&
     typeof service.images === "object"
@@ -567,10 +533,6 @@ function getServiceImages(service) {
   }
 
 
-  /*
-    Support common alternative backend fields
-    without replacing the real provider pictures.
-  */
   if (!rawImages) {
 
     if (Array.isArray(service.imageUrls)) {
@@ -600,9 +562,6 @@ function getServiceImages(service) {
   }
 
 
-  /*
-    Single-image fields.
-  */
   if (!rawImages) {
 
     const singleImage =
@@ -629,22 +588,6 @@ function getServiceImages(service) {
   }
 
 
-  /*
-    Normalize every image.
-
-    Backend may return:
-      "/uploads/a.jpg"
-      "uploads/a.jpg"
-      "a.jpg"
-      "https://..."
-      { url: "..." }
-      { path: "..." }
-      { filename: "..." }
-      { secure_url: "..." }
-
-    This prevents [object Object] and incorrect
-    fallback images.
-  */
   return rawImages
     .map(image => {
 
@@ -686,10 +629,6 @@ function getServiceImages(service) {
 }
 
 
-/* =====================================================
-   CONVERT PROVIDER IMAGE TO REAL URL
-===================================================== */
-
 function getImageUrl(image) {
 
   if (!image) {
@@ -709,9 +648,6 @@ function getImageUrl(image) {
   }
 
 
-  /*
-    Full external URL.
-  */
   if (
     value.startsWith("http://") ||
     value.startsWith("https://") ||
@@ -725,26 +661,15 @@ function getImageUrl(image) {
   }
 
 
-  /*
-    Remove accidental API prefix if backend
-    returned something like /api/uploads/...
-  */
   value = value.replace(/^\/api\/?/i, "");
 
 
-  /*
-    Remove localhost backend URL if an old image
-    was stored with it.
-  */
   value = value.replace(
     /^https?:\/\/localhost:\d+\/?/i,
     ""
   );
 
 
-  /*
-    Make sure the path starts with /.
-  */
   if (!value.startsWith("/")) {
 
     value = `/${value}`;
@@ -756,10 +681,6 @@ function getImageUrl(image) {
 
 }
 
-
-/* =====================================================
-   SERVICE IMAGE
-===================================================== */
 
 function getServiceImage(service, index = 0) {
 
@@ -908,10 +829,6 @@ async function initCustomerServices() {
         : data.services || [];
 
 
-    /*
-      Normalize images immediately after loading.
-      We do NOT replace them with category pictures.
-    */
     allServices.forEach(service => {
 
       service.__normalizedImages =
@@ -1230,12 +1147,6 @@ function createProviderCard(service) {
     "service-card";
 
 
-  /*
-    CRITICAL:
-    Images are taken ONLY from this service.
-    No category image is inserted here unless the
-    provider genuinely has no image.
-  */
   const images =
     getServiceImages(service);
 
@@ -1876,9 +1787,6 @@ async function loadProviderServices() {
         : data.services || [];
 
 
-    /*
-      Keep provider images exactly as returned.
-    */
     services.forEach(service => {
 
       service.__normalizedImages =
@@ -1887,11 +1795,6 @@ async function loadProviderServices() {
     });
 
 
-    /*
-      Save these services globally too.
-      This is important because provider gallery
-      needs the exact service object.
-    */
     allServices =
       services;
 
@@ -2279,6 +2182,10 @@ function createProviderManagementCard(service) {
 
 function openAddServiceForm() {
 
+  serviceFormMode =
+    "create";
+
+
   document.getElementById(
     "serviceForm"
   ).reset();
@@ -2307,6 +2214,12 @@ function openAddServiceForm() {
 
 
   document.getElementById(
+    "imageHelpText"
+  ).textContent =
+    "You can select multiple pictures.";
+
+
+  document.getElementById(
     "serviceFormCard"
   ).style.display =
     "block";
@@ -2327,6 +2240,10 @@ function openAddServiceForm() {
 ===================================================== */
 
 async function editService(serviceId) {
+
+  serviceFormMode =
+    "edit";
+
 
   const service =
     await getServiceById(serviceId);
@@ -2389,6 +2306,11 @@ async function editService(serviceId) {
 
 
   document.getElementById(
+    "serviceImages"
+  ).value = "";
+
+
+  document.getElementById(
     "serviceFormTitle"
   ).textContent =
     "Edit Service";
@@ -2398,6 +2320,12 @@ async function editService(serviceId) {
     "saveServiceText"
   ).textContent =
     "Update Service";
+
+
+  document.getElementById(
+    "imageHelpText"
+  ).textContent =
+    "Select new pictures if you want to add/replace them while editing.";
 
 
   document.getElementById(
@@ -2556,7 +2484,7 @@ function renderExistingImages(service) {
 
       <img
         src="${imageUrl || "categories/Other.jpg"}"
-        alt="Service image"
+        alt="Service image ${index + 1}"
         style="
           width:90px;
           height:90px;
@@ -2606,11 +2534,129 @@ function renderExistingImages(service) {
 
 /* =====================================================
    ADD PICTURES
+   FIXED
+
+   This NO LONGER opens the normal
+   edit-service save flow.
+
+   It uses:
+   POST /api/services/:id/images
 ===================================================== */
 
-function openAddPictures(serviceId) {
+async function openAddPictures(serviceId) {
 
-  editService(serviceId);
+  const service =
+    await getServiceById(serviceId);
+
+
+  if (!service) {
+
+    alert(
+      "Unable to load this service."
+    );
+
+    return;
+
+  }
+
+
+  serviceFormMode =
+    "addPictures";
+
+
+  document.getElementById(
+    "serviceForm"
+  ).reset();
+
+
+  document.getElementById(
+    "serviceId"
+  ).value =
+    service._id;
+
+
+  document.getElementById(
+    "serviceName"
+  ).value =
+    service.name || "";
+
+
+  document.getElementById(
+    "serviceDescription"
+  ).value =
+    service.description || "";
+
+
+  document.getElementById(
+    "servicePrice"
+  ).value =
+    service.price || "";
+
+
+  document.getElementById(
+    "serviceCategory"
+  ).value =
+    service.category || "";
+
+
+  document.getElementById(
+    "storeLocation"
+  ).value =
+    service.storeLocation || "";
+
+
+  document.getElementById(
+    "storeMode"
+  ).value =
+    service.storeMode || "";
+
+
+  document.getElementById(
+    "mobileMode"
+  ).value =
+    service.mobileMode || "";
+
+
+  renderExistingImages(
+    service
+  );
+
+
+  document.getElementById(
+    "serviceImages"
+  ).value = "";
+
+
+  document.getElementById(
+    "serviceFormTitle"
+  ).textContent =
+    "Add Pictures";
+
+
+  document.getElementById(
+    "saveServiceText"
+  ).textContent =
+    "Upload Pictures";
+
+
+  document.getElementById(
+    "imageHelpText"
+  ).textContent =
+    "Select the new pictures you want to add. Existing pictures will stay unchanged. Maximum 5 pictures total.";
+
+
+  document.getElementById(
+    "serviceFormCard"
+  ).style.display =
+    "block";
+
+
+  document.getElementById(
+    "serviceFormCard"
+  ).scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
 
 
   setTimeout(() => {
@@ -2649,6 +2695,191 @@ document.getElementById(
       );
 
 
+    const imageInput =
+      document.getElementById(
+        "serviceImages"
+      );
+
+
+    /*
+      ===================================================
+      ADD PICTURES MODE
+      ===================================================
+
+      This is the important fix.
+
+      We DO NOT send the whole service form.
+
+      We send only:
+        images
+
+      to:
+
+        POST /api/services/:id/images
+
+      Therefore the backend appends the new images
+      to the existing images array.
+    */
+
+    if (
+      serviceFormMode ===
+      "addPictures"
+    ) {
+
+      if (
+        !serviceId
+      ) {
+
+        alert(
+          "Service ID is missing."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !imageInput.files ||
+        imageInput.files.length === 0
+      ) {
+
+        alert(
+          "Please select at least one picture."
+        );
+
+        return;
+
+      }
+
+
+      const formData =
+        new FormData();
+
+
+      /*
+        IMPORTANT:
+
+        Append the files in the exact
+        order selected by the user.
+
+        The backend receives them as
+        req.files in the same order.
+      */
+
+      Array.from(
+        imageInput.files
+      ).forEach(file => {
+
+        formData.append(
+          "images",
+          file
+        );
+
+      });
+
+
+      try {
+
+        const res =
+          await fetch(
+            `${API}/services/${serviceId}/images`,
+            {
+              method:"POST",
+              headers:{
+                ...authHeaders()
+              },
+              body:formData
+            }
+          );
+
+
+        const data =
+          await res.json()
+            .catch(() => ({}));
+
+
+        if (!res.ok) {
+
+          throw new Error(
+            data.message ||
+            "Unable to upload pictures."
+          );
+
+        }
+
+
+        /*
+          The backend returns the complete
+          updated service.
+
+          Refresh the provider list so the
+          exact new images appear immediately.
+        */
+
+        serviceFormMode =
+          "edit";
+
+
+        closeServiceForm();
+
+
+        await loadProviderServices();
+
+
+        /*
+          If desired, we can keep the exact
+          service object fresh in memory.
+        */
+
+        if (data && data._id) {
+
+          const index =
+            allServices.findIndex(
+              service =>
+                String(service._id) ===
+                String(data._id)
+            );
+
+
+          if (index !== -1) {
+
+            allServices[index] =
+              data;
+
+          }
+
+        }
+
+
+        return;
+
+      } catch (error) {
+
+        console.error(
+          "ADD PICTURES ERROR:",
+          error
+        );
+
+
+        alert(
+          error.message
+        );
+
+
+        return;
+
+      }
+
+    }
+
+
+    /*
+      ===================================================
+      NORMAL CREATE / EDIT MODE
+      ===================================================
+    */
+
     const formData =
       new FormData(form);
 
@@ -2663,7 +2894,9 @@ document.getElementById(
         "POST";
 
 
-      if (serviceId) {
+      if (
+        serviceId
+      ) {
 
         url =
           `${API}/services/${serviceId}`;
@@ -2894,6 +3127,16 @@ function closeServiceForm() {
   ).value =
     "";
 
+
+  document.getElementById(
+    "existingImages"
+  ).innerHTML =
+    "";
+
+
+  serviceFormMode =
+    "create";
+
 }
 
 
@@ -2911,10 +3154,6 @@ async function openGallery(serviceId) {
     );
 
 
-  /*
-    If the service isn't already in memory,
-    get the exact service from the backend.
-  */
   if (!service) {
 
     service =
@@ -2932,11 +3171,6 @@ async function openGallery(serviceId) {
   }
 
 
-  /*
-    IMPORTANT:
-    Never use categoryImages here.
-    The gallery receives ONLY this provider's images.
-  */
   currentGalleryImages =
     getServiceImages(service);
 
