@@ -1,20 +1,16 @@
 /* =========================
    serviceController.js
-   FULL FIXED VERSION
+   QUICKCONNECT SERVICE CONTROLLER
 
-   FIXES:
-   - Provider services stay separated
-   - /api/services = public marketplace
-   - /api/services/my = logged-in provider only
-   - Upload directory is absolute and always created
-   - Images and thumbnails remain supported
+   IMAGE SYSTEM:
+   - Uses one absolute uploads directory
+   - Stores image paths consistently as /uploads/<filename>
+   - Serves correctly through server.js
+   - Supports old stored image formats
    - Maximum 5 images
-   - Mobile-only services still satisfy existing schema
-   - HTML yes/no service modes supported
-   - Single image deletion fixed
-   - Image path normalization supported
-   - Physical image files are removed
-   - Existing service functionality preserved
+   - Provider services remain separated
+   - Individual image deletion supported
+   - Physical files are deleted safely
 ========================= */
 
 import Service from "../models/service.js";
@@ -23,1547 +19,1126 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-
-/* =========================
+/* =========================================================
    PATH SETUP
-========================= */
+========================================================= */
 
-const __filename =
-  fileURLToPath(import.meta.url);
-
-const __dirname =
-  path.dirname(__filename);
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /*
   Backend/
     controllers/
       serviceController.js
+    uploads/
 
   Therefore uploads is:
-
     Backend/uploads
 */
 
-const UPLOADS_DIR =
-  path.resolve(
-    __dirname,
-    "../uploads"
-  );
-
-
-/*
-  Always make sure the uploads
-  directory exists.
-*/
+const UPLOADS_DIR = path.resolve(__dirname, "../uploads");
 
 if (!fs.existsSync(UPLOADS_DIR)) {
-
-  fs.mkdirSync(
-    UPLOADS_DIR,
-    {
-      recursive: true
-    }
-  );
-
+  fs.mkdirSync(UPLOADS_DIR, {
+    recursive: true
+  });
 }
 
+console.log("SERVICE UPLOADS DIRECTORY:", UPLOADS_DIR);
 
-/* =========================
-   MULTER CONFIG
-========================= */
+/* =========================================================
+   MULTER
+========================================================= */
 
-const storage =
-  multer.diskStorage({
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOADS_DIR);
+  },
 
-    destination: (
-      req,
-      file,
-      cb
-    ) => {
+  filename: (req, file, cb) => {
+    const extension = path.extname(
+      file.originalname || ""
+    ).toLowerCase();
 
-      cb(
-        null,
-        UPLOADS_DIR
-      );
+    const safeExtension =
+      extension && extension.length <= 10
+        ? extension
+        : "";
 
-    },
+    const uniqueName =
+      `${Date.now()}-${Math.round(
+        Math.random() * 1e9
+      )}${safeExtension}`;
 
+    cb(null, uniqueName);
+  }
+});
 
-    filename: (
-      req,
-      file,
-      cb
-    ) => {
+const upload = multer({
+  storage,
 
-      const extension =
-        path.extname(
-          file.originalname
-        ).toLowerCase();
+  limits: {
+    files: 5,
+    fileSize: 10 * 1024 * 1024
+  },
 
-
-      const uniqueName =
-        `${Date.now()}-${Math.round(
-          Math.random() * 1e9
-        )}${extension}`;
-
-
-      cb(
-        null,
-        uniqueName
-      );
-
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype &&
+      file.mimetype.startsWith("image/")
+    ) {
+      return cb(null, true);
     }
 
-  });
+    return cb(
+      new Error("Only image files are allowed.")
+    );
+  }
+}).array("images", 5);
 
-
-const upload =
-  multer({
-
-    storage,
-
-    limits: {
-      files: 5
-    }
-
-  }).array(
-    "images",
-    5
-  );
-
-
-/* =====================================================
-   IMAGE HELPERS
-===================================================== */
-
+/* =========================================================
+   IMAGE PATH HELPERS
+========================================================= */
 
 /*
-  Convert different possible image
-  formats into a normal path.
+  Database image values should always end up looking like:
 
-  Examples:
+      /uploads/filename.jpg
 
-  /uploads/file.jpg
-  uploads/file.jpg
-  https://example.com/uploads/file.jpg
+  This helper also understands older values such as:
 
-  all become:
-
-  /uploads/file.jpg
+      uploads/filename.jpg
+      /api/uploads/filename.jpg
+      https://quickconnect-api.../uploads/filename.jpg
+      http://localhost:5000/uploads/filename.jpg
 */
 
-function normalizeImagePath(
-  image
-) {
-
+function normalizeImagePath(image) {
   if (!image) {
     return "";
   }
 
-
-  let value =
-    String(image).trim();
-
+  let value = String(image).trim();
 
   if (!value) {
     return "";
   }
 
-
   try {
-
-    value =
-      decodeURIComponent(
-        value
-      );
-
-  } catch {}
-
-
-  /*
-    If a complete URL was stored,
-    use only its pathname.
-  */
-
-  try {
-
-    if (
-      value.startsWith(
-        "http://"
-      ) ||
-      value.startsWith(
-        "https://"
-      )
-    ) {
-
-      const parsed =
-        new URL(
-          value
-        );
-
-      value =
-        parsed.pathname;
-
-    }
-
-  } catch {}
-
-
-  /*
-    Remove /api if someone
-    accidentally stored it.
-  */
-
-  value =
-    value.replace(
-      /^\/api\/?/i,
-      "/"
-    );
-
-
-  /*
-    Ensure leading slash.
-  */
-
-  if (
-    !value.startsWith("/")
-  ) {
-
-    value =
-      `/${value}`;
-
+    value = decodeURIComponent(value);
+  } catch {
+    // Keep original value.
   }
 
+  /* Full URL */
+  try {
+    if (
+      value.startsWith("http://") ||
+      value.startsWith("https://")
+    ) {
+      const parsed = new URL(value);
+      value = parsed.pathname;
+    }
+  } catch {
+    // Keep original value.
+  }
+
+  /* Backslashes -> forward slashes */
+  value = value.replaceAll("\\", "/");
+
+  /* Remove duplicate leading slashes */
+  value = value.replace(/^\/+/, "/");
+
+  /* Remove accidental API prefix */
+  value = value.replace(/^\/api\/+/i, "/");
+
+  /* Remove accidental domain-less API path */
+  value = value.replace(/^api\/+/i, "/");
+
+  /* Ensure uploads prefix for bare filenames */
+  if (
+    !value.startsWith("/uploads/")
+  ) {
+    const uploadsIndex =
+      value.toLowerCase().indexOf("/uploads/");
+
+    if (uploadsIndex !== -1) {
+      value =
+        value.substring(uploadsIndex);
+    }
+  }
+
+  /* Bare filename */
+  if (
+    !value.startsWith("/uploads/")
+  ) {
+    const filename = path.basename(value);
+
+    if (
+      filename &&
+      filename !== "." &&
+      filename !== "/"
+    ) {
+      value = `/uploads/${filename}`;
+    }
+  }
 
   return value;
-
 }
 
-
 /*
-  Get physical filename safely.
+  Return only the physical filename.
 */
 
-function getImageFilename(
-  image
-) {
-
+function getImageFilename(image) {
   const normalized =
-    normalizeImagePath(
-      image
-    );
-
+    normalizeImagePath(image);
 
   if (!normalized) {
     return "";
   }
 
-
-  return path.basename(
-    normalized
-  );
-
+  return path.basename(normalized);
 }
 
-
 /*
-  Delete a physical uploaded file.
-
-  This intentionally does not throw
-  if the file is already missing.
+  Get the absolute physical path safely.
 */
 
-function deletePhysicalImage(
-  image
-) {
-
+function getPhysicalImagePath(image) {
   const filename =
-    getImageFilename(
-      image
-    );
-
+    getImageFilename(image);
 
   if (!filename) {
-    return;
+    return "";
   }
 
-
   const fullPath =
-    path.join(
+    path.resolve(
       UPLOADS_DIR,
       filename
     );
 
+  /*
+    Prevent path traversal.
+  */
+
+  const uploadsRoot =
+    path.resolve(UPLOADS_DIR) + path.sep;
+
+  if (
+    !fullPath.startsWith(
+      uploadsRoot
+    )
+  ) {
+    return "";
+  }
+
+  return fullPath;
+}
+
+/*
+  Delete physical image.
+*/
+
+function deletePhysicalImage(image) {
+  const fullPath =
+    getPhysicalImagePath(image);
+
+  if (!fullPath) {
+    return;
+  }
 
   try {
-
-    if (
-      fs.existsSync(
-        fullPath
-      )
-    ) {
-
-      fs.unlinkSync(
-        fullPath
-      );
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
 
       console.log(
         "IMAGE FILE DELETED:",
         fullPath
       );
-
-    } else {
-
-      console.log(
-        "IMAGE FILE ALREADY MISSING:",
-        fullPath
-      );
-
     }
-
   } catch (error) {
-
     console.error(
-      "PHYSICAL IMAGE DELETE ERROR:",
+      "IMAGE FILE DELETE ERROR:",
       error
     );
-
   }
-
 }
 
+/*
+  Convert whatever is in the database into the
+  canonical database format.
 
-/* =========================
+  IMPORTANT:
+  We store relative paths, never localhost URLs
+  and never Render URLs.
+*/
+
+function canonicalImagePath(image) {
+  const normalized =
+    normalizeImagePath(image);
+
+  if (!normalized) {
+    return "";
+  }
+
+  const filename =
+    getImageFilename(normalized);
+
+  if (!filename) {
+    return "";
+  }
+
+  return `/uploads/${filename}`;
+}
+
+/*
+  Clean image arrays before returning them.
+*/
+
+function normalizeServiceImages(service) {
+  const existingImages =
+    Array.isArray(service.images)
+      ? service.images
+      : [];
+
+  const normalizedImages =
+    existingImages
+      .map(canonicalImagePath)
+      .filter(Boolean)
+      .slice(0, 5);
+
+  /*
+    Old services may only have image.
+  */
+
+  if (
+    normalizedImages.length === 0 &&
+    service.image
+  ) {
+    const oldImage =
+      canonicalImagePath(service.image);
+
+    if (oldImage) {
+      normalizedImages.push(oldImage);
+    }
+  }
+
+  service.images =
+    normalizedImages;
+
+  service.image =
+    normalizedImages[0] || "";
+
+  return service;
+}
+
+/* =========================================================
    CREATE SERVICE
-========================= */
+========================================================= */
 
-export const createService =
-  (
+export const createService = (
+  req,
+  res
+) => {
+  upload(
     req,
-    res
-  ) => {
-
-    upload(
-      req,
-      res,
-      async (err) => {
-
-        if (err) {
-
-          console.error(
-            "MULTER CREATE ERROR:",
-            err
-          );
-
-          return res.status(400).json({
-            message:
-              err.message
-          });
-
-        }
-
-
-        try {
-
-          /* =========================
-             AUTHORIZATION
-          ========================= */
-
-          if (!req.user) {
-
-            return res.status(401).json({
-              message:
-                "Not authorized"
-            });
-
-          }
-
-
-          if (
-            req.user.role !==
-            "serviceProvider"
-          ) {
-
-            return res.status(403).json({
-              message:
-                "Only service providers can create services."
-            });
-
-          }
-
-
-          /* =========================
-             BODY
-          ========================= */
-
-          const {
-            name,
-            description,
-            price,
-            storeLocation,
-            storeMode,
-            mobileMode,
-            category,
-            providerName,
-            rating,
-            location
-          } = req.body;
-
-
-          if (
-            !name ||
-            !name.trim()
-          ) {
-
-            return res.status(400).json({
-              message:
-                "Service name is required."
-            });
-
-          }
-
-
-          /* =========================
-             SERVICE MODE
-          ========================= */
-
-          const serviceMode = [];
-
-
-          /*
-            Your HTML sends:
-
-              yes
-              no
-
-            We also support:
-
-              true
-              false
-
-            so existing forms remain
-            compatible.
-          */
-
-          if (
-            storeMode === "yes" ||
-            storeMode === "true" ||
-            storeMode === true
-          ) {
-
-            serviceMode.push(
-              "store"
-            );
-
-          }
-
-
-          if (
-            mobileMode === "yes" ||
-            mobileMode === "true" ||
-            mobileMode === true
-          ) {
-
-            serviceMode.push(
-              "mobile"
-            );
-
-          }
-
-
-          if (
-            serviceMode.length === 0
-          ) {
-
-            return res.status(400).json({
-              message:
-                "Please select at least one service mode."
-            });
-
-          }
-
-
-          /* =========================
-             STORE LOCATION
-          ========================= */
-
-          /*
-            Your existing schema requires
-            storeLocation.
-
-            Mobile-only services therefore
-            receive a harmless placeholder.
-          */
-
-          const finalStoreLocation =
-            storeLocation &&
-            storeLocation.trim()
-              ? storeLocation.trim()
-              : "Mobile service";
-
-
-          /* =========================
-             IMAGES
-          ========================= */
-
-          const images =
-            Array.isArray(
-              req.files
-            )
-              ? req.files.map(
-                  (file) =>
-                    `/uploads/${file.filename}`
-                )
-              : [];
-
-
-          /* =========================
-             PROVIDER NAME
-          ========================= */
-
-          const finalProviderName =
-            providerName &&
-            providerName.trim()
-              ? providerName.trim()
-              : (
-                  req.user.name ||
-                  "Unknown Provider"
-                );
-
-
-          /* =========================
-             CREATE SERVICE
-          ========================= */
-
-          const service =
-            await Service.create({
-
-              name:
-                name.trim(),
-
-              description:
-                description || "",
-
-              price:
-                Number(
-                  price || 0
-                ),
-
-              serviceMode,
-
-              storeLocation:
-                finalStoreLocation,
-
-              category:
-                category &&
-                category.trim()
-                  ? category.trim()
-                  : "Uncategorized",
-
-              /*
-                Always link service
-                to logged-in provider.
-              */
-
-              provider:
-                req.user._id,
-
-              /*
-                Main image remains
-                for old UI compatibility.
-              */
-
-              image:
-                images[0] || "",
-
-              /*
-                Full gallery.
-              */
-
-              images,
-
-              providerName:
-                finalProviderName,
-
-              rating:
-                Number(
-                  rating || 0
-                ),
-
-              location:
-                location || ""
-
-            });
-
-
-          console.log(
-            "SERVICE CREATED:",
-            service._id
-          );
-
-
-          return res.status(201).json(
-            service
-          );
-
-
-        } catch (err) {
-
-          console.error(
-            "CREATE SERVICE ERROR:",
-            err
-          );
-
-
-          /*
-            Clean up newly uploaded
-            files if database creation
-            failed.
-          */
-
-          if (
-            Array.isArray(
-              req.files
-            )
-          ) {
-
-            for (
-              const file
-              of req.files
-            ) {
-
-              try {
-
-                if (
-                  fs.existsSync(
-                    file.path
-                  )
-                ) {
-
-                  fs.unlinkSync(
-                    file.path
-                  );
-
-                }
-
-              } catch (
-                deleteError
-              ) {
-
-                console.error(
-                  "UPLOAD CLEANUP ERROR:",
-                  deleteError
-                );
-
-              }
-
-            }
-
-          }
-
-
-          return res.status(500).json({
-            message:
-              err.message
-          });
-
-        }
-
+    res,
+    async (err) => {
+      if (err) {
+        console.error(
+          "MULTER CREATE ERROR:",
+          err
+        );
+
+        return res.status(400).json({
+          message:
+            err.message ||
+            "Unable to upload images."
+        });
       }
 
-    );
+      try {
+        if (!req.user) {
+          return res.status(401).json({
+            message: "Not authorized"
+          });
+        }
 
-  };
+        if (
+          req.user.role !==
+          "serviceProvider"
+        ) {
+          return res.status(403).json({
+            message:
+              "Only service providers can create services."
+          });
+        }
 
+        const {
+          name,
+          description,
+          price,
+          storeLocation,
+          storeMode,
+          mobileMode,
+          category,
+          providerName,
+          rating,
+          location
+        } = req.body;
 
-/* =========================
+        if (
+          !name ||
+          !String(name).trim()
+        ) {
+          return res.status(400).json({
+            message:
+              "Service name is required."
+          });
+        }
+
+        const serviceMode = [];
+
+        const storeSelected =
+          storeMode === "yes" ||
+          storeMode === "true" ||
+          storeMode === true;
+
+        const mobileSelected =
+          mobileMode === "yes" ||
+          mobileMode === "true" ||
+          mobileMode === true;
+
+        if (storeSelected) {
+          serviceMode.push("store");
+        }
+
+        if (mobileSelected) {
+          serviceMode.push("mobile");
+        }
+
+        if (serviceMode.length === 0) {
+          return res.status(400).json({
+            message:
+              "Please select at least one service mode."
+          });
+        }
+
+        const finalStoreLocation =
+          storeLocation &&
+          String(storeLocation).trim()
+            ? String(storeLocation).trim()
+            : "Mobile service";
+
+        const images =
+          Array.isArray(req.files)
+            ? req.files
+                .map(
+                  file =>
+                    `/uploads/${file.filename}`
+                )
+                .slice(0, 5)
+            : [];
+
+        const finalProviderName =
+          providerName &&
+          String(providerName).trim()
+            ? String(providerName).trim()
+            : (
+                req.user.name ||
+                "Unknown Provider"
+              );
+
+        const service =
+          await Service.create({
+            name:
+              String(name).trim(),
+
+            description:
+              description
+                ? String(description)
+                : "",
+
+            price:
+              Number(price || 0),
+
+            serviceMode,
+
+            storeLocation:
+              finalStoreLocation,
+
+            category:
+              category &&
+              String(category).trim()
+                ? String(category).trim()
+                : "Uncategorized",
+
+            provider:
+              req.user._id,
+
+            image:
+              images[0] || "",
+
+            images,
+
+            providerName:
+              finalProviderName,
+
+            rating:
+              Number(rating || 0),
+
+            location:
+              location
+                ? String(location)
+                : ""
+          });
+
+        console.log(
+          "SERVICE CREATED:",
+          service._id
+        );
+
+        return res.status(201).json(
+          normalizeServiceImages(service)
+        );
+      } catch (error) {
+        console.error(
+          "CREATE SERVICE ERROR:",
+          error
+        );
+
+        if (Array.isArray(req.files)) {
+          for (const file of req.files) {
+            try {
+              if (
+                file.path &&
+                fs.existsSync(file.path)
+              ) {
+                fs.unlinkSync(file.path);
+              }
+            } catch (cleanupError) {
+              console.error(
+                "CREATE IMAGE CLEANUP ERROR:",
+                cleanupError
+              );
+            }
+          }
+        }
+
+        return res.status(500).json({
+          message:
+            error.message ||
+            "Unable to create service."
+        });
+      }
+    }
+  );
+};
+
+/* =========================================================
    GET ALL SERVICES
-   PUBLIC MARKETPLACE
-========================= */
+========================================================= */
 
 export const getServices =
-  async (
-    req,
-    res
-  ) => {
-
+  async (req, res) => {
     try {
-
       const services =
         await Service.find({})
           .sort({
             createdAt: -1
           });
 
+      const cleanedServices =
+        services.map(
+          service =>
+            normalizeServiceImages(
+              service
+            )
+        );
 
       return res.json(
-        services
+        cleanedServices
       );
-
-
-    } catch (err) {
-
+    } catch (error) {
       console.error(
         "GET SERVICES ERROR:",
-        err
+        error
       );
-
 
       return res.status(500).json({
         message:
-          err.message
+          error.message ||
+          "Unable to load services."
       });
-
     }
-
   };
 
-
-/* =========================
+/* =========================================================
    GET MY SERVICES
-   PROVIDER DASHBOARD
-========================= */
+========================================================= */
 
 export const getMyServices =
-  async (
-    req,
-    res
-  ) => {
-
+  async (req, res) => {
     try {
-
       if (!req.user) {
-
         return res.status(401).json({
           message:
             "Not authorized"
         });
-
       }
-
 
       if (
         req.user.role !==
         "serviceProvider"
       ) {
-
         return res.status(403).json({
           message:
             "Only service providers can access their dashboard services."
         });
-
       }
-
 
       const services =
         await Service.find({
-
           provider:
             req.user._id
-
-        })
-        .sort({
+        }).sort({
           createdAt: -1
         });
 
+      const cleanedServices =
+        services.map(
+          service =>
+            normalizeServiceImages(
+              service
+            )
+        );
 
       return res.json(
-        services
+        cleanedServices
       );
-
-
-    } catch (err) {
-
+    } catch (error) {
       console.error(
         "GET MY SERVICES ERROR:",
-        err
+        error
       );
-
 
       return res.status(500).json({
         message:
-          err.message
+          error.message ||
+          "Unable to load your services."
       });
-
     }
-
   };
 
-
-/* =========================
+/* =========================================================
    DELETE SERVICE
-========================= */
+========================================================= */
 
 export const deleteService =
-  async (
-    req,
-    res
-  ) => {
-
+  async (req, res) => {
     try {
-
       if (!req.user) {
-
         return res.status(401).json({
           message:
             "Not authorized"
         });
-
       }
-
 
       const service =
         await Service.findById(
           req.params.id
         );
 
-
       if (!service) {
-
         return res.status(404).json({
           message:
             "Service not found"
         });
-
       }
-
 
       if (
         !service.provider ||
         service.provider.toString() !==
           req.user._id.toString()
       ) {
-
         return res.status(403).json({
           message:
             "You are not authorized to delete this service."
         });
-
       }
 
+      const images =
+        Array.isArray(service.images)
+          ? service.images
+          : [];
 
-      /* =========================
-         DELETE SERVICE IMAGES
-      ========================= */
+      for (const image of images) {
+        deletePhysicalImage(image);
+      }
+
+      /*
+        Also remove old main image if it
+        isn't already represented in images.
+      */
 
       if (
-        Array.isArray(
-          service.images
+        service.image &&
+        !images.some(
+          image =>
+            canonicalImagePath(image) ===
+            canonicalImagePath(
+              service.image
+            )
         )
       ) {
-
-        for (
-          const imagePath
-          of service.images
-        ) {
-
-          deletePhysicalImage(
-            imagePath
-          );
-
-        }
-
+        deletePhysicalImage(
+          service.image
+        );
       }
-
-
-      /* =========================
-         DELETE SERVICE
-      ========================= */
 
       await Service.findByIdAndDelete(
         req.params.id
       );
 
-
       return res.json({
         message:
           "Service deleted successfully"
       });
-
-
-    } catch (err) {
-
+    } catch (error) {
       console.error(
         "DELETE SERVICE ERROR:",
-        err
+        error
       );
-
 
       return res.status(500).json({
         message:
-          err.message
+          error.message ||
+          "Unable to delete service."
       });
-
     }
-
   };
 
-
-/* =========================
-   ADD IMAGES
-   APPEND + MAX 5
-========================= */
+/* =========================================================
+   ADD SERVICE IMAGES
+========================================================= */
 
 export const addServiceImages =
-  (
-    req,
-    res
-  ) => {
-
+  (req, res) => {
     upload(
       req,
       res,
       async (err) => {
-
         if (err) {
-
           return res.status(400).json({
             message:
-              err.message
+              err.message ||
+              "Unable to upload images."
           });
-
         }
 
-
         try {
-
           if (!req.user) {
-
             return res.status(401).json({
               message:
                 "Not authorized"
             });
-
           }
-
 
           const service =
             await Service.findById(
               req.params.id
             );
 
-
           if (!service) {
-
             return res.status(404).json({
               message:
                 "Service not found"
             });
-
           }
-
 
           if (
             !service.provider ||
             service.provider.toString() !==
               req.user._id.toString()
           ) {
-
             return res.status(403).json({
               message:
                 "You are not authorized to modify this service."
             });
-
           }
 
+          normalizeServiceImages(
+            service
+          );
 
-          if (
-            !Array.isArray(
-              service.images
-            )
-          ) {
-
-            service.images = [];
-
-          }
-
-
-          const newImages =
-            Array.isArray(
-              req.files
-            )
-              ? req.files.map(
-                  (file) =>
-                    `/uploads/${file.filename}`
-                )
-              : [];
-
+          const existingImages =
+            service.images;
 
           const availableSlots =
             Math.max(
               0,
               5 -
-                service.images.length
+                existingImages.length
             );
 
+          const uploadedImages =
+            Array.isArray(req.files)
+              ? req.files.map(
+                  file =>
+                    `/uploads/${file.filename}`
+                )
+              : [];
 
           const imagesToAdd =
-            newImages.slice(
+            uploadedImages.slice(
               0,
               availableSlots
             );
 
-
-          /*
-            Delete uploaded files
-            that exceed the 5 image
-            maximum.
-          */
-
           const rejectedImages =
-            newImages.slice(
+            uploadedImages.slice(
               availableSlots
             );
 
-
           for (
-            const imagePath
-            of rejectedImages
+            const image of rejectedImages
           ) {
-
-            deletePhysicalImage(
-              imagePath
-            );
-
+            deletePhysicalImage(image);
           }
 
-
           service.images = [
-            ...service.images,
+            ...existingImages,
             ...imagesToAdd
-          ].slice(
-            0,
-            5
-          );
-
+          ].slice(0, 5);
 
           service.image =
-            service.images[0] ||
-            "";
-
+            service.images[0] || "";
 
           await service.save();
 
-
           return res.json(
-            service
+            normalizeServiceImages(
+              service
+            )
           );
-
-
-        } catch (err) {
-
+        } catch (error) {
           console.error(
             "ADD SERVICE IMAGES ERROR:",
-            err
+            error
           );
 
-
-          /*
-            If database update failed,
-            clean up newly uploaded files.
-          */
-
-          if (
-            Array.isArray(
-              req.files
-            )
-          ) {
-
-            for (
-              const file
-              of req.files
-            ) {
-
+          if (Array.isArray(req.files)) {
+            for (const file of req.files) {
               try {
-
                 if (
-                  fs.existsSync(
-                    file.path
-                  )
+                  file.path &&
+                  fs.existsSync(file.path)
                 ) {
-
-                  fs.unlinkSync(
-                    file.path
-                  );
-
+                  fs.unlinkSync(file.path);
                 }
-
-              } catch (
-                cleanupError
-              ) {
-
+              } catch (cleanupError) {
                 console.error(
                   "ADD IMAGE CLEANUP ERROR:",
                   cleanupError
                 );
-
               }
-
             }
-
           }
-
 
           return res.status(500).json({
             message:
-              err.message
+              error.message ||
+              "Unable to add service images."
           });
-
         }
-
       }
-
     );
-
   };
 
-
-/* =========================
-   DELETE SINGLE IMAGE
-   FIXED
-========================= */
+/* =========================================================
+   DELETE SINGLE SERVICE IMAGE
+========================================================= */
 
 export const deleteServiceImage =
-  async (
-    req,
-    res
-  ) => {
-
+  async (req, res) => {
     try {
-
-      /* =========================
-         AUTHORIZATION
-      ========================= */
-
       if (!req.user) {
-
         return res.status(401).json({
           message:
             "Not authorized"
         });
-
       }
-
-
-      /* =========================
-         FIND SERVICE
-      ========================= */
 
       const service =
         await Service.findById(
           req.params.id
         );
 
-
       if (!service) {
-
         return res.status(404).json({
           message:
             "Service not found"
         });
-
       }
-
-
-      /* =========================
-         OWNER CHECK
-      ========================= */
 
       if (
         !service.provider ||
         service.provider.toString() !==
           req.user._id.toString()
       ) {
-
         return res.status(403).json({
           message:
             "You are not authorized to modify this service."
         });
-
       }
 
+      normalizeServiceImages(
+        service
+      );
 
-      /* =========================
-         MAKE SURE IMAGES EXISTS
-      ========================= */
-
-      if (
-        !Array.isArray(
-          service.images
-        )
-      ) {
-
-        service.images = [];
-
-      }
-
-
-      /* =========================
-         GET IMAGE
-      ========================= */
-
-      let image =
+      let requestedImage =
         req.body?.image;
 
-
-      if (!image) {
-
+      if (!requestedImage) {
         return res.status(400).json({
           message:
             "Image is required."
         });
-
       }
 
-
-      image =
-        String(image).trim();
-
-
-      if (!image) {
-
-        return res.status(400).json({
-          message:
-            "Image is required."
-        });
-
-      }
-
-
-      /* =========================
-         NORMALIZE REQUESTED IMAGE
-      ========================= */
-
-      const normalizedRequestedImage =
-        normalizeImagePath(
-          image
+      requestedImage =
+        canonicalImagePath(
+          requestedImage
         );
 
-
-      /* =========================
-         FIND IMAGE
-      ========================= */
+      if (!requestedImage) {
+        return res.status(400).json({
+          message:
+            "Invalid image path."
+        });
+      }
 
       const imageIndex =
         service.images.findIndex(
-          storedImage => {
-
-            return (
-              normalizeImagePath(
-                storedImage
-              ) ===
-              normalizedRequestedImage
-            );
-
-          }
+          storedImage =>
+            canonicalImagePath(
+              storedImage
+            ) === requestedImage
         );
 
-
-      if (
-        imageIndex === -1
-      ) {
-
+      if (imageIndex === -1) {
         return res.status(404).json({
-
           message:
             "Image not found in this service.",
-
-          requestedImage:
-            image,
-
+          requestedImage,
           availableImages:
             service.images
-
         });
-
       }
-
-
-      /* =========================
-         GET ACTUAL STORED IMAGE
-      ========================= */
 
       const storedImage =
         service.images[
           imageIndex
         ];
 
-
-      /* =========================
-         DELETE PHYSICAL FILE
-      ========================= */
-
       deletePhysicalImage(
         storedImage
       );
 
-
-      /* =========================
-         REMOVE FROM DATABASE
-      ========================= */
-
       service.images =
         service.images.filter(
-          (
-            currentImage,
-            index
-          ) => {
-
-            return (
-              index !==
-              imageIndex
-            );
-
-          }
+          (_, index) =>
+            index !== imageIndex
         );
 
-
-      /*
-        Keep old single image field
-        synchronized.
-      */
-
       service.image =
-        service.images[0] ||
-        "";
-
+        service.images[0] || "";
 
       await service.save();
 
-
-      /* =========================
-         SUCCESS RESPONSE
-      ========================= */
-
       return res.status(200).json({
-
         message:
           "Image deleted successfully",
 
-        service
-
+        service:
+          normalizeServiceImages(
+            service
+          )
       });
-
-
-    } catch (err) {
-
+    } catch (error) {
       console.error(
         "DELETE SERVICE IMAGE ERROR:",
-        err
+        error
       );
 
-
       return res.status(500).json({
-
         message:
           "Unable to delete service image.",
-
         error:
-          err.message
-
+          error.message
       });
-
     }
-
   };
 
-
-/* =========================
+/* =========================================================
    REPLACE ALL IMAGES
-========================= */
+========================================================= */
 
 export const replaceServiceImages =
-  (
-    req,
-    res
-  ) => {
-
+  (req, res) => {
     upload(
       req,
       res,
       async (err) => {
-
         if (err) {
-
           return res.status(400).json({
             message:
-              err.message
+              err.message ||
+              "Unable to upload images."
           });
-
         }
 
-
         try {
-
           if (!req.user) {
-
             return res.status(401).json({
               message:
                 "Not authorized"
             });
-
           }
-
 
           const service =
             await Service.findById(
               req.params.id
             );
 
-
           if (!service) {
-
             return res.status(404).json({
               message:
                 "Service not found"
             });
-
           }
-
 
           if (
             !service.provider ||
             service.provider.toString() !==
               req.user._id.toString()
           ) {
-
             return res.status(403).json({
               message:
                 "You are not authorized to modify this service."
             });
-
           }
 
-
-          /* =========================
-             DELETE OLD IMAGES
-          ========================= */
-
-          if (
-            Array.isArray(
-              service.images
-            )
-          ) {
-
-            for (
-              const oldImage
-              of service.images
-            ) {
-
-              deletePhysicalImage(
-                oldImage
-              );
-
-            }
-
-          }
-
-
-          /* =========================
-             NEW IMAGES
-          ========================= */
-
-          const images =
-            Array.isArray(
-              req.files
-            )
-              ? req.files
-                  .map(
-                    (file) =>
-                      `/uploads/${file.filename}`
-                  )
-                  .slice(
-                    0,
-                    5
-                  )
-              : [];
-
-
-          /* =========================
-             UPDATE SERVICE
-          ========================= */
-
-          service.images =
-            images;
-
-
-          service.image =
-            images[0] ||
-            "";
-
-
-          await service.save();
-
-
-          return res.json(
+          normalizeServiceImages(
             service
           );
 
+          /*
+            Save old images first.
+            Only delete them after the new upload
+            has successfully been written.
+          */
 
-        } catch (err) {
+          const oldImages =
+            [...service.images];
 
-          console.error(
-            "REPLACE SERVICE IMAGES ERROR:",
-            err
-          );
-
+          const newImages =
+            Array.isArray(req.files)
+              ? req.files
+                  .map(
+                    file =>
+                      `/uploads/${file.filename}`
+                  )
+                  .slice(0, 5)
+              : [];
 
           /*
-            Clean up newly uploaded
-            files if saving failed.
+            Delete any files beyond the maximum.
           */
 
           if (
-            Array.isArray(
-              req.files
-            )
+            Array.isArray(req.files) &&
+            req.files.length > 5
           ) {
-
             for (
-              const file
-              of req.files
+              const file of req.files.slice(5)
             ) {
-
               try {
-
                 if (
-                  fs.existsSync(
-                    file.path
-                  )
+                  file.path &&
+                  fs.existsSync(file.path)
                 ) {
-
-                  fs.unlinkSync(
-                    file.path
-                  );
-
+                  fs.unlinkSync(file.path);
                 }
+              } catch (cleanupError) {
+                console.error(
+                  "REPLACE EXTRA IMAGE CLEANUP ERROR:",
+                  cleanupError
+                );
+              }
+            }
+          }
 
-              } catch (
-                cleanupError
-              ) {
+          /*
+            Update database.
+          */
 
+          service.images =
+            newImages;
+
+          service.image =
+            newImages[0] || "";
+
+          await service.save();
+
+          /*
+            Database save succeeded.
+            Now remove old physical files.
+          */
+
+          for (const oldImage of oldImages) {
+            deletePhysicalImage(
+              oldImage
+            );
+          }
+
+          return res.json(
+            normalizeServiceImages(
+              service
+            )
+          );
+        } catch (error) {
+          console.error(
+            "REPLACE SERVICE IMAGES ERROR:",
+            error
+          );
+
+          if (Array.isArray(req.files)) {
+            for (const file of req.files) {
+              try {
+                if (
+                  file.path &&
+                  fs.existsSync(file.path)
+                ) {
+                  fs.unlinkSync(file.path);
+                }
+              } catch (cleanupError) {
                 console.error(
                   "REPLACE IMAGE CLEANUP ERROR:",
                   cleanupError
                 );
-
               }
-
             }
-
           }
-
 
           return res.status(500).json({
             message:
-              err.message
+              error.message ||
+              "Unable to replace service images."
           });
-
         }
-
       }
-
     );
-
   };

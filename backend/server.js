@@ -1,4 +1,5 @@
 import "dotenv/config";
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -15,66 +16,117 @@ import adminRoutes from "./routes/adminRoutes.js";
 import passwordRoutes from "./routes/passwordRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+
 import { paystackWebhook } from "./webhooks/paystackWebhook.js";
+
+/* =========================================================
+   APP
+========================================================= */
 
 const app = express();
 const server = http.createServer(app);
 
 /* =========================================================
-   PATH SETUP
-   ========================================================= */
+   ABSOLUTE PATH SETUP
+========================================================= */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename =
+  fileURLToPath(import.meta.url);
 
-const UPLOADS_DIR = path.resolve(__dirname, "uploads");
+const __dirname =
+  path.dirname(__filename);
 
 /*
-  Always create the uploads directory.
+  This MUST be the exact same uploads directory
+  used by serviceController.js.
 
-  This prevents image uploads from breaking after a restart
-  or when the deployment environment starts with no uploads
-  folder.
+  Backend/
+    server.js
+    uploads/
 */
 
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, {
-    recursive: true
-  });
+const UPLOADS_DIR =
+  path.resolve(
+    __dirname,
+    "uploads"
+  );
+
+/*
+  Always create uploads directory.
+*/
+
+if (
+  !fs.existsSync(
+    UPLOADS_DIR
+  )
+) {
+  fs.mkdirSync(
+    UPLOADS_DIR,
+    {
+      recursive: true
+    }
+  );
 }
+
+console.log(
+  "UPLOADS DIRECTORY:",
+  UPLOADS_DIR
+);
 
 /* =========================================================
    SOCKET.IO
-   ========================================================= */
+========================================================= */
 
-export const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "DELETE",
-      "PATCH"
-    ]
+export const io =
+  new Server(
+    server,
+    {
+      cors: {
+        origin: "*",
+
+        methods: [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE",
+          "PATCH"
+        ]
+      }
+    }
+  );
+
+io.on(
+  "connection",
+  (socket) => {
+
+    console.log(
+      "Admin connected:",
+      socket.id
+    );
+
+    socket.on(
+      "disconnect",
+      () => {
+
+        console.log(
+          "Socket disconnected:",
+          socket.id
+        );
+
+      }
+    );
+
   }
-});
-
-io.on("connection", (socket) => {
-  console.log("Admin connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("Socket disconnected:", socket.id);
-  });
-});
+);
 
 /* =========================================================
    CORS
-   ========================================================= */
+========================================================= */
 
 app.use(
   cors({
     origin: "*",
+
     methods: [
       "GET",
       "POST",
@@ -83,6 +135,7 @@ app.use(
       "PATCH",
       "OPTIONS"
     ],
+
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -93,103 +146,210 @@ app.use(
 
 /* =========================================================
    PAYSTACK WEBHOOK
-   MUST COME BEFORE express.json()
-   ========================================================= */
+   MUST BE BEFORE JSON PARSER
+========================================================= */
 
 app.use(
   "/api/paystack/webhook",
+
   express.raw({
     type: "application/json"
   }),
+
   (req, res, next) => {
-    req.rawBody = req.body;
+
+    req.rawBody =
+      req.body;
 
     try {
-      const rawBody = req.body.toString();
 
-      req.body = JSON.parse(rawBody);
-    } catch (err) {
+      const rawBody =
+        Buffer.isBuffer(
+          req.body
+        )
+          ? req.body.toString(
+              "utf8"
+            )
+          : String(
+              req.body || ""
+            );
+
+      req.body =
+        JSON.parse(
+          rawBody
+        );
+
+    } catch (error) {
+
       console.error(
         "PAYSTACK WEBHOOK PARSE ERROR:",
-        err
+        error
       );
 
-      return res.status(400).json({
-        message: "Invalid webhook payload."
+      return res.status(
+        400
+      ).json({
+        message:
+          "Invalid webhook payload."
       });
+
     }
 
     next();
+
   },
+
   paystackWebhook
 );
 
 /* =========================================================
    BODY PARSERS
-   ========================================================= */
+========================================================= */
 
 app.use(
-  express.json()
+  express.json({
+    limit: "10mb"
+  })
 );
 
 app.use(
   express.urlencoded({
-    extended: true
+    extended: true,
+    limit: "10mb"
   })
 );
 
 /* =========================================================
    STATIC UPLOADS
-   IMPORTANT FOR SERVICE IMAGES
-   ========================================================= */
+========================================================= */
 
 /*
   IMPORTANT:
 
-  Do NOT use:
+  NEVER use:
 
       express.static("uploads")
 
   because that depends on the directory from which
   Node was started.
 
-  We use the absolute uploads directory instead.
+  We use the absolute path instead.
 
-  Therefore:
+  Database:
 
       /uploads/example.jpg
 
-  always points to:
+  Browser requests:
+
+      https://quickconnect-api-m617.onrender.com/uploads/example.jpg
+
+  Express serves:
 
       Backend/uploads/example.jpg
 */
 
 app.use(
   "/uploads",
-  express.static(UPLOADS_DIR, {
-    fallthrough: false,
-    maxAge: "7d"
-  })
+  express.static(
+    UPLOADS_DIR,
+    {
+      fallthrough: true,
+      index: false,
+      redirect: false,
+      maxAge: "7d"
+    }
+  )
+);
+
+/*
+  Explicit image diagnostic route.
+
+  This makes it much easier to identify whether an image
+  exists physically on the server.
+*/
+
+app.get(
+  "/uploads/:filename",
+  (req, res, next) => {
+
+    const filename =
+      path.basename(
+        req.params.filename
+      );
+
+    const filePath =
+      path.resolve(
+        UPLOADS_DIR,
+        filename
+      );
+
+    const uploadsRoot =
+      path.resolve(
+        UPLOADS_DIR
+      ) + path.sep;
+
+    if (
+      !filePath.startsWith(
+        uploadsRoot
+      )
+    ) {
+      return res.status(
+        400
+      ).json({
+        message:
+          "Invalid image path."
+      });
+    }
+
+    if (
+      !fs.existsSync(
+        filePath
+      )
+    ) {
+      return res.status(
+        404
+      ).json({
+        message:
+          "Image file not found.",
+        filename
+      });
+    }
+
+    return res.sendFile(
+      filePath
+    );
+
+  }
 );
 
 /* =========================================================
    BASIC SERVER TEST
-   ========================================================= */
+========================================================= */
 
 app.get(
   "/",
   (req, res) => {
+
     res.json({
-      message: "QuickConnect API is running.",
-      uploads: "/uploads",
-      status: "online"
+      message:
+        "QuickConnect API is running.",
+
+      status:
+        "online",
+
+      uploads:
+        "/uploads",
+
+      imageFormat:
+        "/uploads/<filename>"
     });
+
   }
 );
 
 /* =========================================================
    API ROUTES
-   ========================================================= */
+========================================================= */
 
 app.use(
   "/api/auth",
@@ -213,7 +373,7 @@ app.use(
 
 /* =========================================================
    PASSWORD RESET
-   ========================================================= */
+========================================================= */
 
 app.use(
   "/api/password",
@@ -222,7 +382,7 @@ app.use(
 
 /* =========================================================
    PAYMENTS
-   ========================================================= */
+========================================================= */
 
 app.use(
   "/api/payments",
@@ -231,7 +391,7 @@ app.use(
 
 /* =========================================================
    SUBSCRIPTIONS
-   ========================================================= */
+========================================================= */
 
 app.use(
   "/api/subscriptions",
@@ -239,30 +399,38 @@ app.use(
 );
 
 /* =========================================================
-   API 404 HANDLER
-   ========================================================= */
+   API 404
+========================================================= */
 
 app.use(
   "/api",
   (req, res) => {
-    res.status(404).json({
-      message: "API endpoint not found."
+
+    res.status(
+      404
+    ).json({
+      message:
+        "API endpoint not found."
     });
+
   }
 );
 
 /* =========================================================
    GENERAL ERROR HANDLER
-   ========================================================= */
+========================================================= */
 
 app.use(
   (err, req, res, next) => {
+
     console.error(
       "SERVER ERROR:",
       err
     );
 
-    if (res.headersSent) {
+    if (
+      res.headersSent
+    ) {
       return next(err);
     }
 
@@ -273,32 +441,41 @@ app.use(
         err.message ||
         "Internal server error."
     });
+
   }
 );
 
 /* =========================================================
    DATABASE
-   ========================================================= */
+========================================================= */
 
 mongoose
   .connect(
     process.env.MONGO_URI
   )
-  .then(() => {
-    console.log(
-      "MongoDB connected"
-    );
-  })
-  .catch((err) => {
-    console.error(
-      "MongoDB error:",
-      err
-    );
-  });
+  .then(
+    () => {
+
+      console.log(
+        "MongoDB connected"
+      );
+
+    }
+  )
+  .catch(
+    (error) => {
+
+      console.error(
+        "MongoDB error:",
+        error
+      );
+
+    }
+  );
 
 /* =========================================================
    START SERVER
-   ========================================================= */
+========================================================= */
 
 const PORT =
   process.env.PORT || 5000;
@@ -306,6 +483,7 @@ const PORT =
 server.listen(
   PORT,
   () => {
+
     console.log(
       `Server running on port ${PORT}`
     );
@@ -317,7 +495,8 @@ server.listen(
 
     console.log(
       "Image URL format:",
-      `/uploads/<filename>`
+      "/uploads/<filename>"
     );
+
   }
 );
