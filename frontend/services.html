@@ -3041,63 +3041,199 @@ async function deleteServiceImage(
 
   try {
 
-    const res =
+    const token =
+      getToken();
+
+
+    if (!token) {
+
+      alert(
+        "Your session has expired. Please log in again."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Make sure the exact backend image
+      path is sent.
+
+      Example:
+      /uploads/12345-image.jpg
+    */
+
+    let imagePath =
+      String(image || "").trim();
+
+
+    if (!imagePath) {
+
+      throw new Error(
+        "No image was selected."
+      );
+
+    }
+
+
+    try {
+
+      imagePath =
+        decodeURIComponent(
+          imagePath
+        );
+
+    } catch {}
+
+
+    const response =
       await fetch(
-        `${API}/services/${serviceId}/images`,
+        `${API}/services/${encodeURIComponent(serviceId)}/images`,
         {
-          method:"DELETE",
-          headers:{
+          method: "DELETE",
+
+          headers: {
             "Content-Type":
               "application/json",
-            ...authHeaders()
+
+            "Authorization":
+              `Bearer ${token}`
           },
-          body:JSON.stringify({
-            image
+
+          body: JSON.stringify({
+            image: imagePath
           })
         }
       );
 
 
-    const data =
-      await res.json()
-        .catch(() => ({}));
+    /*
+      IMPORTANT:
+      Do not blindly call response.json().
+      If the server sends HTML, this prevents:
+
+      Unexpected token '<'
+    */
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
 
 
-    if (!res.ok) {
+    let data = null;
+
+
+    if (
+      contentType.includes(
+        "application/json"
+      )
+    ) {
+
+      data =
+        await response.json();
+
+    } else {
+
+      const text =
+        await response.text();
+
+      console.error(
+        "DELETE IMAGE RETURNED NON-JSON:",
+        text
+      );
 
       throw new Error(
-        data.message ||
+        `Server returned an unexpected response (${response.status}).`
+      );
+
+    }
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data?.message ||
         "Unable to delete picture."
       );
 
     }
 
 
-    const service =
+    /*
+      Get the updated service directly
+      from the backend.
+    */
+
+    const updatedService =
+      data?.service ||
       await getServiceById(
         serviceId
       );
 
 
-    if (service) {
+    if (updatedService) {
+
+      /*
+        Update the service in memory too.
+        This prevents the old image array
+        from being reused by the gallery.
+      */
+
+      updatedService.__normalizedImages =
+        getServiceImages(
+          updatedService
+        );
+
+
+      const serviceIndex =
+        allServices.findIndex(
+          service =>
+            String(service._id) ===
+            String(serviceId)
+        );
+
+
+      if (serviceIndex !== -1) {
+
+        allServices[serviceIndex] =
+          updatedService;
+
+      }
+
+
+      /*
+        Refresh existing images
+        if the edit form is open.
+      */
 
       renderExistingImages(
-        service
+        updatedService
       );
 
     }
 
+
+    /*
+      Reload provider cards so the
+      deleted picture disappears everywhere.
+    */
 
     await loadProviderServices();
 
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "DELETE SERVICE IMAGE ERROR:",
+      error
+    );
 
 
     alert(
-      error.message
+      error.message ||
+      "Unable to delete picture."
     );
 
   }
