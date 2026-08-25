@@ -2,11 +2,17 @@
    my-services.js
    QUICKCONNECT PROVIDER SERVICES
 
-   FIXED:
-   - Service images display correctly
+   FULL FIXED VERSION
+
+   FIXES:
+   - Service images always use the live Render backend
+   - Old localhost image URLs are converted automatically
+   - /uploads/... paths are converted to full backend URLs
+   - Full Render URLs remain supported
+   - Images stored as strings or objects are handled
    - Existing images can be viewed
    - Individual images can be deleted
-   - Uses the correct DELETE /services/:id/images endpoint
+   - Uses DELETE /services/:id/images
    - Handles non-JSON server responses safely
    - New images can be added
    - Form image previews work
@@ -56,9 +62,7 @@ function getToken() {
 
   if (!token) {
 
-    console.error(
-      "No authentication token found."
-    );
+    console.error("No authentication token found.");
 
     return null;
 
@@ -71,9 +75,6 @@ function getToken() {
 
 /* =========================================================
    SAFE RESPONSE READER
-   Prevents:
-   Unexpected token '<'
-   when server returns HTML instead of JSON.
 ========================================================= */
 
 async function readResponse(response) {
@@ -81,18 +82,13 @@ async function readResponse(response) {
   const contentType =
     response.headers.get("content-type") || "";
 
-  const text =
-    await response.text();
+  const text = await response.text();
 
-  if (
-    contentType.includes("application/json")
-  ) {
+  if (contentType.toLowerCase().includes("application/json")) {
 
     try {
 
-      return text
-        ? JSON.parse(text)
-        : {};
+      return text ? JSON.parse(text) : {};
 
     } catch (error) {
 
@@ -103,8 +99,7 @@ async function readResponse(response) {
       );
 
       return {
-        message:
-          "The server returned invalid JSON."
+        message: "The server returned invalid JSON."
       };
 
     }
@@ -144,41 +139,28 @@ function setupProfile() {
       JSON.parse(savedUser);
 
     const name =
-      user.name ||
-      "Provider";
+      user.name || "Provider";
 
     const topName =
-      document.getElementById(
-        "topProfileName"
-      );
+      document.getElementById("topProfileName");
 
     if (topName) {
-
-      topName.textContent =
-        name;
-
+      topName.textContent = name;
     }
 
     const avatar =
-      document.getElementById(
-        "profileAvatar"
-      );
+      document.getElementById("profileAvatar");
 
     if (avatar) {
 
       avatar.textContent =
-        name
-          .charAt(0)
-          .toUpperCase();
+        name.charAt(0).toUpperCase();
 
     }
 
   } catch (err) {
 
-    console.error(
-      "PROFILE ERROR:",
-      err
-    );
+    console.error("PROFILE ERROR:", err);
 
   }
 
@@ -192,19 +174,13 @@ function setupProfile() {
 async function loadMyServices() {
 
   const loading =
-    document.getElementById(
-      "servicesLoading"
-    );
+    document.getElementById("servicesLoading");
 
   const empty =
-    document.getElementById(
-      "servicesEmpty"
-    );
+    document.getElementById("servicesEmpty");
 
   const grid =
-    document.getElementById(
-      "servicesGrid"
-    );
+    document.getElementById("servicesGrid");
 
   if (loading) {
     loading.hidden = false;
@@ -216,8 +192,7 @@ async function loadMyServices() {
 
   try {
 
-    const token =
-      getToken();
+    const token = getToken();
 
     if (!token) {
 
@@ -234,18 +209,15 @@ async function loadMyServices() {
         `${API}/services/my`,
         {
           method: "GET",
-
           headers: {
-            "Authorization":
-              `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
           }
         }
       );
 
     const data =
-      await readResponse(
-        response
-      );
+      await readResponse(response);
 
     console.log(
       "MY SERVICES:",
@@ -270,8 +242,7 @@ async function loadMyServices() {
 
     }
 
-    myServices =
-      data;
+    myServices = data;
 
     updateSummary();
     renderServices();
@@ -303,24 +274,16 @@ async function loadMyServices() {
    ERROR
 ========================================================= */
 
-function showServicesError(
-  message
-) {
+function showServicesError(message) {
 
   const loading =
-    document.getElementById(
-      "servicesLoading"
-    );
+    document.getElementById("servicesLoading");
 
   const empty =
-    document.getElementById(
-      "servicesEmpty"
-    );
+    document.getElementById("servicesEmpty");
 
   const grid =
-    document.getElementById(
-      "servicesGrid"
-    );
+    document.getElementById("servicesGrid");
 
   if (loading) {
     loading.hidden = true;
@@ -330,36 +293,34 @@ function showServicesError(
     empty.hidden = true;
   }
 
-  if (grid) {
+  if (!grid) return;
 
-    grid.innerHTML = `
+  grid.innerHTML = `
 
-      <div class="services-error">
+    <div class="services-error">
 
-        <div class="empty-icon">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-
-        <h3>Could not load services</h3>
-
-        <p>
-          ${escapeHTML(message)}
-        </p>
-
-        <button
-          type="button"
-          class="primary-btn"
-          onclick="loadMyServices()"
-        >
-          <i class="fa-solid fa-rotate-right"></i>
-          Try Again
-        </button>
-
+      <div class="empty-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
 
-    `;
+      <h3>Could not load services</h3>
 
-  }
+      <p>
+        ${escapeHTML(message)}
+      </p>
+
+      <button
+        type="button"
+        class="primary-btn"
+        onclick="loadMyServices()"
+      >
+        <i class="fa-solid fa-rotate-right"></i>
+        Try Again
+      </button>
+
+    </div>
+
+  `;
 
 }
 
@@ -376,50 +337,27 @@ function updateSummary() {
   let mobile = 0;
   let store = 0;
 
-  myServices.forEach(
-    service => {
+  myServices.forEach(service => {
 
-      const modes =
-        Array.isArray(
-          service.serviceMode
-        )
-          ? service.serviceMode
-          : [];
+    const modes =
+      Array.isArray(service.serviceMode)
+        ? service.serviceMode
+        : [];
 
-      if (
-        modes.includes("mobile")
-      ) {
-        mobile++;
-      }
-
-      if (
-        modes.includes("store")
-      ) {
-        store++;
-      }
-
+    if (modes.includes("mobile")) {
+      mobile++;
     }
-  );
 
-  setText(
-    "totalServices",
-    total
-  );
+    if (modes.includes("store")) {
+      store++;
+    }
 
-  setText(
-    "activeServices",
-    total
-  );
+  });
 
-  setText(
-    "mobileServices",
-    mobile
-  );
-
-  setText(
-    "storeServices",
-    store
-  );
+  setText("totalServices", total);
+  setText("activeServices", total);
+  setText("mobileServices", mobile);
+  setText("storeServices", store);
 
 }
 
@@ -431,32 +369,22 @@ function updateSummary() {
 function renderServices() {
 
   const grid =
-    document.getElementById(
-      "servicesGrid"
-    );
+    document.getElementById("servicesGrid");
 
   const empty =
-    document.getElementById(
-      "servicesEmpty"
-    );
+    document.getElementById("servicesEmpty");
 
   if (!grid) return;
 
   const searchInput =
-    document.getElementById(
-      "serviceSearch"
-    );
+    document.getElementById("serviceSearch");
 
   const filter =
-    document.getElementById(
-      "serviceFilter"
-    );
+    document.getElementById("serviceFilter");
 
   const search =
     searchInput
-      ? searchInput.value
-          .trim()
-          .toLowerCase()
+      ? searchInput.value.trim().toLowerCase()
       : "";
 
   const filterValue =
@@ -465,55 +393,37 @@ function renderServices() {
       : "all";
 
   const filtered =
-    myServices.filter(
-      service => {
+    myServices.filter(service => {
 
-        const name =
-          String(
-            service.name || ""
-          ).toLowerCase();
+      const name =
+        String(service.name || "").toLowerCase();
 
-        const description =
-          String(
-            service.description || ""
-          ).toLowerCase();
+      const description =
+        String(service.description || "").toLowerCase();
 
-        const category =
-          String(
-            service.category || ""
-          ).toLowerCase();
+      const category =
+        String(service.category || "").toLowerCase();
 
-        const matchesSearch =
-          !search ||
-          name.includes(search) ||
-          description.includes(search) ||
-          category.includes(search);
+      const matchesSearch =
+        !search ||
+        name.includes(search) ||
+        description.includes(search) ||
+        category.includes(search);
 
-        const modes =
-          Array.isArray(
-            service.serviceMode
-          )
-            ? service.serviceMode
-            : [];
+      const modes =
+        Array.isArray(service.serviceMode)
+          ? service.serviceMode
+          : [];
 
-        const matchesFilter =
-          filterValue === "all" ||
-          modes.includes(
-            filterValue
-          );
+      const matchesFilter =
+        filterValue === "all" ||
+        modes.includes(filterValue);
 
-        return (
-          matchesSearch &&
-          matchesFilter
-        );
+      return matchesSearch && matchesFilter;
 
-      }
-    );
+    });
 
-
-  if (
-    myServices.length === 0
-  ) {
+  if (myServices.length === 0) {
 
     grid.innerHTML = "";
 
@@ -525,15 +435,11 @@ function renderServices() {
 
   }
 
-
   if (empty) {
     empty.hidden = true;
   }
 
-
-  if (
-    filtered.length === 0
-  ) {
+  if (filtered.length === 0) {
 
     grid.innerHTML = `
 
@@ -557,13 +463,9 @@ function renderServices() {
 
   }
 
-
   grid.innerHTML =
     filtered
-      .map(
-        service =>
-          createServiceCard(service)
-      )
+      .map(service => createServiceCard(service))
       .join("");
 
 }
@@ -573,14 +475,10 @@ function renderServices() {
    SERVICE CARD
 ========================================================= */
 
-function createServiceCard(
-  service
-) {
+function createServiceCard(service) {
 
   const images =
-    getServiceImages(
-      service
-    );
+    getServiceImages(service);
 
   const firstImage =
     images.length
@@ -606,40 +504,32 @@ function createServiceCard(
     );
 
   const price =
-    Number(
-      service.price || 0
-    ).toFixed(2);
+    Number(service.price || 0).toFixed(2);
 
   const modes =
-    Array.isArray(
-      service.serviceMode
-    )
+    Array.isArray(service.serviceMode)
       ? service.serviceMode
       : [];
 
   const modeHTML =
     modes.length
-
       ? modes
-          .map(
-            mode => `
+          .map(mode => `
 
-              <span class="service-mode-tag">
+            <span class="service-mode-tag">
 
-                <i class="fa-solid ${
-                  mode === "mobile"
-                    ? "fa-car-side"
-                    : "fa-store"
-                }"></i>
+              <i class="fa-solid ${
+                mode === "mobile"
+                  ? "fa-car-side"
+                  : "fa-store"
+              }"></i>
 
-                ${escapeHTML(mode)}
+              ${escapeHTML(mode)}
 
-              </span>
+            </span>
 
-            `
-          )
+          `)
           .join("")
-
       : `
 
           <span class="service-mode-tag">
@@ -652,14 +542,12 @@ function createServiceCard(
 
         `;
 
-
   const imageHTML =
     firstImage
-
       ? `
 
           <img
-            src="${firstImage}"
+            src="${escapeHTML(firstImage)}"
             alt="${name}"
             loading="lazy"
             class="service-main-image"
@@ -670,7 +558,6 @@ function createServiceCard(
           >
 
         `
-
       : `
 
           <div class="service-no-image">
@@ -681,12 +568,11 @@ function createServiceCard(
 
         `;
 
-
   return `
 
     <article
       class="service-card"
-      data-id="${service._id}"
+      data-id="${escapeHTML(service._id || "")}"
     >
 
       <div class="service-card-image">
@@ -711,7 +597,6 @@ function createServiceCard(
 
       </div>
 
-
       <div class="service-card-content">
 
         <div class="service-card-top">
@@ -726,23 +611,17 @@ function createServiceCard(
 
         </div>
 
-
         <h3>
           ${name}
         </h3>
-
 
         <p class="service-description">
           ${description}
         </p>
 
-
         <div class="service-modes">
-
           ${modeHTML}
-
         </div>
-
 
         ${
           service.location
@@ -752,9 +631,7 @@ function createServiceCard(
 
                 <i class="fa-solid fa-location-dot"></i>
 
-                ${escapeHTML(
-                  service.location
-                )}
+                ${escapeHTML(service.location)}
 
               </div>
 
@@ -762,18 +639,16 @@ function createServiceCard(
             : ""
         }
 
-
         <div class="service-card-actions">
 
           <button
             type="button"
             class="service-action"
-            onclick="triggerServiceImageUpload('${service._id}')"
+            onclick="triggerServiceImageUpload('${escapeJS(service._id)}')"
           >
             <i class="fa-solid fa-plus"></i>
             Add Image
           </button>
-
 
           ${
             images.length
@@ -782,7 +657,7 @@ function createServiceCard(
                 <button
                   type="button"
                   class="service-action"
-                  onclick="openServiceGallery('${service._id}')"
+                  onclick="openServiceGallery('${escapeJS(service._id)}')"
                 >
                   <i class="fa-solid fa-images"></i>
                   View Images
@@ -792,24 +667,22 @@ function createServiceCard(
               : ""
           }
 
-
           <button
             type="button"
             class="service-action delete"
-            onclick="deleteMyService('${service._id}')"
+            onclick="deleteMyService('${escapeJS(service._id)}')"
           >
             <i class="fa-solid fa-trash"></i>
             Delete
           </button>
 
-
           <input
             type="file"
-            id="service-image-${service._id}"
+            id="service-image-${escapeHTML(service._id || "")}"
             accept="image/*"
             multiple
             hidden
-            onchange="uploadServiceImages(event, '${service._id}')"
+            onchange="uploadServiceImages(event, '${escapeJS(service._id)}')"
           >
 
         </div>
@@ -827,76 +700,236 @@ function createServiceCard(
    GET ALL SERVICE IMAGES
 ========================================================= */
 
-function getServiceImages(
-  service
-) {
+function getServiceImages(service) {
 
   let images = [];
 
-  if (
-    Array.isArray(
-      service.images
-    )
-  ) {
+  if (Array.isArray(service.images)) {
 
     images =
       service.images
+        .map(extractImageValue)
         .filter(Boolean);
 
   }
+
+  /*
+    Backward compatibility:
+    Some older services only have "image".
+  */
 
   if (
     images.length === 0 &&
     service.image
   ) {
 
-    images = [
-      service.image
-    ];
+    const legacyImage =
+      extractImageValue(service.image);
+
+    if (legacyImage) {
+      images = [legacyImage];
+    }
 
   }
 
-  return images.map(
-    image =>
-      normalizeImageURL(image)
-  );
+  /*
+    Remove duplicate image URLs while
+    preserving their original order.
+  */
+
+  const unique = [];
+  const seen = new Set();
+
+  images.forEach(image => {
+
+    const normalized =
+      normalizeImageURL(image);
+
+    if (
+      normalized &&
+      !seen.has(normalized)
+    ) {
+
+      seen.add(normalized);
+      unique.push(normalized);
+
+    }
+
+  });
+
+  return unique.slice(0, 5);
+
+}
+
+
+/* =========================================================
+   EXTRACT IMAGE VALUE
+   Supports:
+
+   "/uploads/file.jpg"
+
+   "uploads/file.jpg"
+
+   "https://.../uploads/file.jpg"
+
+   { url: "/uploads/file.jpg" }
+
+   { path: "/uploads/file.jpg" }
+
+   { filename: "file.jpg" }
+========================================================= */
+
+function extractImageValue(image) {
+
+  if (!image) {
+    return "";
+  }
+
+  if (typeof image === "string") {
+    return image.trim();
+  }
+
+  if (typeof image === "object") {
+
+    if (typeof image.url === "string") {
+      return image.url.trim();
+    }
+
+    if (typeof image.path === "string") {
+      return image.path.trim();
+    }
+
+    if (typeof image.src === "string") {
+      return image.src.trim();
+    }
+
+    if (typeof image.filename === "string") {
+      return `/uploads/${image.filename}`;
+    }
+
+  }
+
+  return "";
 
 }
 
 
 /* =========================================================
    NORMALIZE IMAGE URL
+   CRITICAL IMAGE FIX
 ========================================================= */
 
-function normalizeImageURL(
-  image
-) {
+function normalizeImageURL(image) {
 
-  if (!image) {
+  const raw =
+    extractImageValue(image);
+
+  if (!raw) {
     return "";
   }
 
-  image =
-    String(image);
+  let value =
+    raw.trim();
+
+  /*
+    Convert Windows-style paths.
+  */
+
+  value =
+    value.replace(/\\/g, "/");
+
+  /*
+    Decode encoded paths where possible.
+  */
+
+  try {
+
+    value =
+      decodeURIComponent(value);
+
+  } catch (_) {}
+
+  /*
+    Full URL:
+    Always convert old localhost URLs
+    to the current Render backend.
+
+    Example:
+
+    http://localhost:5000/uploads/a.jpg
+
+    becomes:
+
+    https://quickconnect-api-m617.onrender.com/uploads/a.jpg
+  */
 
   if (
-    image.startsWith("http://") ||
-    image.startsWith("https://")
+    /^https?:\/\//i.test(value)
   ) {
 
-    return image;
+    try {
+
+      const parsed =
+        new URL(value);
+
+      /*
+        If this is an uploaded image,
+        force it through the live backend.
+      */
+
+      if (
+        parsed.pathname
+          .toLowerCase()
+          .includes("/uploads/")
+      ) {
+
+        return `${SERVER}${parsed.pathname}${parsed.search || ""}`;
+
+      }
+
+      /*
+        Keep external images untouched.
+      */
+
+      return value;
+
+    } catch (_) {
+
+      return value;
+
+    }
 
   }
 
+  /*
+    Remove accidental /api prefix.
+  */
+
+  value =
+    value.replace(
+      /^\/api\/?/i,
+      "/"
+    );
+
+  /*
+    If only "uploads/file.jpg"
+    was stored, add the slash.
+  */
+
   if (
-    image.startsWith("/")
+    !value.startsWith("/")
   ) {
 
-    return `${SERVER}${image}`;
+    value =
+      `/${value}`;
 
   }
 
-  return `${SERVER}/${image}`;
+  /*
+    Final image URL.
+  */
+
+  return `${SERVER}${value}`;
 
 }
 
@@ -905,9 +938,7 @@ function normalizeImageURL(
    ADD IMAGE BUTTON
 ========================================================= */
 
-function triggerServiceImageUpload(
-  serviceId
-) {
+function triggerServiceImageUpload(serviceId) {
 
   const input =
     document.getElementById(
@@ -935,18 +966,13 @@ function triggerServiceImageUpload(
    UPLOAD SERVICE IMAGES
 ========================================================= */
 
-async function uploadServiceImages(
-  event,
-  serviceId
-) {
+async function uploadServiceImages(event, serviceId) {
 
   const input =
     event.target;
 
   const files =
-    Array.from(
-      input.files || []
-    );
+    Array.from(input.files || []);
 
   if (!files.length) {
     return;
@@ -954,24 +980,18 @@ async function uploadServiceImages(
 
   const service =
     myServices.find(
-      item =>
-        item._id === serviceId
+      item => item._id === serviceId
     );
 
   const existingImages =
     service
-      ? getServiceImages(
-          service
-        ).length
+      ? getServiceImages(service).length
       : 0;
 
   const availableSlots =
     5 - existingImages;
 
-
-  if (
-    availableSlots <= 0
-  ) {
+  if (availableSlots <= 0) {
 
     alert(
       "This service already has the maximum of 5 images."
@@ -983,17 +1003,11 @@ async function uploadServiceImages(
 
   }
 
-
-  if (
-    files.length >
-    availableSlots
-  ) {
+  if (files.length > availableSlots) {
 
     alert(
       `You can only add ${availableSlots} more image${
-        availableSlots === 1
-          ? ""
-          : "s"
+        availableSlots === 1 ? "" : "s"
       }. Maximum is 5 images per service.`
     );
 
@@ -1003,15 +1017,12 @@ async function uploadServiceImages(
 
   }
 
-
   const token =
     getToken();
 
   if (!token) {
 
-    alert(
-      "Please log in again."
-    );
+    alert("Please log in again.");
 
     input.value = "";
 
@@ -1019,21 +1030,17 @@ async function uploadServiceImages(
 
   }
 
-
   const formData =
     new FormData();
 
-  files.forEach(
-    file => {
+  files.forEach(file => {
 
-      formData.append(
-        "images",
-        file
-      );
+    formData.append(
+      "images",
+      file
+    );
 
-    }
-  );
-
+  });
 
   try {
 
@@ -1043,7 +1050,6 @@ async function uploadServiceImages(
       files.length
     );
 
-
     const response =
       await fetch(
         `${API}/services/${serviceId}/images`,
@@ -1051,27 +1057,22 @@ async function uploadServiceImages(
           method: "POST",
 
           headers: {
-            "Authorization":
-              `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
           },
 
           body: formData
         }
       );
 
-
     const data =
-      await readResponse(
-        response
-      );
-
+      await readResponse(response);
 
     console.log(
       "IMAGE UPLOAD RESPONSE:",
       response.status,
       data
     );
-
 
     if (!response.ok) {
 
@@ -1082,21 +1083,15 @@ async function uploadServiceImages(
 
     }
 
-
     input.value = "";
 
-
     const updatedService =
-      data.service ||
-      data;
-
+      data.service || data;
 
     const index =
       myServices.findIndex(
-        item =>
-          item._id === serviceId
+        item => item._id === serviceId
       );
-
 
     if (
       index !== -1 &&
@@ -1109,10 +1104,8 @@ async function uploadServiceImages(
 
     }
 
-
     updateSummary();
     renderServices();
-
 
   } catch (err) {
 
@@ -1150,9 +1143,7 @@ function setupGallery() {
     "click",
     event => {
 
-      if (
-        event.target === modal
-      ) {
+      if (event.target === modal) {
 
         closeServiceGallery();
 
@@ -1168,14 +1159,11 @@ function setupGallery() {
    OPEN SERVICE GALLERY
 ========================================================= */
 
-function openServiceGallery(
-  serviceId
-) {
+function openServiceGallery(serviceId) {
 
   const service =
     myServices.find(
-      item =>
-        item._id === serviceId
+      item => item._id === serviceId
     );
 
   if (!service) {
@@ -1183,9 +1171,7 @@ function openServiceGallery(
   }
 
   const images =
-    getServiceImages(
-      service
-    );
+    getServiceImages(service);
 
   if (!images.length) {
     return;
@@ -1194,19 +1180,15 @@ function openServiceGallery(
   currentGalleryService =
     service;
 
-
   let modal =
     document.getElementById(
       "serviceImageModal"
     );
 
-
   if (!modal) {
 
     modal =
-      document.createElement(
-        "div"
-      );
+      document.createElement("div");
 
     modal.id =
       "serviceImageModal";
@@ -1214,12 +1196,9 @@ function openServiceGallery(
     modal.className =
       "service-modal";
 
-    document.body.appendChild(
-      modal
-    );
+    document.body.appendChild(modal);
 
   }
-
 
   modal.innerHTML = `
 
@@ -1236,16 +1215,12 @@ function openServiceGallery(
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-
       <h2 class="modal-title">
-
         ${escapeHTML(
           service.name ||
           "Service Images"
         )}
-
       </h2>
-
 
       <div
         class="gallery-main"
@@ -1254,12 +1229,12 @@ function openServiceGallery(
 
         <img
           id="galleryMainImage"
-          src="${images[0]}"
+          src="${escapeHTML(images[0])}"
           alt="Service image"
+          onerror="this.style.display='none';"
         >
 
       </div>
-
 
       <div
         class="gallery-thumbnails"
@@ -1276,7 +1251,7 @@ function openServiceGallery(
               >
 
                 <img
-                  src="${image}"
+                  src="${escapeHTML(image)}"
                   alt="Image ${index + 1}"
                   class="${
                     index === 0
@@ -1284,8 +1259,8 @@ function openServiceGallery(
                       : ""
                   }"
                   onclick="selectGalleryImage(${index})"
+                  onerror="this.style.display='none';"
                 >
-
 
                 <button
                   type="button"
@@ -1293,7 +1268,7 @@ function openServiceGallery(
                   onclick="
                     event.stopPropagation();
                     deleteServiceImage(
-                      '${service._id}',
+                      '${escapeJS(service._id)}',
                       ${index}
                     );
                   "
@@ -1316,10 +1291,7 @@ function openServiceGallery(
 
   `;
 
-
-  modal.classList.add(
-    "show"
-  );
+  modal.classList.add("show");
 
   document.body.style.overflow =
     "hidden";
@@ -1331,13 +1303,9 @@ function openServiceGallery(
    SELECT GALLERY IMAGE
 ========================================================= */
 
-function selectGalleryImage(
-  index
-) {
+function selectGalleryImage(index) {
 
-  if (
-    !currentGalleryService
-  ) {
+  if (!currentGalleryService) {
     return;
   }
 
@@ -1350,7 +1318,6 @@ function selectGalleryImage(
     return;
   }
 
-
   const mainImage =
     document.getElementById(
       "galleryMainImage"
@@ -1361,8 +1328,10 @@ function selectGalleryImage(
     mainImage.src =
       images[index];
 
-  }
+    mainImage.style.display =
+      "";
 
+  }
 
   document
     .querySelectorAll(
@@ -1384,13 +1353,13 @@ function selectGalleryImage(
 
 /* =========================================================
    DELETE SINGLE SERVICE IMAGE
-   CORRECT BACKEND ROUTE:
 
-   DELETE /api/services/:id/images
+   DELETE:
+   /api/services/:id/images
 
    BODY:
    {
-      image: "original database image path"
+     image: "original database image path"
    }
 ========================================================= */
 
@@ -1401,8 +1370,7 @@ async function deleteServiceImage(
 
   const service =
     myServices.find(
-      item =>
-        item._id === serviceId
+      item => item._id === serviceId
     );
 
   if (!service) {
@@ -1416,18 +1384,36 @@ async function deleteServiceImage(
 
   }
 
+  /*
+    IMPORTANT:
+    Use the original database array.
+    Do not use getServiceImages() here
+    because that converts the paths to
+    full URLs.
+  */
 
-  const images =
-    Array.isArray(
-      service.images
-    )
+  const rawImages =
+    Array.isArray(service.images)
       ? service.images.filter(Boolean)
       : [];
 
+  /*
+    If this is an old service with only
+    the legacy image field, support it.
+  */
 
   if (
-    !images[imageIndex]
+    rawImages.length === 0 &&
+    service.image
   ) {
+
+    rawImages.push(
+      service.image
+    );
+
+  }
+
+  if (!rawImages[imageIndex]) {
 
     console.error(
       "Image not found at index:",
@@ -1438,46 +1424,40 @@ async function deleteServiceImage(
 
   }
 
-
-  /*
-    IMPORTANT:
-
-    We send the ORIGINAL database
-    value.
-
-    Do NOT send normalizeImageURL()
-    here because the backend needs
-    the stored image path.
-  */
-
   const image =
-    images[imageIndex];
+    extractImageValue(
+      rawImages[imageIndex]
+    );
 
+  if (!image) {
+
+    console.error(
+      "Could not determine original image path."
+    );
+
+    return;
+
+  }
 
   const confirmed =
     window.confirm(
       "Are you sure you want to delete this image?"
     );
 
-
   if (!confirmed) {
     return;
   }
-
 
   const token =
     getToken();
 
   if (!token) {
 
-    alert(
-      "Please log in again."
-    );
+    alert("Please log in again.");
 
     return;
 
   }
-
 
   try {
 
@@ -1500,17 +1480,6 @@ async function deleteServiceImage(
       image
     );
 
-
-    /*
-      CORRECT ROUTE:
-
-      /services/:id/images
-
-      NOT:
-
-      /services/:id/image
-    */
-
     const response =
       await fetch(
         `${API}/services/${serviceId}/images`,
@@ -1518,36 +1487,25 @@ async function deleteServiceImage(
           method: "DELETE",
 
           headers: {
-            "Authorization":
-              `Bearer ${token}`,
-
-            "Content-Type":
-              "application/json",
-
-            "Accept":
-              "application/json"
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
 
-          body:
-            JSON.stringify({
-              image: image
-            })
+          body: JSON.stringify({
+            image: image
+          })
         }
       );
 
-
     const data =
-      await readResponse(
-        response
-      );
-
+      await readResponse(response);
 
     console.log(
       "DELETE IMAGE RESPONSE:",
       response.status,
       data
     );
-
 
     if (!response.ok) {
 
@@ -1558,33 +1516,15 @@ async function deleteServiceImage(
 
     }
 
-
-    /*
-      Backend returns:
-
-      {
-        message:
-          "Image deleted successfully",
-
-        service: updatedService
-      }
-    */
-
     const updatedService =
-      data.service ||
-      null;
-
+      data.service || null;
 
     const serviceIndex =
       myServices.findIndex(
-        item =>
-          item._id === serviceId
+        item => item._id === serviceId
       );
 
-
-    if (
-      serviceIndex === -1
-    ) {
+    if (serviceIndex === -1) {
 
       throw new Error(
         "The service could not be found after deleting the image."
@@ -1592,20 +1532,12 @@ async function deleteServiceImage(
 
     }
 
-
-    /*
-      Use the updated service
-      returned from backend.
-    */
-
     if (
       updatedService &&
       updatedService._id
     ) {
 
-      myServices[
-        serviceIndex
-      ] =
+      myServices[serviceIndex] =
         updatedService;
 
       currentGalleryService =
@@ -1613,34 +1545,23 @@ async function deleteServiceImage(
 
     } else {
 
-      /*
-        Fallback in case backend
-        confirms deletion but does
-        not return the service.
-      */
-
       const localService =
         {
-          ...myServices[
-            serviceIndex
-          ]
+          ...myServices[serviceIndex]
         };
 
-
       localService.images =
-        Array.isArray(
-          localService.images
-        )
+        Array.isArray(localService.images)
           ? localService.images.filter(
               (_, index) =>
                 index !== imageIndex
             )
           : [];
 
+      localService.image =
+        localService.images[0] || "";
 
-      myServices[
-        serviceIndex
-      ] =
+      myServices[serviceIndex] =
         localService;
 
       currentGalleryService =
@@ -1648,33 +1569,20 @@ async function deleteServiceImage(
 
     }
 
-
     updateSummary();
     renderServices();
 
-
-    /*
-      Refresh gallery with the
-      updated service.
-    */
-
     const refreshedService =
       myServices.find(
-        item =>
-          item._id === serviceId
+        item => item._id === serviceId
       );
-
 
     if (
       refreshedService &&
-      getServiceImages(
-        refreshedService
-      ).length > 0
+      getServiceImages(refreshedService).length > 0
     ) {
 
-      openServiceGallery(
-        serviceId
-      );
+      openServiceGallery(serviceId);
 
     } else {
 
@@ -1682,11 +1590,9 @@ async function deleteServiceImage(
 
     }
 
-
     console.log(
       "✅ SERVICE IMAGE DELETED SUCCESSFULLY"
     );
-
 
   } catch (err) {
 
@@ -1718,9 +1624,7 @@ function closeServiceGallery() {
 
   if (modal) {
 
-    modal.classList.remove(
-      "show"
-    );
+    modal.classList.remove("show");
 
   }
 
@@ -1754,7 +1658,6 @@ function setupButtons() {
       "cancelServiceButton"
     );
 
-
   if (addButton) {
 
     addButton.addEventListener(
@@ -1764,7 +1667,6 @@ function setupButtons() {
 
   }
 
-
   if (emptyButton) {
 
     emptyButton.addEventListener(
@@ -1773,7 +1675,6 @@ function setupButtons() {
     );
 
   }
-
 
   if (cancelButton) {
 
@@ -1867,7 +1768,6 @@ function setupForm() {
 
   }
 
-
   form.addEventListener(
     "submit",
     async event => {
@@ -1903,9 +1803,7 @@ async function createService() {
       "serviceSubmitText"
     );
 
-
   if (!form) return;
-
 
   const token =
     getToken();
@@ -1921,14 +1819,11 @@ async function createService() {
 
   }
 
-
   const getValue =
     id => {
 
       const element =
-        document.getElementById(
-          id
-        );
+        document.getElementById(id);
 
       return element
         ? element.value.trim()
@@ -1936,11 +1831,8 @@ async function createService() {
 
     };
 
-
   const name =
-    getValue(
-      "serviceName"
-    );
+    getValue("serviceName");
 
   const price =
     document.getElementById(
@@ -1953,14 +1845,10 @@ async function createService() {
     )?.value || "";
 
   const location =
-    getValue(
-      "serviceLocation"
-    );
+    getValue("serviceLocation");
 
   const description =
-    getValue(
-      "serviceDescription"
-    );
+    getValue("serviceDescription");
 
   const storeMode =
     Boolean(
@@ -1977,10 +1865,7 @@ async function createService() {
     );
 
   const storeLocation =
-    getValue(
-      "storeLocation"
-    );
-
+    getValue("storeLocation");
 
   if (
     !storeMode &&
@@ -1995,7 +1880,6 @@ async function createService() {
     return;
 
   }
-
 
   if (
     storeMode &&
@@ -2012,7 +1896,6 @@ async function createService() {
 
   }
 
-
   if (
     selectedImages.length > 5
   ) {
@@ -2026,10 +1909,8 @@ async function createService() {
 
   }
 
-
   const formData =
     new FormData();
-
 
   formData.append(
     "name",
@@ -2061,28 +1942,30 @@ async function createService() {
     storeLocation
   );
 
+  /*
+    Backend accepts:
+    yes / no
+    true / false
+  */
+
   formData.append(
     "storeMode",
-    storeMode
+    storeMode ? "true" : "false"
   );
 
   formData.append(
     "mobileMode",
-    mobileMode
+    mobileMode ? "true" : "false"
   );
 
+  selectedImages.forEach(image => {
 
-  selectedImages.forEach(
-    image => {
+    formData.append(
+      "images",
+      image
+    );
 
-      formData.append(
-        "images",
-        image
-      );
-
-    }
-  );
-
+  });
 
   try {
 
@@ -2091,17 +1974,13 @@ async function createService() {
     }
 
     if (submitText) {
-
-      submitText.textContent =
-        "Adding...";
-
+      submitText.textContent = "Adding...";
     }
 
     setMessage(
       "Creating your service...",
       false
     );
-
 
     const response =
       await fetch(
@@ -2110,27 +1989,22 @@ async function createService() {
           method: "POST",
 
           headers: {
-            "Authorization":
-              `Bearer ${token}`
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
           },
 
           body: formData
         }
       );
 
-
     const data =
-      await readResponse(
-        response
-      );
-
+      await readResponse(response);
 
     console.log(
       "CREATE SERVICE RESPONSE:",
       response.status,
       data
     );
-
 
     if (!response.ok) {
 
@@ -2141,35 +2015,28 @@ async function createService() {
 
     }
 
-
     setMessage(
       "Service added successfully!",
       false
     );
-
 
     if (
       data &&
       data._id
     ) {
 
-      myServices.unshift(
-        data
-      );
+      myServices.unshift(data);
 
     }
 
-
     updateSummary();
     renderServices();
-
 
     form.reset();
 
     selectedImages = [];
 
     updateImagePreview();
-
 
     setTimeout(
       () => {
@@ -2184,7 +2051,6 @@ async function createService() {
       },
       700
     );
-
 
   } catch (err) {
 
@@ -2206,10 +2072,7 @@ async function createService() {
     }
 
     if (submitText) {
-
-      submitText.textContent =
-        "Add Service";
-
+      submitText.textContent = "Add Service";
     }
 
   }
@@ -2230,7 +2093,6 @@ function setupImageUpload() {
 
   if (!input) return;
 
-
   input.addEventListener(
     "change",
     event => {
@@ -2240,10 +2102,7 @@ function setupImageUpload() {
           event.target.files || []
         );
 
-
-      if (
-        files.length > 5
-      ) {
+      if (files.length > 5) {
 
         setMessage(
           "You can select a maximum of 5 images.",
@@ -2259,7 +2118,6 @@ function setupImageUpload() {
         return;
 
       }
-
 
       selectedImages =
         files.slice(0, 5);
@@ -2285,7 +2143,6 @@ function updateImagePreview() {
 
   if (!preview) return;
 
-
   if (
     selectedImages.length === 0
   ) {
@@ -2297,9 +2154,7 @@ function updateImagePreview() {
 
   }
 
-
   preview.hidden = false;
-
 
   preview.innerHTML =
     selectedImages
@@ -2307,9 +2162,7 @@ function updateImagePreview() {
         (file, index) => {
 
           const url =
-            URL.createObjectURL(
-              file
-            );
+            URL.createObjectURL(file);
 
           return `
 
@@ -2323,7 +2176,6 @@ function updateImagePreview() {
                 alt="Preview ${index + 1}"
               >
 
-
               <button
                 type="button"
                 class="preview-remove"
@@ -2334,7 +2186,6 @@ function updateImagePreview() {
                 <i class="fa-solid fa-xmark"></i>
 
               </button>
-
 
               <span>
                 ${index + 1}
@@ -2355,9 +2206,7 @@ function updateImagePreview() {
    REMOVE FORM PREVIEW IMAGE
 ========================================================= */
 
-function removeSelectedImage(
-  index
-) {
+function removeSelectedImage(index) {
 
   if (
     index < 0 ||
@@ -2366,39 +2215,31 @@ function removeSelectedImage(
     return;
   }
 
-
   selectedImages.splice(
     index,
     1
   );
-
 
   const input =
     document.getElementById(
       "serviceImage"
     );
 
-
   if (input) {
 
     const transfer =
       new DataTransfer();
 
-    selectedImages.forEach(
-      file => {
+    selectedImages.forEach(file => {
 
-        transfer.items.add(
-          file
-        );
+      transfer.items.add(file);
 
-      }
-    );
+    });
 
     input.files =
       transfer.files;
 
   }
-
 
   updateImagePreview();
 
@@ -2451,38 +2292,29 @@ function setupFilter() {
    DELETE SERVICE
 ========================================================= */
 
-async function deleteMyService(
-  serviceId
-) {
+async function deleteMyService(serviceId) {
 
   if (!serviceId) return;
-
 
   const confirmed =
     window.confirm(
       "Are you sure you want to delete this service?"
     );
 
-
   if (!confirmed) {
     return;
   }
 
-
   const token =
     getToken();
 
-
   if (!token) {
 
-    alert(
-      "Please log in again."
-    );
+    alert("Please log in again.");
 
     return;
 
   }
-
 
   try {
 
@@ -2493,21 +2325,14 @@ async function deleteMyService(
           method: "DELETE",
 
           headers: {
-            "Authorization":
-              `Bearer ${token}`,
-
-            "Accept":
-              "application/json"
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
           }
         }
       );
 
-
     const data =
-      await readResponse(
-        response
-      );
-
+      await readResponse(response);
 
     if (!response.ok) {
 
@@ -2518,17 +2343,23 @@ async function deleteMyService(
 
     }
 
-
     myServices =
       myServices.filter(
         service =>
           service._id !== serviceId
       );
 
+    if (
+      currentGalleryService &&
+      currentGalleryService._id === serviceId
+    ) {
+
+      closeServiceGallery();
+
+    }
 
     updateSummary();
     renderServices();
-
 
   } catch (err) {
 
@@ -2573,8 +2404,7 @@ function setMessage(
 
   message.classList.toggle(
     "success",
-    !isError &&
-    Boolean(text)
+    !isError && Boolean(text)
   );
 
 }
@@ -2590,9 +2420,7 @@ function setText(
 ) {
 
   const element =
-    document.getElementById(
-      id
-    );
+    document.getElementById(id);
 
   if (element) {
 
@@ -2608,31 +2436,30 @@ function setText(
    ESCAPE HTML
 ========================================================= */
 
-function escapeHTML(
-  value
-) {
+function escapeHTML(value) {
 
   return String(value)
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   ESCAPE JAVASCRIPT STRING
+========================================================= */
+
+function escapeJS(value) {
+
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n");
 
 }
 
@@ -2643,13 +2470,8 @@ function escapeHTML(
 
 function logout() {
 
-  localStorage.removeItem(
-    "token"
-  );
-
-  localStorage.removeItem(
-    "user"
-  );
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 
   window.location.href =
     "login.html";

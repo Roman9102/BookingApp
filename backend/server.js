@@ -3,6 +3,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import http from "http";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -17,8 +20,27 @@ import { paystackWebhook } from "./webhooks/paystackWebhook.js";
 const app = express();
 const server = http.createServer(app);
 
+/* =========================================================
+   PATH SETUP
+========================================================= */
 
-/* ================= SOCKET.IO ================= */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const UPLOADS_DIR = path.resolve(
+  __dirname,
+  "uploads"
+);
+
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, {
+    recursive: true
+  });
+}
+
+/* =========================================================
+   SOCKET.IO
+========================================================= */
 
 export const io = new Server(server, {
   cors: {
@@ -27,27 +49,53 @@ export const io = new Server(server, {
       "GET",
       "POST",
       "PUT",
-      "DELETE"
+      "DELETE",
+      "PATCH"
     ]
   }
 });
 
 io.on("connection", (socket) => {
   console.log(
-    "Admin connected:",
+    "Socket connected:",
     socket.id
   );
+
+  socket.on("disconnect", () => {
+    console.log(
+      "Socket disconnected:",
+      socket.id
+    );
+  });
 });
 
+/* =========================================================
+   CORS
+========================================================= */
 
-/* ================= MIDDLEWARE ================= */
+app.use(
+  cors({
+    origin: "*",
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "OPTIONS"
+    ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept"
+    ]
+  })
+);
 
-app.use(cors());
-
-
-/* ================= PAYSTACK WEBHOOK =================
+/* =========================================================
+   PAYSTACK WEBHOOK
    MUST COME BEFORE express.json()
-====================================================== */
+========================================================= */
 
 app.use(
   "/api/paystack/webhook",
@@ -59,23 +107,34 @@ app.use(
     req.rawBody = req.body;
 
     try {
+
       req.body = JSON.parse(
         req.body.toString()
       );
+
     } catch (err) {
+
+      console.error(
+        "PAYSTACK WEBHOOK PARSE ERROR:",
+        err
+      );
+
       return res.status(400).json({
         message:
           "Invalid webhook payload."
       });
+
     }
 
     next();
+
   },
   paystackWebhook
 );
 
-
-/* ================= BODY PARSERS ================= */
+/* =========================================================
+   BODY PARSERS
+========================================================= */
 
 app.use(
   express.json()
@@ -87,13 +146,54 @@ app.use(
   })
 );
 
+/* =========================================================
+   STATIC UPLOADS
+========================================================= */
+
 app.use(
   "/uploads",
-  express.static("uploads")
+  express.static(
+    UPLOADS_DIR,
+    {
+      fallthrough: false,
+      maxAge: "1d"
+    }
+  )
 );
 
+/* =========================================================
+   ROOT / HEALTH CHECK
+========================================================= */
 
-/* ================= ROUTES ================= */
+app.get(
+  "/",
+  (req, res) => {
+
+    res.json({
+      message:
+        "QuickConnect API is running",
+      uploads:
+        "/uploads"
+    });
+
+  }
+);
+
+app.get(
+  "/api/health",
+  (req, res) => {
+
+    res.json({
+      status:
+        "ok"
+    });
+
+  }
+);
+
+/* =========================================================
+   ROUTES
+========================================================= */
 
 app.use(
   "/api/auth",
@@ -115,51 +215,92 @@ app.use(
   adminRoutes
 );
 
-
-/* ================= PASSWORD RESET ================= */
-
 app.use(
   "/api/password",
   passwordRoutes
 );
-
-
-/* ================= PAYMENTS ================= */
 
 app.use(
   "/api/payments",
   paymentRoutes
 );
 
-
-/* ================= SUBSCRIPTIONS ================= */
-
 app.use(
   "/api/subscriptions",
   subscriptionRoutes
 );
 
+/* =========================================================
+   404 HANDLER
+========================================================= */
 
-/* ================= DATABASE ================= */
+app.use(
+  (req, res) => {
+
+    res.status(404).json({
+      message:
+        "Route not found.",
+      path:
+        req.originalUrl
+    });
+
+  }
+);
+
+/* =========================================================
+   GLOBAL ERROR HANDLER
+========================================================= */
+
+app.use(
+  (err, req, res, next) => {
+
+    console.error(
+      "SERVER ERROR:",
+      err
+    );
+
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    res.status(
+      err.status || 500
+    ).json({
+      message:
+        err.message ||
+        "Internal server error."
+    });
+
+  }
+);
+
+/* =========================================================
+   DATABASE
+========================================================= */
 
 mongoose
   .connect(
     process.env.MONGO_URI
   )
   .then(() => {
+
     console.log(
       "MongoDB connected"
     );
+
   })
   .catch((err) => {
-    console.log(
+
+    console.error(
       "MongoDB error:",
       err
     );
+
   });
 
-
-/* ================= START SERVER ================= */
+/* =========================================================
+   START SERVER
+========================================================= */
 
 const PORT =
   process.env.PORT || 5000;
@@ -167,8 +308,20 @@ const PORT =
 server.listen(
   PORT,
   () => {
+
     console.log(
-      `Server running on http://localhost:${PORT}`
+      `Server running on port ${PORT}`
     );
+
+    console.log(
+      "Uploads directory:",
+      UPLOADS_DIR
+    );
+
+    console.log(
+      "Static image URL:",
+      "/uploads/<filename>"
+    );
+
   }
 );
