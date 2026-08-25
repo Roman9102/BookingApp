@@ -10,29 +10,30 @@
 import Service from "../models/service.js";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /* =========================
    MULTER CONFIG
 ========================= */
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) =>
-    cb(null, "uploads/"),
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
 
-  filename: (req, file, cb) =>
+  filename: (req, file, cb) => {
     cb(
       null,
       Date.now() +
+        "-" +
+        Math.round(Math.random() * 1e9) +
         path.extname(file.originalname)
-    )
+    );
+  }
 });
 
 const upload = multer({
   storage,
+
   limits: {
     files: 5
   }
@@ -45,25 +46,14 @@ const upload = multer({
 export const createService = (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
+      console.error("UPLOAD ERROR:", err);
+
       return res.status(400).json({
         message: err.message
       });
     }
 
     try {
-      const {
-        name,
-        description,
-        price,
-        storeLocation,
-        storeMode,
-        mobileMode,
-        category,
-        providerName,
-        rating,
-        location
-      } = req.body;
-
       if (!req.user) {
         return res.status(401).json({
           message: "Not authorized"
@@ -76,6 +66,19 @@ export const createService = (req, res) => {
             "Only service providers can create services."
         });
       }
+
+      const {
+        name,
+        description,
+        price,
+        storeLocation,
+        storeMode,
+        mobileMode,
+        category,
+        providerName,
+        rating,
+        location
+      } = req.body;
 
       /* =========================
          SERVICE MODE
@@ -101,72 +104,65 @@ export const createService = (req, res) => {
          IMAGES
       ========================= */
 
-      const images = req.files
-        ? req.files.map(
-            (file) =>
-              `/uploads/${file.filename}`
-          )
-        : [];
+      const images = (req.files || []).map(
+        (file) => `/uploads/${file.filename}`
+      );
 
       /* =========================
          CREATE SERVICE
       ========================= */
 
-      const service =
-        await Service.create({
-          name,
-          description,
+      const service = await Service.create({
+        name,
 
-          price:
-            Number(price || 0),
+        description,
 
-          serviceMode,
+        price: Number(price || 0),
 
-          storeLocation,
+        serviceMode,
 
-          category:
-            category ||
-            "Uncategorized",
+        storeLocation,
 
-          /*
-            IMPORTANT:
-            Every service is permanently
-            linked to the provider who
-            created it.
-          */
+        category:
+          category || "Uncategorized",
 
-          provider:
-            req.user._id,
+        /*
+          IMPORTANT:
+          Always use the logged-in provider.
+          Never trust provider ID from frontend.
+        */
 
-          /*
-            Keep image for old UI
-            compatibility.
-          */
+        provider: req.user._id,
 
-          image:
-            images[0] || "",
+        /*
+          Keep old image field for
+          existing frontend compatibility.
+        */
 
-          /*
-            Keep ALL images so the
-            provider/customer thumbnails
-            and gallery can use them.
-          */
+        image: images[0] || "",
 
-          images,
+        /*
+          Keep all uploaded images.
+        */
 
-          providerName:
-            providerName ||
-            req.user.name ||
-            "Unknown Provider",
+        images,
 
-          rating:
-            Number(rating || 0),
+        /*
+          Keep provider name for
+          existing marketplace UI.
+        */
 
-          location:
-            location || ""
-        });
+        providerName:
+          providerName ||
+          req.user.name ||
+          "Unknown Provider",
 
-      res.status(201).json(service);
+        rating: Number(rating || 0),
+
+        location: location || ""
+      });
+
+      return res.status(201).json(service);
 
     } catch (err) {
       console.error(
@@ -174,7 +170,7 @@ export const createService = (req, res) => {
         err
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         message: err.message
       });
     }
@@ -191,28 +187,23 @@ export const getServices = async (
   res
 ) => {
   try {
-
     /*
-      IMPORTANT:
+      PUBLIC MARKETPLACE
 
-      This route remains the public
-      marketplace.
+      This returns services from ALL
+      providers.
 
-      Customers/users can see services
-      from ALL providers.
-
-      Provider dashboard must NOT use
-      this endpoint. It must use
-      getMyServices (/api/services/my).
+      Customers use this endpoint.
+      Provider "My Services" must use
+      getMyServices below.
     */
 
-    const services =
-      await Service.find({})
-        .sort({
-          createdAt: -1
-        });
+    const services = await Service.find({})
+      .sort({
+        createdAt: -1
+      });
 
-    res.json(services);
+    return res.json(services);
 
   } catch (err) {
     console.error(
@@ -220,7 +211,7 @@ export const getServices = async (
       err
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       message: err.message
     });
   }
@@ -236,7 +227,6 @@ export const getMyServices = async (
   res
 ) => {
   try {
-
     if (!req.user) {
       return res.status(401).json({
         message: "Not authorized"
@@ -251,25 +241,19 @@ export const getMyServices = async (
     }
 
     /*
-      CRITICAL FIX:
+      CRITICAL:
 
-      Only services whose provider field
-      matches the logged-in provider's
-      _id are returned.
-
-      This means Provider A cannot see
-      Provider B's services.
+      Only return services belonging
+      to the logged-in provider.
     */
 
-    const services =
-      await Service.find({
-        provider: req.user._id
-      })
-        .sort({
-          createdAt: -1
-        });
+    const services = await Service.find({
+      provider: req.user._id
+    }).sort({
+      createdAt: -1
+    });
 
-    res.json(services);
+    return res.json(services);
 
   } catch (err) {
     console.error(
@@ -277,7 +261,7 @@ export const getMyServices = async (
       err
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       message: err.message
     });
   }
@@ -292,7 +276,6 @@ export const deleteService = async (
   res
 ) => {
   try {
-
     if (!req.user) {
       return res.status(401).json({
         message: "Not authorized"
@@ -300,9 +283,7 @@ export const deleteService = async (
     }
 
     const service =
-      await Service.findById(
-        req.params.id
-      );
+      await Service.findById(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -310,9 +291,10 @@ export const deleteService = async (
       });
     }
 
-    /* =========================
-       ONLY OWNER CAN DELETE
-    ========================= */
+    /*
+      ONLY THE PROVIDER WHO CREATED
+      THE SERVICE CAN DELETE IT.
+    */
 
     if (
       !service.provider ||
@@ -329,7 +311,7 @@ export const deleteService = async (
       req.params.id
     );
 
-    res.json({
+    return res.json({
       message:
         "Service deleted successfully"
     });
@@ -340,7 +322,7 @@ export const deleteService = async (
       err
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       message: err.message
     });
   }
@@ -348,7 +330,7 @@ export const deleteService = async (
 
 /* =========================
    ADD IMAGES
-   APPEND + MAX 5
+   APPEND + MAX 5 TOTAL
 ========================= */
 
 export const addServiceImages = (
@@ -356,15 +338,18 @@ export const addServiceImages = (
   res
 ) => {
   upload(req, res, async (err) => {
-
     if (err) {
+      console.error(
+        "ADD IMAGES UPLOAD ERROR:",
+        err
+      );
+
       return res.status(400).json({
         message: err.message
       });
     }
 
     try {
-
       if (!req.user) {
         return res.status(401).json({
           message: "Not authorized"
@@ -372,9 +357,7 @@ export const addServiceImages = (
       }
 
       const service =
-        await Service.findById(
-          req.params.id
-        );
+        await Service.findById(req.params.id);
 
       if (!service) {
         return res.status(404).json({
@@ -382,9 +365,9 @@ export const addServiceImages = (
         });
       }
 
-      /* =========================
-         ONLY OWNER
-      ========================= */
+      /*
+        ONLY OWNER
+      */
 
       if (
         !service.provider ||
@@ -407,9 +390,9 @@ export const addServiceImages = (
         service.images = [];
       }
 
-      /* =========================
-         MAX 5 TOTAL
-      ========================= */
+      /*
+        MAX 5 IMAGES TOTAL
+      */
 
       const combined = [
         ...service.images,
@@ -419,8 +402,8 @@ export const addServiceImages = (
       service.images = combined;
 
       /*
-        Keep first image for the
-        existing service-card preview.
+        Keep old main image field
+        synchronized.
       */
 
       service.image =
@@ -428,16 +411,15 @@ export const addServiceImages = (
 
       await service.save();
 
-      res.json(service);
+      return res.json(service);
 
     } catch (err) {
-
       console.error(
         "ADD SERVICE IMAGES ERROR:",
         err
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         message: err.message
       });
     }
@@ -450,9 +432,7 @@ export const addServiceImages = (
 
 export const deleteServiceImage =
   async (req, res) => {
-
     try {
-
       if (!req.user) {
         return res.status(401).json({
           message: "Not authorized"
@@ -460,9 +440,7 @@ export const deleteServiceImage =
       }
 
       const service =
-        await Service.findById(
-          req.params.id
-        );
+        await Service.findById(req.params.id);
 
       if (!service) {
         return res.status(404).json({
@@ -470,9 +448,9 @@ export const deleteServiceImage =
         });
       }
 
-      /* =========================
-         ONLY OWNER
-      ========================= */
+      /*
+        ONLY OWNER
+      */
 
       if (
         !service.provider ||
@@ -498,8 +476,7 @@ export const deleteServiceImage =
       }
 
       try {
-        image =
-          decodeURIComponent(image);
+        image = decodeURIComponent(image);
       } catch {
         // Keep original image
       }
@@ -510,10 +487,7 @@ export const deleteServiceImage =
         );
 
       /*
-        IMPORTANT:
-
-        Update the small main preview
-        after deleting an image.
+        Keep main image synchronized.
       */
 
       service.image =
@@ -521,7 +495,7 @@ export const deleteServiceImage =
 
       await service.save();
 
-      res.json({
+      return res.json({
         message:
           "Image deleted successfully",
 
@@ -529,13 +503,12 @@ export const deleteServiceImage =
       });
 
     } catch (err) {
-
       console.error(
         "DELETE SERVICE IMAGE ERROR:",
         err
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         message: err.message
       });
     }
@@ -549,87 +522,80 @@ export const replaceServiceImages = (
   req,
   res
 ) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error(
+        "REPLACE IMAGES UPLOAD ERROR:",
+        err
+      );
 
-  upload(
-    req,
-    res,
-    async (err) => {
-
-      if (err) {
-        return res.status(400).json({
-          message: err.message
-        });
-      }
-
-      try {
-
-        if (!req.user) {
-          return res.status(401).json({
-            message:
-              "Not authorized"
-          });
-        }
-
-        const service =
-          await Service.findById(
-            req.params.id
-          );
-
-        if (!service) {
-          return res.status(404).json({
-            message:
-              "Service not found"
-          });
-        }
-
-        /* =========================
-           ONLY OWNER
-        ========================= */
-
-        if (
-          !service.provider ||
-          service.provider.toString() !==
-            req.user._id.toString()
-        ) {
-          return res.status(403).json({
-            message:
-              "You are not authorized to modify this service."
-          });
-        }
-
-        const images =
-          (req.files || [])
-            .map(
-              (file) =>
-                `/uploads/${file.filename}`
-            )
-            .slice(0, 5);
-
-        service.images = images;
-
-        /*
-          Keep the main service-card
-          preview working.
-        */
-
-        service.image =
-          images[0] || "";
-
-        await service.save();
-
-        res.json(service);
-
-      } catch (err) {
-
-        console.error(
-          "REPLACE SERVICE IMAGES ERROR:",
-          err
-        );
-
-        res.status(500).json({
-          message: err.message
-        });
-      }
+      return res.status(400).json({
+        message: err.message
+      });
     }
-  );
+
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          message: "Not authorized"
+        });
+      }
+
+      const service =
+        await Service.findById(req.params.id);
+
+      if (!service) {
+        return res.status(404).json({
+          message: "Service not found"
+        });
+      }
+
+      /*
+        ONLY OWNER
+      */
+
+      if (
+        !service.provider ||
+        service.provider.toString() !==
+          req.user._id.toString()
+      ) {
+        return res.status(403).json({
+          message:
+            "You are not authorized to modify this service."
+        });
+      }
+
+      const images =
+        (req.files || [])
+          .map(
+            (file) =>
+              `/uploads/${file.filename}`
+          )
+          .slice(0, 5);
+
+      service.images = images;
+
+      /*
+        Keep main service-card
+        preview synchronized.
+      */
+
+      service.image =
+        images[0] || "";
+
+      await service.save();
+
+      return res.json(service);
+
+    } catch (err) {
+      console.error(
+        "REPLACE SERVICE IMAGES ERROR:",
+        err
+      );
+
+      return res.status(500).json({
+        message: err.message
+      });
+    }
+  });
 };
