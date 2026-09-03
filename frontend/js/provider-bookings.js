@@ -4,8 +4,10 @@
 
    FIXED:
    - Postpone booking now sends bookingDate + bookingTime
+   - Sends reason using the backend's expected field
    - Keeps postponedDate + postponedTime for reschedule tracking
    - Customer can respond to proposed date
+   - Customer booking notes are visible to provider
    - Existing booking actions preserved
 ========================================================= */
 
@@ -403,6 +405,34 @@ function createBookingCard(booking) {
 
         </div>
 
+        ${
+          booking.notes
+            ? `
+              <div style="
+                margin-top:18px;
+                padding:14px 16px;
+                border-radius:12px;
+                background:rgba(59,130,246,0.08);
+                border:1px solid rgba(59,130,246,0.20);
+              ">
+
+                <strong>
+                  Customer Note
+                </strong>
+
+                <p style="
+                  margin:7px 0 0;
+                  color:#94a3b8;
+                  white-space:pre-wrap;
+                ">
+                  ${escapeHtml(booking.notes)}
+                </p>
+
+              </div>
+            `
+            : ""
+        }
+
       </div>
 
 
@@ -530,6 +560,34 @@ function createBookingCard(booking) {
           <strong>Payment:</strong>
           ${escapeHtml(payment)}
         </p>
+
+        ${
+          booking.notes
+            ? `
+              <div style="
+                margin-top:18px;
+                padding:14px 16px;
+                border-radius:12px;
+                background:rgba(59,130,246,0.08);
+                border:1px solid rgba(59,130,246,0.20);
+              ">
+
+                <strong>
+                  Customer Note
+                </strong>
+
+                <p style="
+                  margin:7px 0 0;
+                  color:#94a3b8;
+                  white-space:pre-wrap;
+                ">
+                  ${escapeHtml(booking.notes)}
+                </p>
+
+              </div>
+            `
+            : ""
+        }
 
       </div>
 
@@ -720,6 +778,35 @@ function createBookingCard(booking) {
           </p>
 
         </div>
+
+
+        ${
+          booking.notes
+            ? `
+              <div style="
+                margin-top:18px;
+                padding:14px 16px;
+                border-radius:12px;
+                background:rgba(59,130,246,0.08);
+                border:1px solid rgba(59,130,246,0.20);
+              ">
+
+                <strong>
+                  Customer Note
+                </strong>
+
+                <p style="
+                  margin:7px 0 0;
+                  color:#94a3b8;
+                  white-space:pre-wrap;
+                ">
+                  ${escapeHtml(booking.notes)}
+                </p>
+
+              </div>
+            `
+            : ""
+        }
 
 
         <div style="
@@ -973,12 +1060,12 @@ async function updateBookingStatus(
 /* =========================================================
    POSTPONE BOOKING
    FIXED:
-   Sends both:
+   Sends:
    - bookingDate / bookingTime
    - postponedDate / postponedTime
+   - reason
 
-   This fixes backend validation:
-   "A new booking date is required."
+   The backend expects "reason" for postponedReason.
 ========================================================= */
 
 function postponeBooking(id) {
@@ -1464,36 +1551,33 @@ function postponeBooking(id) {
         /* =====================================================
            IMPORTANT FIX
 
-           The backend validates the new booking date using
-           bookingDate.
+           The backend expects:
 
-           We therefore send BOTH naming formats:
+           bookingDate
+           bookingTime
+           reason
 
-           bookingDate / bookingTime
-           AND
-           postponedDate / postponedTime
+           The postponed date/time are also retained using:
 
-           This keeps the postponement information while
-           satisfying the booking controller validation.
+           postponedDate
+           postponedTime
         ===================================================== */
 
         const postponePayload = {
 
-          /* Backend booking fields */
           bookingDate:
             date,
 
           bookingTime:
             time,
 
-          /* Existing postponement fields */
           postponedDate:
             date,
 
           postponedTime:
             time,
 
-          postponedReason:
+          reason:
             reason
 
         };
@@ -1759,6 +1843,16 @@ async function viewBookingDetails(id) {
     `Status: ${
       booking.status ||
       "pending"
+    }\n\n` +
+
+    `Customer Note: ${
+      booking.notes ||
+      "No note provided"
+    }\n\n` +
+
+    `Provider Postponement Reason: ${
+      booking.postponedReason ||
+      "Not applicable"
     }`
 
   );
